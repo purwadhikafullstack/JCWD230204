@@ -17,7 +17,8 @@ app.use(
 app.use(express.json());
 
 //#region API ROUTES
-
+const usersRouter = require("./routers/usersRouter");
+app.use("/api/users", usersRouter);
 // ===========================
 // NOTE : Add your routes here
 
