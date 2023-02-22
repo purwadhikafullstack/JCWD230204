@@ -11,7 +11,7 @@ export default function App() {
   return (
     <div className="App">
       {/* navbar */}
-      <div className="flex justify-around gap-10 h-[100px] items-center border drop-shadow-lg">
+      <div className="flex justify-around gap-10 h-[100px] items-center drop-shadow-lg">
         <div>
           <img src={Applogo} alt="logo" className="w-[100px]"/>
         </div>
