@@ -13,7 +13,7 @@ export default function App() {
       {/* navbar */}
       <div className="flex justify-around gap-10 h-[100px] items-center drop-shadow-lg">
         <div>
-          <img src={Applogo} alt="logo" className="w-[100px]"/>
+          <img src={Applogo} alt="logo" className="w-[200px]"/>
         </div>
         <div>
           <ul className="flex gap-5">

@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import Banner from '../assets/img/banner.png';
 
 export default function LandingPage(){
     const [products, setProducts] = useState([]);
@@ -10,15 +13,15 @@ export default function LandingPage(){
     const [newProducts, setNewProducts] = useState([]);
 
     let getProducts = async() => {
-        let response = await axios.get('http://localhost:5000/products/');
-        console.log(response.data[0]);
-        setProducts(response.data);
+        let response = await axios.get('http://localhost:8000/products/get');
+        console.log(response.data.data);
+        setProducts(response.data.data);
     }
 
     let getCategories = async() => {
-        let response = await axios.get('http://localhost:5000/categories/');
-        console.log(response.data[0]);
-        setCategories(response.data);
+        let response = await axios.get('http://localhost:8000/products/getCat');
+        console.log(response.data.data);
+        setCategories(response.data.data);
     }
 
     let getPromo = async() => {
@@ -46,9 +49,10 @@ export default function LandingPage(){
 
     return(
         <>
-        <div className='flex flex-col justify-center gap-3 px-5'>
-            <div className="h-[400px] border">
-                <div>banner</div>
+        <div className='flex flex-col justify-center gap-3 px-6'>
+            {/* banner */}
+            <div className="h-[400px] flex justify-center">
+                <img src={Banner} alt="" className="h-[400px] object-scale-down"/>
             </div>
             {/* categories */}
             <div className="h-[300px] border flex flex-col gap-10 items-center py-5">
@@ -58,7 +62,14 @@ export default function LandingPage(){
                         categories.map((value, index) => {
                             return(
                                 <>
-                                <div className="border rounded-md w-[500px] h-[100px]">{value.categories_name}</div>
+                                <Link to={null}>
+                                <div className="border rounded-md w-[500px] h-[100px] bg-slate-200 hover:bg-slate-100" key={index}>
+                                    <div className="text-center font-bold text-2xl">
+                                        {value.category}
+                                    </div>
+                                    
+                                </div>
+                                </Link>
                                 </>
                             )
                         })
@@ -78,8 +89,8 @@ export default function LandingPage(){
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
-                                        <h2 className="text-sm ">{value.products_name}</h2>
-                                        <h2 className="text-sm">Rp.{value.products_price.toLocaleString()}</h2>
+                                        <h2 className="text-sm " key={index}>{value.products_name}</h2>
+                                        <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
                                     </div>
                                     <div className="flex justify-center">
                                         Tangerang Selatan
@@ -111,8 +122,8 @@ export default function LandingPage(){
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
-                                        <h2 className="text-sm ">{value.products_name}</h2>
-                                        <h2 className="text-sm">Rp.{value.products_price.toLocaleString()}</h2>
+                                        <h2 className="text-sm " key={index}>{value.products_name}</h2>
+                                        <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
                                     </div>
                                     <div className="flex justify-center">
                                         Tangerang Selatan
@@ -144,10 +155,10 @@ export default function LandingPage(){
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
-                                        <h2 className="text-sm ">{value.products_name}</h2>
-                                        <h2 className="text-sm">Rp.{value.products_price.toLocaleString()}</h2>
+                                        <h2 className="text-sm " key={index}>{value.products_name}</h2>
+                                        <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
                                     </div>
-                                    <div className="flex justify-center">
+                                    <div className="flex justify-center" key={index}>
                                         {value.store_location}
                                     </div>
                                     {/* <div className="flex justify-center">
@@ -166,7 +177,7 @@ export default function LandingPage(){
             {/* all products */}
             <div className=" border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">All Products</h1>
-                    <div className="grid grid-cols-7 gap-4">
+                    <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                             {
                                 products.map((value, index) => {
                                     return(
@@ -177,7 +188,7 @@ export default function LandingPage(){
                                             </div>
                                             <div className="flex gap-4 justify-around px-2">
                                                 <h2 className="text-sm " key={index}>{value.products_name}</h2>
-                                                <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
+                                                {/* <h2 className="text-sm" key={index}>Rp.{value.products_details[0].price}</h2> */}
                                             </div>
                                             <div className="flex justify-center">
                                                 Tangerang Selatan

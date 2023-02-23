@@ -9,12 +9,22 @@ const products_image = db.products_image;
 module.exports = {
     getAllProducts: async(req, res) => {
         try {
-            let result = products.findAll()
-            console.log(result)
+            let findProducts = await products.findAll({
+                include: [
+                    {
+                        model: products_detail,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    }
+                ]
+            })
+            console.log(findProducts)
+
             res.status(200).send({
                 isError: false,
                 message: "get data sucess",
-                data: result
+                data: findProducts
             })
         } catch (error) {
             res.status(404).send({
@@ -29,10 +39,20 @@ module.exports = {
 
     getCategory: async(req, res) => {
         try {
-            let result = await category.findAll()
-            console.log(result)
+            let findCategory = await category.findAll()
+            console.log(findCategory)
+
+            res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findCategory
+            })
         } catch (error) {
-            
+            res.status(404).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
         }
     }
 }
