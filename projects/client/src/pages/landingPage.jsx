@@ -26,25 +26,28 @@ export default function LandingPage(){
 
     let getPromo = async() => {
         let response = await axios.get('http://localhost:5000/promo/');
-        console.log(response.data[0]);
+        console.log(response.data);
         setPromo(response.data);
     }
 
     let getRecommended = async() => {
-        let response = await axios.get('http://localhost:5000/recommended/');
-        console.log(response.data[0]);
+        let response = await axios.get('http://localhost:5000/recomendedProducts/');
+        console.log(response.data);
         setRecommended(response.data);
     }
 
     let getNewProducts = async() => {
         let response = await axios.get('http://localhost:5000/newProducts/');
-        console.log(response.data[0]);
+        console.log(response.data);
         setNewProducts(response.data);
     }
 
     useEffect(() => {
         getProducts();
         getCategories();
+        getPromo();
+        getRecommended();
+        getNewProducts();
     }, [])
 
     return(
@@ -59,7 +62,7 @@ export default function LandingPage(){
                 <div className="text-xl font-bold">Browse Category</div>
                 <div className="flex gap-3">
                     {
-                        categories.map((value, index) => {
+                        categories ? categories.map((value, index) => {
                             return(
                                 <>
                                 <Link to={null}>
@@ -72,14 +75,14 @@ export default function LandingPage(){
                                 </Link>
                                 </>
                             )
-                        })
+                        }) : <h1>No Product Found!</h1>
                     }
                 </div>
             </div>
             {/* recommended for you */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">Recommended for you</h1>
-                <div className="flex gap-4">
+                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
                         recommended.map((value,index) => {
                             return(
@@ -112,11 +115,12 @@ export default function LandingPage(){
             {/* new products */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">What's New</h1>
-                <div className="flex gap-4">
+                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
                         newProducts.map((value,index) => {
                             return(
                                 <>
+                                <Link to={null}>
                                 <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                     <div className="bg-slate-300 rounded-t-lg">
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
@@ -131,8 +135,9 @@ export default function LandingPage(){
                                     {/* <div className="flex justify-center">
                                         <button className="bg-green-300 rounded-lg p-2 w-[150px]">add to cart</button>
                                     </div> */}
-                                    <div>rating</div>
                                 </div>
+                                </Link>
+                                
                                 </>
                             )
                         })
@@ -145,7 +150,7 @@ export default function LandingPage(){
             {/* promo */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold ">Promo</h1>
-                <div className="flex gap-4">
+                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
                         promo.map((value, index) => {
                             return(
@@ -155,11 +160,11 @@ export default function LandingPage(){
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
-                                        <h2 className="text-sm " key={index}>{value.products_name}</h2>
-                                        <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
+                                        <h2 className="text-sm " key={index}>{value.promo_name}</h2>
+                                        {/* <h2 className="text-sm" key={index}>Rp.{}</h2> */}
                                     </div>
                                     <div className="flex justify-center" key={index}>
-                                        {value.store_location}
+                                        {/* {value.store_location} */}
                                     </div>
                                     {/* <div className="flex justify-center">
                                         <button className="bg-green-300 rounded-lg p-2 w-[150px]">add to cart</button>
@@ -179,24 +184,32 @@ export default function LandingPage(){
                 <h1 className="text-xl font-bold">All Products</h1>
                     <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                             {
-                                products.map((value, index) => {
+                                products.length ? products.map((value, index) => {
                                     return(
                                         <>
+                                        <Link to={null}>
                                         <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                             <div className="bg-slate-300 rounded-t-lg">
                                                 <img src={value.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                             </div>
                                             <div className="flex gap-4 justify-around px-2">
                                                 <h2 className="text-sm " key={index}>{value.products_name}</h2>
-                                                {/* <h2 className="text-sm" key={index}>Rp.{value.products_details[0].price}</h2> */}
+                                                {
+                                                    value.products_details.map((value, index) => {
+                                                        return(
+                                                            <h2 className="text-sm" key={index}>Rp.{value.price.toLocaleString()}</h2>
+                                                        )
+                                                    })
+                                                }
                                             </div>
                                             <div className="flex justify-center">
                                                 Tangerang Selatan
                                             </div>
                                         </div>
+                                        </Link>
                                         </>
                                     )
-                                })
+                                }) : <h1>No Product Found!</h1>
                             }
                     </div>
             </div>

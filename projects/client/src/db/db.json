@@ -95,5 +95,86 @@
             "id": 3,
             "categories_name": "Accessories"
         }
+    ],
+    "promo": [
+        {
+            "id": 1,
+            "promo_name": "Buy 1 get 1",
+            "promo_discount": 0,
+            "promo_start": "2021-09-01",
+            "promo_end": "2021-09-30"
+        },
+        {
+            "id": 2,
+            "promo_name": "get 20% off purchase over 1.000.000",
+            "promo_discount": 20,
+            "promo_start": "2021-10-01",
+            "promo_end": "2021-10-30"
+        },
+        {
+            "id": 3,
+            "promo_name": "get 30% off purchase over 2.000.000",
+            "promo_discount": 30,
+            "promo_start": "2021-11-01",
+            "promo_end": "2021-11-30"
+        }
+    ],
+    "newProducts": [
+        {
+            "id": 1,
+            "products_name": "playStation 4",
+            "products_price": 4750000,
+            "products_description": "playStation 4",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10 
+        },
+        {
+            "id": 2,
+            "products_name": "PlayStation 5",
+            "products_price": 10000000,
+            "products_description": "PlayStation 5",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10
+        },
+        {
+            "id": 3,
+            "products_name": "Xbox Series X",
+            "products_price": 10000000,
+            "products_description": "Xbox Series X",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10
+        }
+    ],
+    "recomendedProducts": [
+        {
+            "id": 1,
+            "products_name": "playStation 4",
+            "products_price": 4750000,
+            "products_description": "playStation 4",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10 
+        },
+        {
+            "id": 2,
+            "products_name": "PlayStation 5",
+            "products_price": 10000000,
+            "products_description": "PlayStation 5",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10
+        },
+        {
+            "id": 3,
+            "products_name": "Xbox Series X",
+            "products_price": 10000000,
+            "products_description": "Xbox Series X",
+            "products_image": "url",
+            "products_category": "Console",
+            "products_stock": 10
+        }
     ]
 }
