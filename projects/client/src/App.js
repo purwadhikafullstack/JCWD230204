@@ -5,6 +5,9 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 
 import LandingPage from "./pages/landingPage";
 import Hello from "./pages/hello";
+import EditProfile from "./pages/editProfile";
+
+import { Link } from "react-router-dom"
 
 export default function App() {
   
@@ -33,6 +36,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/hello" element={<Hello />} />
+        <Route path="/editProfile" element={<EditProfile />} />
       </Routes>
     </div>
   );

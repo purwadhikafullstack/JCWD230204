@@ -3,16 +3,17 @@ const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(cors());
 
 app.use(express.json());
 
 //#region API ROUTES
-const {adminRouter, productsRouter} = require('./../routers');
+const {adminRouter, productsRouter, usersRouter} = require('./routers');
 app.use('/admin', adminRouter);
 app.use('/products', productsRouter);
+app.use('/users', usersRouter);
 
 // NOTE : Add your routes here
 
@@ -70,7 +71,7 @@ app.listen(PORT, (err) => {
 
 // sequelize synchronous
 // const Sequelize = require('sequelize')
-// const Models = require('../models')
+// const Models = require('./models')
 
 // Models.sequelize.sync({
 //     force: false,

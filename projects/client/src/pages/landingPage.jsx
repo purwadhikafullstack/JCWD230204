@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import Banner from '../assets/img/banner.png';
+import Banner from '../assets/img/banner2.jpg';
 
 export default function LandingPage(){
     const [products, setProducts] = useState([]);
@@ -25,9 +25,9 @@ export default function LandingPage(){
     }
 
     let getPromo = async() => {
-        let response = await axios.get('http://localhost:5000/promo/');
-        console.log(response.data);
-        setPromo(response.data);
+        let response = await axios.get('http://localhost:8000/products/getPromo');
+        console.log(response.data.data);
+        setPromo(response.data.data);
     }
 
     let getRecommended = async() => {
@@ -37,9 +37,9 @@ export default function LandingPage(){
     }
 
     let getNewProducts = async() => {
-        let response = await axios.get('http://localhost:5000/newProducts/');
-        console.log(response.data);
-        setNewProducts(response.data);
+        let response = await axios.get('http://localhost:8000/products/getNewProduct/');
+        console.log(response.data.data);
+        setNewProducts(response.data.data);
     }
 
     useEffect(() => {
@@ -84,6 +84,7 @@ export default function LandingPage(){
                 <h1 className="text-xl font-bold">Recommended for you</h1>
                 <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
+                        recommended.length ?
                         recommended.map((value,index) => {
                             return(
                                 <>
@@ -101,11 +102,10 @@ export default function LandingPage(){
                                     {/* <div className="flex justify-center">
                                         <button className="bg-green-300 rounded-lg p-2 w-[150px]">add to cart</button>
                                     </div> */}
-                                    <div>rating</div>
                                 </div>
                                 </>
                             )
-                        })
+                        }) : <h1>No Product Found!</h1>
                     }
                     {/* cards */}
                     
@@ -117,6 +117,7 @@ export default function LandingPage(){
                 <h1 className="text-xl font-bold">What's New</h1>
                 <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
+                        newProducts.length ?
                         newProducts.map((value,index) => {
                             return(
                                 <>
@@ -127,7 +128,14 @@ export default function LandingPage(){
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
                                         <h2 className="text-sm " key={index}>{value.products_name}</h2>
-                                        <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2>
+                                        {
+                                            value.products_details.map((value, index) => {
+                                                return(
+                                                    <h2 className="text-sm" key={index}>Rp.{value.price.toLocaleString()}</h2>
+                                                )
+                                            })
+                                        }
+                                        {/* <h2 className="text-sm" key={index}>Rp.{value.products_price.toLocaleString()}</h2> */}
                                     </div>
                                     <div className="flex justify-center">
                                         Tangerang Selatan
@@ -140,7 +148,7 @@ export default function LandingPage(){
                                 
                                 </>
                             )
-                        })
+                        }) : <h1>No Product Found!</h1>
                     }
                     {/* cards */}
                     
@@ -152,6 +160,7 @@ export default function LandingPage(){
                 <h1 className="text-xl font-bold ">Promo</h1>
                 <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
                     {
+                        promo.length ?
                         promo.map((value, index) => {
                             return(
                                 <>
@@ -160,7 +169,7 @@ export default function LandingPage(){
                                         <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-around px-2">
-                                        <h2 className="text-sm " key={index}>{value.promo_name}</h2>
+                                        <h2 className="text-sm " key={index}>{value.discount_name}</h2>
                                         {/* <h2 className="text-sm" key={index}>Rp.{}</h2> */}
                                     </div>
                                     <div className="flex justify-center" key={index}>
@@ -172,7 +181,7 @@ export default function LandingPage(){
                                 </div>
                                 </>
                             )
-                        })
+                        }) : <h1>promo not found</h1>
                     }
                     {/* cards */}
                     
@@ -201,9 +210,6 @@ export default function LandingPage(){
                                                         )
                                                     })
                                                 }
-                                            </div>
-                                            <div className="flex justify-center">
-                                                Tangerang Selatan
                                             </div>
                                         </div>
                                         </Link>
