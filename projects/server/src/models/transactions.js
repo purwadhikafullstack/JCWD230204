@@ -11,20 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      transactions.hasMany(models.transactions_details, {
-        foreignKey: 'transaction_id'
-      })
-      transactions.hasOne(models.transactions_log, {
-        foreignKey: 'transaction_id'
-      })
-      transactions.belongsTo(models.transactions_status, {
-        foreignKey: 'status_id'
-      })
     }
   }
   transactions.init({
     date: DataTypes.DATE,
-    expiry_date: DataTypes.DATE,
+    expiri_date: DataTypes.DATE,
     payment_proof: DataTypes.STRING
   }, {
     sequelize,
