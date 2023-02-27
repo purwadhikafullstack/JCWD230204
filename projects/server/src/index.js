@@ -5,20 +5,15 @@ const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 
 //#region API ROUTES
-const {adminRouter} = require('./../routers');
+const {adminRouter, productsRouter, usersRouter} = require('./routers');
 app.use('/admin', adminRouter);
+app.use('/products', productsRouter);
+app.use('/users', usersRouter);
 
 // NOTE : Add your routes here
 
@@ -75,15 +70,15 @@ app.listen(PORT, (err) => {
 });
 
 // sequelize synchronous
-const Sequelize = require('sequelize')
-const Models = require('./models')
+// const Sequelize = require('sequelize')
+// const Models = require('./models')
 
-Models.sequelize.sync({
-    force: false,
-    alter: true,
-    logging: console.log
-}).then(function () {
-    console.log('database is synchronized')
-}).catch(function (error){
-    console.log(error, 'something went wrong with the database')
-})
+// Models.sequelize.sync({
+//     force: false,
+//     alter: true,
+//     logging: console.log
+// }).then(function () {
+//     console.log('database is synchronized')
+// }).catch(function (error){
+//     console.log(error, 'something went wrong with the database')
+// })
