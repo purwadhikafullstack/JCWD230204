@@ -1,16 +1,17 @@
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import Applogo from "./assets/img/1.svg"
 import { AiOutlineShoppingCart } from "react-icons/ai";
-
+import "./App.css";
 import LandingPage from "./pages/landingPage";
 import Hello from "./pages/hello";
 import EditProfile from "./pages/editProfile";
+import Hello from "./pages/Hello";
+import Activation from "./pages/activation"
+import Register from "./pages/register"
+import Login from "./pages/login"
 
-import { Link } from "react-router-dom"
-
-export default function App() {
-  
+function App() {
   return (
     <div className="App">
       {/* navbar */}
@@ -37,7 +38,11 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/hello" element={<Hello />} />
         <Route path="/editProfile" element={<EditProfile />} />
+        <Route path="/register" element={<Register/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/activation/:id" element={<Activation/>} />
       </Routes>
+    
     </div>
   );
 }

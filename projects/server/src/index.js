@@ -82,3 +82,12 @@ app.listen(PORT, (err) => {
 // }).catch(function (error){
 //     console.log(error, 'something went wrong with the database')
 // })
+// Models.sequelize.sync({
+//     force: false,
+//     alter: true,
+//     logging: console.log
+// }).then(function () {
+//     console.log('database is synchronized')
+// }).catch(function (error){
+//     console.log(error, 'something went wrong with the database')
+// })
