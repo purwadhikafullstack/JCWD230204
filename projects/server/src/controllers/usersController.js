@@ -115,6 +115,7 @@ module.exports = {
             }
          },
 
+
  
     login: async(req, res) => {
         try {
@@ -150,7 +151,54 @@ module.exports = {
         } catch (error) {
             
         }
-    }, 
+    },
+
+    updateProfile: async(req, res) => {
+        try {
+            const {name, gender, birthdate, email} = req.body;
+            const {id} = req.params;
+            console.log(name, gender, birthdate, id);
+
+            console.log('masuk')
+            let findUser = await db.profiles.findAll({
+                where: {id: 1},
+            })
+
+            if (!findUser) {
+                res.status(404).send({
+                    isError: true,
+                    message: "User not found",
+                    data: null
+                })
+            }
+            console.log(findUser)
+
+            let updateUser = await db.profiles.update({
+                name: name,
+                gender: gender,
+                birthdate: birthdate,
+            }, {
+                where: {id}
+            })
+            let updateEmail = await users.update({
+                email: email
+            }, {
+                where: {id}
+            })
+            res.status(200).send({
+                isError: false,
+                message: "Update profile success",
+                data: null
+            })
+
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "Update profile failed",
+                data: error.message
+            })
+        }
+
 
     // keepLogin: async(req, res) => {
     //     res.status(201).send({

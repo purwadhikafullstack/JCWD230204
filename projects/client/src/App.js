@@ -6,10 +6,11 @@ import "./App.css";
 import LandingPage from "./pages/landingPage";
 import Hello from "./pages/hello";
 import EditProfile from "./pages/editProfile";
-import Hello from "./pages/Hello";
 import Activation from "./pages/activation"
 import Register from "./pages/register"
 import Login from "./pages/login"
+import Profiling from "./pages/profiling";
+import EditProfileForm from "./pages/editProfile";
 
 function App() {
   return (
@@ -41,6 +42,8 @@ function App() {
         <Route path="/register" element={<Register/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/activation/:id" element={<Activation/>} />
+        <Route path="/Profiling" element={<Profiling/>}/>
+        <Route path="/EditProfile" element={<EditProfileForm/>}/>
       </Routes>
     
     </div>
