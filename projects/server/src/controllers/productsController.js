@@ -1,5 +1,6 @@
 const {sequelize} = require('./../models');
 
+
 const db = require('./../models/index');
 const products = db.products;
 const category = db.category;
@@ -8,6 +9,8 @@ const products_image = db.products_image;
 const discounts_categories = db.discount_category;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
+
+const {Op} = require('sequelize');
 
 module.exports = {
     getAllProducts: async(req, res) => {
@@ -148,6 +151,92 @@ module.exports = {
                 message: "get data failed",
                 data: error.message
             })
+        }
+    },
+
+    filterBy: async(req, res) => {
+        try {
+            //filter products by category and products name
+            let {category, name} = req.body
+            let findProducts = await products.findAll({
+                where: {
+                    [Op.and]: [
+                        {category: {[Op.like]: `%${category}%`}},
+                        {name: {[Op.like]: `%${name}%`}}
+                    ]
+                },
+                include: [
+                    {
+                        model: products_detail,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    },
+                    {
+                        model: products_image,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    },
+                    {
+                        model: category,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    }
+                ]
+            })
+
+            console.log(findProducts)
+
+            res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findProducts
+            })
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
+        }
+    },
+
+    sortBy: async(req,res) => {
+        try {
+            //sort by products name and price asc to desc
+            let {name, price} = req.query
+            let findProducts = await products.findAll({
+                order: [
+                    [name, 'ASC'],
+                    [price, 'DESC']
+                ],
+                include: [
+                    {
+                        model: products_detail,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    },
+                    {
+                        model: products_image,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    }
+                ]
+            })
+
+            console.log(findProducts)
+
+            res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findProducts
+            })
+        } catch (error) {
+            
         }
     }
 }

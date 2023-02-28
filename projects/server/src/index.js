@@ -5,7 +5,11 @@ const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(cors());
+app.use(cors(
+  {
+    origin: "http://localhost:3000",
+  }
+));
 
 app.use(express.json());
 

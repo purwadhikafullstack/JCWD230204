@@ -52,7 +52,7 @@ export default function LandingPage(){
 
     return(
         <>
-        <div className='flex flex-col justify-center gap-3 px-6'>
+        <div className='flex flex-col justify-center gap-3 px-6 mb-4'>
             {/* banner */}
             <div className="h-[400px] flex justify-center">
                 <img src={Banner} alt="" className="h-[400px] object-scale-down"/>
@@ -99,15 +99,11 @@ export default function LandingPage(){
                                     <div className="flex justify-center">
                                         Tangerang Selatan
                                     </div>
-                                    {/* <div className="flex justify-center">
-                                        <button className="bg-green-300 rounded-lg p-2 w-[150px]">add to cart</button>
-                                    </div> */}
                                 </div>
                                 </>
                             )
                         }) : <h1>No Product Found!</h1>
                     }
-                    {/* cards */}
                     
                     
                 </div>
@@ -219,24 +215,7 @@ export default function LandingPage(){
                             }
                     </div>
             </div>
-            {/* footer */}
-            <div className="h-[300px] border bg-slate-600 flex justify-around p-5">
-                <div>
-                    <h1 className="text-xl font-bold">Gamepedia</h1>
-                    <p className="text-sm">One stop service for all gaming stuff</p>
-                    <p>email: support@gamepedia.com phone: (021)123456789</p>
-                    <p>copyright 2023</p>
-                </div>
-                <div>
-                <ul className="flex flex-col gap-5">
-                    <li className="hover:text-white">Categories</li>
-                    <li className="hover:text-white">Deals</li>
-                    <li className="hover:text-white">What's New</li>
-                    <li className="hover:text-white">Delivery</li>
-                    <li className="hover:text-white">Accounts</li>
-                </ul>
-                </div>
-            </div>
+            
         </div>
         </>
     )
