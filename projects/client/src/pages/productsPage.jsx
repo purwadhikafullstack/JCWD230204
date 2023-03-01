@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState, useRef } from 'react'
 
@@ -22,6 +22,8 @@ export default function ProductPage(){
     const currentItems = products.slice(indexOfFirstItem, indexOfLastItem)
     const totalPage = Math.ceil(products.length / itemsPerPage)
     const paginate = (pageNumber) => setPage(pageNumber)
+
+    const Navigate = useNavigate()
 
     let getProducts = async() => {
         try {
@@ -135,8 +137,8 @@ export default function ProductPage(){
                     {
                         currentItems.length ? currentItems.map((product) => {
                             return(
-                                <div key={product.id}>
-                                    <Link to={null}>
+                                <div key={product.id} onClick={() => Navigate(`/Details/${product.id}`)}>
+                                    
                                     <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                         <div className="bg-slate-300 rounded-t-lg">
                                             <img src={product.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
@@ -152,7 +154,6 @@ export default function ProductPage(){
                                             }
                                         </div>
                                     </div>
-                                    </Link>
                                 </div>
                             )
                         }) : <h1>loading...</h1>

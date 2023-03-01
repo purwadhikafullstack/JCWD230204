@@ -3,6 +3,7 @@ const router = express.Router();
 const { productsController } = require('../controllers');
 
 router.get('/get', productsController.getAllProducts);
+router.get('/getDetail', productsController.getProductDetail);
 router.get('/getCat', productsController.getCategory);
 router.get('/getPromo', productsController.getPromo);
 router.get('/getNewProduct', productsController.getNewProducts);

@@ -50,7 +50,7 @@ export default function App() {
         <Route path="/Profiling" element={<Profiling/>}/>
         <Route path="/EditProfile" element={<EditProfileForm/>}/>
         <Route path="/Products" element={<ProductsPage/>}/>
-        <Route path="/Details" element={<ProductsDetails/>}/>
+        <Route path="/Details/:id" element={<ProductsDetails/>}/>
       </Routes>
 
       {/* footer */}

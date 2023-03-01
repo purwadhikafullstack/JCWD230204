@@ -49,6 +49,44 @@ module.exports = {
 
     },
 
+    getProductDetail: async(req, res) => {
+        try{
+            const {id} = req.query
+            console.log(id)
+            let findProductDetail = await products_detail.findAll({
+                where: {products_id: id},
+                include: {
+                    model: products,
+                    
+                }
+            })
+
+            // let findDetail = await products.findAll({
+            //     where: {id},
+            //     include:{
+            //         model: products_detail,
+            //         attributes: {
+            //             include: ["products_id"]
+            //         }
+            //     }
+            // })
+
+            res.status(200).send({
+                isError: false,
+                message: "get detail success",
+                data: findProductDetail
+            })
+
+        } catch(error){
+            res.status(404).send({
+                isError: true,
+                message: "get detail failed",
+                data: error.message
+            })
+        }
+        
+    },
+
     getCategory: async(req, res) => {
         try {
             let findCategory = await category.findAll()

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {useState, useEffect, useRef} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 
 export default function ProductDetails(){
     const [category, setCategory] = useState([])
@@ -11,9 +11,11 @@ export default function ProductDetails(){
     const sort = useRef(null)
     const filter = useRef(null)
 
+    const {id} = useParams()
+
     let getProducts = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/get`)
+            const response = await axios.get(`http://localhost:8000/products/getDetail?id=${id}`)
             setProduct(response.data.data)
         } catch (error) {
             console.log(error)
@@ -91,6 +93,7 @@ export default function ProductDetails(){
                 </div>
             </div>
             {/* products details */}
+            {console.log(id)}
             <div className="border w-[1000px]">
                 <div>
                     <h1>Breadcrumbs</h1>
@@ -105,12 +108,12 @@ export default function ProductDetails(){
                         </div>
                     </div>
                     <div className='border flex flex-col items-center gap-4 w-[400px] p-4'>
-                        <div>
-                            <h1 className='text-xl font-bold'>Playstation 5 black</h1>
-                            <p className='text-md'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni voluptate sapiente sunt eos dolor aspernatur facere eum pariatur ipsa. Perspiciatis perferendis consectetur autem obcaecati iste tenetur a atque doloribus ab.</p>
+                        <div>{console.log(product[0])}
+                            <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
+                            <p className='text-md'>{product[0] ? product[0].description : null}</p>
                         </div>
                         <div>
-                            <h1 className='text-xl font-bold'>Rp. 5.000.000</h1>
+                            <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
                         </div>
                         <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
                             <button>+</button>

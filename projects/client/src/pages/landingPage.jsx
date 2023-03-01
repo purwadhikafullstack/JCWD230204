@@ -82,7 +82,7 @@ export default function LandingPage(){
             {/* recommended for you */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">Recommended for you</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         recommended.length ?
                         recommended.map((value,index) => {
@@ -111,7 +111,7 @@ export default function LandingPage(){
             {/* new products */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">What's New</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         newProducts.length ?
                         newProducts.map((value,index) => {
@@ -154,7 +154,7 @@ export default function LandingPage(){
             {/* promo */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold ">Promo</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         promo.length ?
                         promo.map((value, index) => {
@@ -187,7 +187,7 @@ export default function LandingPage(){
             {/* all products */}
             <div className=" border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">All Products</h1>
-                    <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                    <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                             {
                                 products.length ? products.map((value, index) => {
                                     return(
@@ -215,7 +215,6 @@ export default function LandingPage(){
                             }
                     </div>
             </div>
-            
         </div>
         </>
     )
