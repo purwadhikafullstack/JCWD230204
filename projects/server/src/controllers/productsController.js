@@ -14,8 +14,16 @@ const {Op} = require('sequelize');
 
 module.exports = {
     getAllProducts: async(req, res) => {
+        const { page, limit } = req.query
+        const pageNumber = parseInt(page) || 1
+        const productPerPage = parseInt(limit) || 8
+
+        const offset = (pageNumber - 1) * productPerPage
+
         try {
             let findProducts = await products.findAll({
+                offset: offset,
+                limit: productPerPage,
                 include: [
                     {
                         model: products_detail,
@@ -31,12 +39,22 @@ module.exports = {
                     }
                 ]
             })
+
+            const totalCount = await products.count()
+
+            const totalPages = Math.ceil(totalCount / productPerPage)
+
             console.log(findProducts)
 
-            res.status(200).send({
-                isError: false,
-                message: "get data sucess",
-                data: findProducts
+            // res.status(200).send({
+            //     isError: false,
+            //     message: "get data sucess",
+            //     data: findProducts
+            // })
+            res.status(200).json({
+                products,
+                totalPages,
+                currentPage: pageNumber,
             })
         } catch (error) {
             res.status(404).send({

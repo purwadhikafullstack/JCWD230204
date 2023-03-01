@@ -23,7 +23,7 @@ export default function App() {
     <div className="App">
       {/* navbar */}
       <div className="flex justify-around gap-10 h-[100px] items-center drop-shadow-lg">
-        <div>
+        <div onClick={() => Navigate('/')}>
           <img src={Applogo} alt="logo" className="w-[200px]"/>
         </div>
         <div>

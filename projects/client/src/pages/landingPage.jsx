@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import Banner from '../assets/img/banner2.jpg';
 
@@ -12,8 +12,10 @@ export default function LandingPage(){
     const [recommended, setRecommended] = useState([]);
     const [newProducts, setNewProducts] = useState([]);
 
+    const Navigate = useNavigate()
+
     let getProducts = async() => {
-        let response = await axios.get('http://localhost:8000/products/get');
+        let response = await axios.get(`http://localhost:8000/products/get`);
         console.log(response.data.data);
         setProducts(response.data.data);
     }
@@ -65,14 +67,13 @@ export default function LandingPage(){
                         categories ? categories.map((value, index) => {
                             return(
                                 <>
-                                <Link to={null}>
+                                <div>
                                 <div className="border rounded-md w-[500px] h-[100px] bg-slate-200 hover:bg-slate-100" key={index}>
                                     <div className="text-center font-bold text-2xl">
                                         {value.category}
                                     </div>
-                                    
                                 </div>
-                                </Link>
+                                </div>
                                 </>
                             )
                         }) : <h1>No Product Found!</h1>
@@ -192,7 +193,7 @@ export default function LandingPage(){
                                 products.length ? products.map((value, index) => {
                                     return(
                                         <>
-                                        <Link to={null}>
+                                        <div key={value.id} onClick={() => Navigate(`/Details/${value.id}`)}>
                                         <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                             <div className="bg-slate-300 rounded-t-lg">
                                                 <img src={value.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
@@ -208,7 +209,7 @@ export default function LandingPage(){
                                                 }
                                             </div>
                                         </div>
-                                        </Link>
+                                        </div>
                                         </>
                                     )
                                 }) : <h1>No Product Found!</h1>

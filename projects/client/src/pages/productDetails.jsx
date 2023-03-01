@@ -60,7 +60,7 @@ export default function ProductDetails(){
         <>
         <div className="flex gap-4 mx-10 mb-4">
             {/* sidebar */}
-            <div className="border w-[300px] p-4 flex flex-col gap-4">
+            {/* <div className="border w-[300px] p-4 flex flex-col gap-4">
                 <div>
                     <h1 className="text-xl font-bold ">Category</h1>
                     <ul>
@@ -91,7 +91,7 @@ export default function ProductDetails(){
                         <input type="radio" value="name" name="sort" onChange={handleFilter}/>Category
                     </div>
                 </div>
-            </div>
+            </div> */}
             {/* products details */}
             {console.log(id)}
             <div className="border w-[1000px]">
@@ -107,6 +107,7 @@ export default function ProductDetails(){
                             <div>small pict</div>
                         </div>
                     </div>
+                    {console.log(product)}
                     <div className='border flex flex-col items-center gap-4 w-[400px] p-4'>
                         <div>{console.log(product[0])}
                             <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
