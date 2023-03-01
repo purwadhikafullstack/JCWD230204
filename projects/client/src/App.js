@@ -11,6 +11,7 @@ import Login from "./pages/login"
 import Profiling from "./pages/profiling";
 import EditProfileForm from "./pages/editProfile";
 import ProductsPage from "./pages/productsPage";
+import ProductsDetails from "./pages/productDetails";
 // import cors from "cors";
 export default function App() {
   const Navigate = useNavigate();
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/Profiling" element={<Profiling/>}/>
         <Route path="/EditProfile" element={<EditProfileForm/>}/>
         <Route path="/Products" element={<ProductsPage/>}/>
+        <Route path="/Details" element={<ProductsDetails/>}/>
       </Routes>
 
       {/* footer */}
