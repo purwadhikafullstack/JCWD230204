@@ -14,16 +14,13 @@ const {Op} = require('sequelize');
 
 module.exports = {
     getAllProducts: async(req, res) => {
-        const { page, limit } = req.query
-        const pageNumber = parseInt(page) || 1
-        const productPerPage = parseInt(limit) || 8
-
-        const offset = (pageNumber - 1) * productPerPage
-
+        const {sort, sortType, filter} = req.query
+        const productsPerPage = parseInt(req.query.productsPerPage) || 10
+        const currentPage = parseInt(req.query.currentPage) || 1
+        console.log(sort, sortType, filter)
+        
         try {
-            let findProducts = await products.findAll({
-                offset: offset,
-                limit: productPerPage,
+             const findProducts = await products.findAll({
                 include: [
                     {
                         model: products_detail,
@@ -36,26 +33,103 @@ module.exports = {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"]
                         }
+                    },
+                    {
+                        model: category,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     }
                 ]
             })
 
-            const totalCount = await products.count()
+            //if sort by product name order ascending then sort product by product name ascending
+            if(sort === 'name' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    order: ['products_name', 'ASC'],
+                    include: {
+                        model: 'products_details',
+                        attributes: ['price']
+                    }
+                })
+            } else
+            //if sort by product name order descending then sort product by product name descending
+            if(sort === 'name' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    order: ['products_name', 'DESC'],
+                    include: {
+                        model: 'products_details',
+                        attributes: ['price']
+                    }
+                })
+            } else
+            //if sort by product price order ascending then sort product by product price ascending
+            if(sort === 'price' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    include: {
+                        model: 'products_details',
+                        attrubutes: ['price'],
+                        order: ['price', 'ASC']
+                    },
+                    attributes: ['products_name']
+                })
+            } else
+            //if sort by product price order descending then sort product by product price descending
+            if(sort === 'price' && sortType === 'DESC'){
+                findProducts = await products.findAll({
+                    include: {
+                        model: 'products_details',
+                        attrubutes: ['price'],
+                        order: ['price', 'DESC']
+                    },
+                    attributes: ['products_name']
+                })
+            } else
 
-            const totalPages = Math.ceil(totalCount / productPerPage)
+            //if filter by category then filter product by category
+            if(filter === 'productsName' ){
+                findProducts = await products.findAll({
+                    where: {
+                        products_name: {
+                            [Op.like]: `%${req.query.products_name}%`
+                        }
+                    }
+                })
+            } else
 
-            console.log(findProducts)
+            //if filter by price then filter product by price
+            if(filter === 'category'){
+                findProducts = await products.findAll({
+                    attributes: ["products_name"],
+                    include: [{
+                            model: category,
+                            attributes: ['category'],
+                            where: {
+                                category: {
+                                    [Op.like]: `%${req.query.category}%`
+                                }
+                            }
+                        }
+                    ]
+                })
+            }
 
-            // res.status(200).send({
-            //     isError: false,
-            //     message: "get data sucess",
-            //     data: findProducts
-            // })
-            res.status(200).json({
-                products,
-                totalPages,
-                currentPage: pageNumber,
+            // const indexOfLastItem = page * itemsPerPage;
+            // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+            // const currentItems = products.slice(indexOfFirstItem, indexOfLastItem)
+            // const totalPage = Math.ceil(products.length / itemsPerPage)
+            // const paginate = (pageNumber) => setPage(pageNumber)
+
+            // console.log(findProducts)
+
+            res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findProducts
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -63,8 +137,6 @@ module.exports = {
                 data: error.message
             })
         }
-        
-
     },
 
     getProductDetail: async(req, res) => {
@@ -78,16 +150,6 @@ module.exports = {
                     
                 }
             })
-
-            // let findDetail = await products.findAll({
-            //     where: {id},
-            //     include:{
-            //         model: products_detail,
-            //         attributes: {
-            //             include: ["products_id"]
-            //         }
-            //     }
-            // })
 
             res.status(200).send({
                 isError: false,
@@ -115,6 +177,7 @@ module.exports = {
                 message: "get data sucess",
                 data: findCategory
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -134,6 +197,7 @@ module.exports = {
                 message: "get data sucess",
                 data: findPromo
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -212,35 +276,26 @@ module.exports = {
 
     filterBy: async(req, res) => {
         try {
-            //filter products by category and products name
-            let {category, name} = req.body
-            let findProducts = await products.findAll({
-                where: {
-                    [Op.and]: [
-                        {category: {[Op.like]: `%${category}%`}},
-                        {name: {[Op.like]: `%${name}%`}}
-                    ]
-                },
-                include: [
-                    {
-                        model: products_detail,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    },
-                    {
-                        model: products_image,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    },
-                    {
-                        model: category,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    }
-                ]
+            const {category, name, order} = req.query
+            const filter = {}
+            if(category){
+                filter.category = category;
+            }
+            if(name){
+                filter.name = {[Op.like]: `%${name}%`}
+            }
+
+            const options = {}
+
+            if(order === 'asc'){
+                options.order = [['name', 'ASC']]
+            } else if(order === 'desc'){
+                options.order = [['name', 'DESC']]
+            }
+
+            const findProducts = await products.findAll({
+                where: filter,
+                ...options,
             })
 
             console.log(findProducts)

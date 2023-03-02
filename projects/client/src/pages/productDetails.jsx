@@ -7,13 +7,14 @@ export default function ProductDetails(){
     const [product, setProduct] = useState([])
     const [sortByproduct, setSortByProduct] = useState([])
     const [filterByproduct, setFilterByProduct] = useState([])
+    const [quantity, setQuantity] = useState(1)
 
     const sort = useRef(null)
     const filter = useRef(null)
 
     const {id} = useParams()
 
-    let getProducts = async() => {
+    const getProducts = async() => {
         try {
             const response = await axios.get(`http://localhost:8000/products/getDetail?id=${id}`)
             setProduct(response.data.data)
@@ -22,7 +23,7 @@ export default function ProductDetails(){
         }
     }
 
-    let getCategory = async() => {
+    const getCategory = async() => {
         try{
             const response = await axios.get(`http://localhost:8000/products/getCat`)
             setCategory(response.data.data)
@@ -31,23 +32,13 @@ export default function ProductDetails(){
         }
     }
 
-    let handleSort = (e) => {
-        if(e.target.checked){
-            if(e.target.value === "name"){
-                setSortByProduct("name")
-            } else {
-                setSortByProduct("price")
-            }
-        }
+    const countPlusHandler = () => {
+        setQuantity(quantity + 1)
     }
 
-    let handleFilter = (e) => {
-        if(e.target.checked){
-            if(e.target.value === "name"){
-                setFilterByProduct("name")
-            } else {
-                setFilterByProduct("category")
-            }
+    const countMinHandler = () => {
+        if(quantity > 1){
+            setQuantity(quantity - 1)
         }
     }
 
@@ -117,9 +108,9 @@ export default function ProductDetails(){
                             <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
                         </div>
                         <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
-                            <button>+</button>
-                            <div>0</div>
-                            <button>-</button>
+                            <button onClick={countPlusHandler}>+</button>
+                            <div>{quantity}</div>
+                            <button onClick={countMinHandler}>-</button>
                         </div>
                         <div>
                             <button className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>

@@ -1,6 +1,6 @@
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 
 // import BannerVertical from './../assets/img/banner-vert-1.png'
 
@@ -8,14 +8,12 @@ import { useEffect, useState, useRef } from 'react'
 export default function ProductPage(){
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState([])
-    const [sortByproduct, setSortByproduct] = useState('')
-    const [filterByproduct, setFilterByproduct] = useState('')
+    const [filter, setFilter] = useState({category: '', name: ''})
+    const [sort, setSort] = useState('asc')
     
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(8)
 
-    const sort = useRef(null)
-    const filter = useRef(null)
 
     const indexOfLastItem = page * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -27,15 +25,13 @@ export default function ProductPage(){
 
     let getProducts = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/get`)
+            const response = await axios.get(`http://localhost:8000/products/get?page=${page}sort=${sort}filter=${filter}`)
             setProducts(response.data.data)
             
         } catch (error) {
             console.log(error)
         }
     }
-
-    
 
     let getCategory = async() => {
         try{
@@ -46,50 +42,10 @@ export default function ProductPage(){
         }
     }
 
-    // let sortBy = async() => {
-    //     try{
-    //         const response = await axios.get(`http://localhost:8000/products/sortBy?sortBy=${sortBy}`)
-    //         setSortByproduct(response.data.data)
-    //     } catch( error ){
-    //         console.log(error.message)
-    //     }
-    // }
-
-    // let filterBy = async() => {
-    //     try{
-    //         const response = await axios.get(`http://localhost:8000/products/filterBy?filterBy=${filterBy}`)
-    //         setFilterByproduct(response.data.data)
-    //     } catch( error ){
-    //         console.log(error.message)
-    //     }
-    // }
-
-    let handleSort = (e) => {
-        if(e.target.checked){
-            if(e.target.value === "name"){
-                setSortByproduct("name")
-            } else {
-                setSortByproduct("price")
-            }
-        }
-    }
-
-    let handleFilter = (e) => {
-        if(e.target.checked){
-            if(e.target.value === "name"){
-                setFilterByproduct("name")
-            } else {
-                setFilterByproduct("category")
-            }
-        }
-    }
-    
     useEffect(() => {
-        getProducts({sortByproduct, filterByproduct})
+        getProducts()
         getCategory()
-        // sortBy()
-        // filterBy()
-    }, [sortByproduct, filterByproduct])
+    }, [])
 
     return(
         <>
@@ -113,8 +69,17 @@ export default function ProductPage(){
                         <h1 className='text-xl font-bold'>Sort by</h1>
                     </div>
                     <div className='flex gap-3'>
-                        <input ref={sort} type="radio" value="name" name="sort" onChange={handleSort}/>Name
-                        <input  type="radio" value="price" name="sort" onChange={handleSort}/>Price
+                        <select>
+                            <option value={'options'}>options</option>
+                            <option value={'name'}>Name</option>
+                            <option value={'price'}>Price</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select>
+                            <option value={'asc'}>ascending</option>
+                            <option value={'desc'}>descending</option>
+                        </select>
                     </div>
                 </div>
                 <div className='flex flex-col'>
@@ -122,8 +87,10 @@ export default function ProductPage(){
                         <h1 className='text-xl font-bold'>Filter By</h1>
                     </div>
                     <div className='flex gap-3'>
-                        <input ref={filter} type="radio" value="name" name="sort" onChange={handleFilter}/>Products Name
-                        <input type="radio" value="name" name="sort" onChange={handleFilter}/>Category
+                        <select>
+                            <option value={'ProductName'}>Product Name</option>
+                            <option value={'category'}>Category</option>
+                        </select>
                     </div>
                 </div>
                 
