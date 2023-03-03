@@ -14,105 +14,106 @@ const {Op} = require('sequelize');
 
 module.exports = {
     getAllProducts: async(req, res) => {
-        const {sort, sortType, filter} = req.query
+        const {sortBy, sortType, filter, search} = req.query
         const productsPerPage = parseInt(req.query.productsPerPage) || 10
         const currentPage = parseInt(req.query.currentPage) || 1
-        console.log(sort, sortType, filter)
+        console.log(sortBy, sortType, filter)
+        let findProducts;
         
         try {
-            //  const findProducts = await products.findAll({
-            //     include: [
-            //         {
-            //             model: products_detail,
-            //             attributes: {
-            //                 exclude: ["createdAt", "updatedAt"]
-            //             }
-            //         },
-            //         {
-            //             model: products_image,
-            //             attributes: {
-            //                 exclude: ["createdAt", "updatedAt"]
-            //             }
-            //         },
-            //         {
-            //             model: category,
-            //             attributes: {
-            //                 exclude: ["createdAt", "updatedAt"]
-            //             }
-            //         }
-            //     ]
-            // })
-
-            //if sort by product name order ascending then sort product by product name ascending
-            if(sort === 'name' && sortType === 'asc'){
-                findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    order: ['products_name', 'ASC'],
-                    include: {
-                        model: 'products_details',
-                        attributes: ['price']
-                    }
-                })
-            } else
-            //if sort by product name order descending then sort product by product name descending
-            if(sort === 'name' && sortType === 'desc'){
-                findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    order: ['products_name', 'DESC'],
-                    include: {
-                        model: 'products_details',
-                        attributes: ['price']
-                    }
-                })
-            } else
-            //if sort by product price order ascending then sort product by product price ascending
-            if(sort === 'price' && sortType === 'asc'){
-                findProducts = await products.findAll({
-                    include: {
-                        model: 'products_details',
-                        attrubutes: ['price'],
-                        order: ['price', 'ASC']
+             findProducts = await products.findAll({
+                include: [
+                    {
+                        model: products_detail,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     },
-                    attributes: ['products_name']
-                })
-            } else
-            //if sort by product price order descending then sort product by product price descending
-            if(sort === 'price' && sortType === 'DESC'){
-                findProducts = await products.findAll({
-                    include: {
-                        model: 'products_details',
-                        attrubutes: ['price'],
-                        order: ['price', 'DESC']
+                    {
+                        model: products_image,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     },
-                    attributes: ['products_name']
-                })
-            } else
+                    {
+                        model: category,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
+                    }
+                ]
+            })
 
-            //if filter by category then filter product by category
+            //filter products
+
+            // if filter by category then filter product by category
             if(filter === 'productsName' ){
                 findProducts = await products.findAll({
                     where: {
-                        products_name: {
-                            [Op.like]: `%${req.query.products_name}%`
+                        'products_name': {
+                            [Op.like]: `%${search}%`
                         }
                     }
                 })
-            } else
-
-            //if filter by price then filter product by price
-            if(filter === 'category'){
+            } else if(filter === 'category'){
                 findProducts = await products.findAll({
-                    attributes: ["products_name"],
                     include: [{
-                            model: category,
-                            attributes: ['category'],
-                            where: {
-                                category: {
-                                    [Op.like]: `%${req.query.category}%`
-                                }
+                        model: category,
+                        attributes: ['category'],
+                        where: {
+                            'category': {
+                                [Op.like]: `%${search}%`
                             }
                         }
-                    ]
+                    }]
+                })
+            }
+
+            //sort products
+            if(sortBy === 'name' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
+                        model: products_detail,
+                        attributes: ['price', 'description'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['products_name', 'ASC']],
+                })
+            } else
+            //if sort by product name order descending then sort product by product name descending
+            if(sortBy === 'name' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
+                        model: products_detail,
+                        attributes: ['price', 'description']
+                    },
+                    order: [['products_name', 'DESC']],
+                })
+            } else
+            //if sort by product price order ascending then sort product by product price ascending
+            if(sortBy === 'price' && sortType === 'asc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'ASC']]
+                })
+            } else
+            //if sort by product price order descending then sort product by product price descending
+            if(sortBy === 'price' && sortType === 'desc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'DESC']]
                 })
             }
 
@@ -276,31 +277,38 @@ module.exports = {
 
     filterBy: async(req, res) => {
         try {
-            const {category, name, order} = req.query
-            const filter = {}
-            if(category){
-                filter.category = category;
+            const {filter, search} = req.query
+            console.log(filter, search)
+            let findProducts;
+            
+            // if filter by category then filter product by category
+            if(filter === 'productsName' ){
+                findProducts = await products.findAll({
+                    where: {
+                        'products_name': {
+                            [Op.like]: `%${search}%`
+                        }
+                    }
+                })
+            } else if(filter === 'category'){
+                findProducts = await products.findAll({
+                    include: [{
+                        model: category,
+                        attributes: ['category'],
+                        where: {
+                            'category': {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    }]
+                })
+            } else {
+                null
             }
-            if(name){
-                filter.name = {[Op.like]: `%${name}%`}
-            }
 
-            const options = {}
+            console.log("findProducts", findProducts)
 
-            if(order === 'asc'){
-                options.order = [['name', 'ASC']]
-            } else if(order === 'desc'){
-                options.order = [['name', 'DESC']]
-            }
-
-            const findProducts = await products.findAll({
-                where: filter,
-                ...options,
-            })
-
-            console.log(findProducts)
-
-            res.status(200).send({
+          res.status(200).send({
                 isError: false,
                 message: "get data sucess",
                 data: findProducts
@@ -315,29 +323,57 @@ module.exports = {
     },
 
     sortBy: async(req,res) => {
+        const {sortBy, sortType} = req.query
+        let findProducts;
+        
         try {
-            //sort by products name and price asc to desc
-            let {name, price} = req.query
-            let findProducts = await products.findAll({
-                order: [
-                    [name, 'ASC'],
-                    [price, 'DESC']
-                ],
-                include: [
-                    {
+            
+            if(sortBy === 'name' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
                         model: products_detail,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
+                        attributes: ['price', 'description'],
+                        exclude: ['created_at', 'updated_at'],
                     },
-                    {
-                        model: products_image,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    }
-                ]
-            })
+                    order: [['products_name', 'ASC']],
+                })
+            } else
+            //if sort by product name order descending then sort product by product name descending
+            if(sortBy === 'name' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
+                        model: products_detail,
+                        attributes: ['price', 'description']
+                    },
+                    order: [['products_name', 'DESC']],
+                })
+            } else
+            //if sort by product price order ascending then sort product by product price ascending
+            if(sortBy === 'price' && sortType === 'asc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'ASC']]
+                })
+            } else
+            //if sort by product price order descending then sort product by product price descending
+            if(sortBy === 'price' && sortType === 'desc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'DESC']]
+                })
+            }
 
             console.log(findProducts)
 
@@ -347,7 +383,11 @@ module.exports = {
                 data: findProducts
             })
         } catch (error) {
-            
+            res.status(404).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
         }
     }
 }

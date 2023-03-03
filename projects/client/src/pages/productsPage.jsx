@@ -8,8 +8,10 @@ import { useEffect, useState } from 'react'
 export default function ProductPage(){
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState([])
-    const [filter, setFilter] = useState({category: '', name: ''})
-    const [sort, setSort] = useState('asc')
+    const [filter, setFilter] = useState('')
+    const [search, setSearch] = useState('')
+    const [sort, setSort] = useState('name')
+    const [sortType, setSortType] = useState('asc')
     
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(8)
@@ -25,7 +27,7 @@ export default function ProductPage(){
 
     let getProducts = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/get?page=${page}sort=${sort}filter=${filter}`)
+            const response = await axios.get(`http://localhost:8000/products/get?page=${page}sortBy=${sort}SortType=${sortType}filter=${filter}`)
             setProducts(response.data.data)
             
         } catch (error) {
@@ -46,6 +48,16 @@ export default function ProductPage(){
         getProducts()
         getCategory()
     }, [])
+
+    const handleFilter = async(filterValue, searchValue) => {
+        try{
+            const response = await axios.get(`http://localhost:8000/products/filterBy?filter=${filter}search=${search}`)
+            console.log(response.data.data)
+            setProducts(response.data.data)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
 
     return(
         <>
@@ -86,11 +98,13 @@ export default function ProductPage(){
                     <div>
                         <h1 className='text-xl font-bold'>Filter By</h1>
                     </div>
-                    <div className='flex gap-3'>
-                        <select>
+                    <div className='flex flex-col gap-3'>
+                        <input type='text' value={search} onChange={(event) => setSearch(event.target.value)} placeholder='filter...'/>
+                        <select value={filter} onChange={(event) => setFilter(event.target.value)}>
                             <option value={'ProductName'}>Product Name</option>
                             <option value={'category'}>Category</option>
                         </select>
+                        <button onClick={() => handleFilter(filter, search)}>filter</button>
                     </div>
                 </div>
                 
