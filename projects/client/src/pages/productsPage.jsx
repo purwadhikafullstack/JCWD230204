@@ -1,6 +1,6 @@
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 // import BannerVertical from './../assets/img/banner-vert-1.png'
 
@@ -8,14 +8,15 @@ import { useEffect, useState } from 'react'
 export default function ProductPage(){
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState([])
-    const [filter, setFilter] = useState('')
-    const [search, setSearch] = useState('')
+    const [filter, setFilter] = useState('productsName')
+    // const [search, setSearch] = useState('')
     const [sort, setSort] = useState('name')
     const [sortType, setSortType] = useState('asc')
     
     const [page, setPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(8)
 
+    const search = useRef()
 
     const indexOfLastItem = page * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -47,11 +48,24 @@ export default function ProductPage(){
     useEffect(() => {
         getProducts()
         getCategory()
-    }, [])
+        handleSort()
+    }, [ sort, sortType])
 
-    const handleFilter = async(filterValue, searchValue) => {
+    const handleFilter = async() => {
+        const inputSearch = search.current.value;
+        console.log(filter, inputSearch)
         try{
-            const response = await axios.get(`http://localhost:8000/products/filterBy?filter=${filter}search=${search}`)
+            const response = await axios.get(`http://localhost:8000/products/get?filter=${filter}&search=${inputSearch}`);
+            console.log(response.data.data)
+            setProducts(response.data.data)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    const handleSort = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/products/get?sortBy=${sort}&sortType=${sortType}`)
             console.log(response.data.data)
             setProducts(response.data.data)
         } catch (error) {
@@ -81,14 +95,14 @@ export default function ProductPage(){
                         <h1 className='text-xl font-bold'>Sort by</h1>
                     </div>
                     <div className='flex gap-3'>
-                        <select>
+                        <select value={sort} onChange={(event) => setSort(event.target.value)}>
                             <option value={'options'}>options</option>
                             <option value={'name'}>Name</option>
                             <option value={'price'}>Price</option>
                         </select>
                     </div>
                     <div>
-                        <select>
+                        <select value={sortType} onChange={(event) => setSortType(event.target.value)}>
                             <option value={'asc'}>ascending</option>
                             <option value={'desc'}>descending</option>
                         </select>
@@ -99,12 +113,12 @@ export default function ProductPage(){
                         <h1 className='text-xl font-bold'>Filter By</h1>
                     </div>
                     <div className='flex flex-col gap-3'>
-                        <input type='text' value={search} onChange={(event) => setSearch(event.target.value)} placeholder='filter...'/>
+                        <input type='text' ref={search} placeholder='filter...'/>
                         <select value={filter} onChange={(event) => setFilter(event.target.value)}>
                             <option value={'ProductName'}>Product Name</option>
                             <option value={'category'}>Category</option>
                         </select>
-                        <button onClick={() => handleFilter(filter, search)}>filter</button>
+                        <button onClick={handleFilter}>filter</button>
                     </div>
                 </div>
                 

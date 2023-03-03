@@ -17,7 +17,7 @@ module.exports = {
         const {sortBy, sortType, filter, search} = req.query
         const productsPerPage = parseInt(req.query.productsPerPage) || 10
         const currentPage = parseInt(req.query.currentPage) || 1
-        console.log(sortBy, sortType, filter)
+        console.log(sortBy, sortType, filter, search)
         let findProducts;
         
         try {
@@ -44,76 +44,83 @@ module.exports = {
                 ]
             })
 
-            //filter products
+            //template for filter by products name
+            // Product.findAll({
+            //     include: [{ model: Category }, { model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price'], [Sequelize.col('Category.category'), 'category']],
+            //     where: { products_name: { [Sequelize.Op.like]: '%sony%' } }
+            //   });
 
-            // if filter by category then filter product by category
+            //template for filter by category name
+            // Product.findAll({
+            //     include: [{ model: Category }, { model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price'], [Sequelize.col('Category.category'), 'category']],
+            //     where: { '$Category.category$': { [Sequelize.Op.like]: '%acces%' } }
+            //   });
+              
+            //filter products
+            // filter by products name
             if(filter === 'productsName' ){
                 findProducts = await products.findAll({
-                    where: {
-                        'products_name': {
-                            [Op.like]: `%${search}%`
-                        }
-                    }
+                    include: [{model: category}, {model:products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    where: {products_name: {[Op.like]: `%${search}%`}}
                 })
             } else if(filter === 'category'){
                 findProducts = await products.findAll({
-                    include: [{
-                        model: category,
-                        attributes: ['category'],
-                        where: {
-                            'category': {
-                                [Op.like]: `%${search}%`
-                            }
-                        }
-                    }]
+                    include: [{model: category}, {model:products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    where: {'$category.category': {[Op.like]: `%${search}%`}}
                 })
             }
 
+            //template for sort by name
+            // Product.findAll({
+            //     include: [{ model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price']],
+            //     order: [['products_name', 'ASC']]
+            //   });
+
+            //template for sort by price
+            // Product.findAll({
+            //     include: [{ model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price']],
+            //     order: [[Sequelize.col('ProductDetail.price'), 'ASC']]
+            //   });
+                            
+
             //sort products
+            //sort by name asc
             if(sortBy === 'name' && sortType === 'asc'){
                 findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    include: {
-                        model: products_detail,
-                        attributes: ['price', 'description'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['products_name', 'ASC']],
-                })
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [['products_name', 'ASC']]
+                  });
+                  
             } else
-            //if sort by product name order descending then sort product by product name descending
+            
             if(sortBy === 'name' && sortType === 'desc'){
                 findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    include: {
-                        model: products_detail,
-                        attributes: ['price', 'description']
-                    },
-                    order: [['products_name', 'DESC']],
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [['products_name', 'DESC']]
                 })
             } else
-            //if sort by product price order ascending then sort product by product price ascending
+            //sort by price asc
             if(sortBy === 'price' && sortType === 'asc'){
-                findProducts = await products_detail.findAll({
-                    attributes: ['price', 'description'],
-                    include: {
-                        model: products,
-                        attributes: ['products_name'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['price', 'ASC']]
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [[sequelize.col('products_details.price'), 'ASC']]
                 })
             } else
             //if sort by product price order descending then sort product by product price descending
             if(sortBy === 'price' && sortType === 'desc'){
-                findProducts = await products_detail.findAll({
-                    attributes: ['price', 'description'],
-                    include: {
-                        model: products,
-                        attributes: ['products_name'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['price', 'DESC']]
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [[sequelize.col('products_details.price'), 'DESC']]
                 })
             }
 
