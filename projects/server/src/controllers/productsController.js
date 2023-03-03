@@ -20,28 +20,28 @@ module.exports = {
         console.log(sort, sortType, filter)
         
         try {
-             const findProducts = await products.findAll({
-                include: [
-                    {
-                        model: products_detail,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    },
-                    {
-                        model: products_image,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    },
-                    {
-                        model: category,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt"]
-                        }
-                    }
-                ]
-            })
+            //  const findProducts = await products.findAll({
+            //     include: [
+            //         {
+            //             model: products_detail,
+            //             attributes: {
+            //                 exclude: ["createdAt", "updatedAt"]
+            //             }
+            //         },
+            //         {
+            //             model: products_image,
+            //             attributes: {
+            //                 exclude: ["createdAt", "updatedAt"]
+            //             }
+            //         },
+            //         {
+            //             model: category,
+            //             attributes: {
+            //                 exclude: ["createdAt", "updatedAt"]
+            //             }
+            //         }
+            //     ]
+            // })
 
             //if sort by product name order ascending then sort product by product name ascending
             if(sort === 'name' && sortType === 'asc'){
