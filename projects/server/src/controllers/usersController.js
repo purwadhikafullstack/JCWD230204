@@ -100,7 +100,7 @@ module.exports = {
             )
 
             // Step-3 Kirim response
-            res.status(201).send({
+            res.status(200).send({
                 isError: false, 
                 message: 'Account Verified!',
                 data: null 
@@ -119,39 +119,198 @@ module.exports = {
  
     login: async(req, res) => {
         try {
-            let {email, password} = req.query
+            let {email, password} = req.body;
+
+            if(!email || !password)
+                return res.status(404).send({
+                    isError: true,
+                    message: "Input must be filled",
+                    data: null,
+                })
 
             let findEmail = await users.findOne({
                 where: { 
                     email : email
                 }
-            })
+            });
 
-            if(!email.dataValues) return res.status(404).send({
+            if(!email.dataValues) 
+                return res.status(404).send({
                 isError: true, 
                 message: 'Email Not Found', 
                 data: true
+            });
+
+            let hashMatchResult = await hashMatch(
+                password, findEmail.dataValues.password);
+            
+            if(hashMatchResult === false) 
+                return res.status(404).send({
+                isError: true, 
+                message: 'Password is Not Valid', 
+                data: null,
             })
 
-            let hasMatchResult = await hashMatch(password, findEmail.dataValues.password)
-            
-            if(hasMatchResult === false) return res.status(404).send({
-                isError: true, 
-                message: 'Password Not Valid', 
-                data: true
-            })
+            const token = createToken({
+                id: findEmail.id
+            });
 
             res.status(200).send({
                 isError: false, 
                 message: 'Login Success', 
                 data: {
-                    token: createToken({id: findEmail.dataValues.id})
-                }
-            })
+                    token, name: findEmail.dataValues.name},
+                    // tambahkan status user verified or not
+                });
         } catch (error) {
-            
+            res.status(404).send({
+				isError: true,
+				message: "Login Failed",
+				data: error.message,
+			});   
         }
     },
+
+    keepLogin: async (req, res) => {
+        try {
+            res.status(200).send({
+                isError: false,
+                message: "Token Valid",
+                data: req.uid.name,
+            });
+        } catch (error) {
+            res.status(500).send({
+                isError: true,
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    forgotPassword: async (req, res) => {
+        try {
+            let { email } = req.body;
+
+            if (!email)
+                return res.status(404).send({
+                    isError: true,
+                    message: "Please Input Your Email",
+                });
+
+            let findEmail = await users.findOne({
+                where: {
+                    email: email,
+                },
+            });
+
+            if (!findEmail)
+                return res.status(404).send({
+                    isError: true,
+                    message: "Email Not Found",
+                    data: null,
+                });
+
+            const username = findEmail.dataValues.username;
+
+            const template = await fs.readFile(
+                "./template/resetPassword.html",
+                "utf-8"
+            );
+            const templateToCompile = await handlebars.compile(template);
+            const newTemplate = templateToCompile({
+                username, url: `http://localhost:3000/resetPassword/${findEmail.dataValues.id}`,
+            });
+
+            await transporter.sendMail({
+                from: "Gamepedia",
+                to: email,
+                subject: "Reset Password",
+                html: newTemplate,
+            });
+
+            res.status(200).send({
+                isError: false,
+                message: "Please Check Your Email",
+                data: null,
+            });
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    resetPassword: async (req, res) => {
+        try {
+            let { id, password, confirmPassword } = req.body;
+            if (!password)
+                return res.status(404).send({
+                    isError: true,
+                    message: "Please Input Your Password",
+                    data: null,
+                });
+
+            if (password !== confirmPassword)
+                return res.status(404).send({
+                    isError: true,
+                    message: "Password Not Match",
+                    data: password,
+                    confirmPassword,
+                });
+
+            await users.update(
+                { password: await hashPassword(password) },
+                {
+                    where: {
+                        id: id,
+                    },
+                }
+            );
+
+            res.status(201).send({
+                isError: false,
+                message: "Update Password Success",
+                data: null,
+            });
+        } catch (error) {
+            res.status(500).send({
+                isError: true,
+                message: error.message,
+                data: null,
+            });
+        }
+    },
+
+    notFound: async(req, res) => {
+        try {
+            let {id} = req.body
+
+            await users.update(
+                {status: 'Confirmed'},
+                {
+                    where: {
+                        id:id
+                    }
+                }
+            )
+
+            res.status(200).send({
+                isError: false, 
+                message: 'Account Verified!',
+                data: null 
+            })
+            } catch (error) {
+                console.log(error)
+                res.status(404).send({
+                    isError: true,
+                    message: error.message,
+                    data: error
+                })
+            }
+         },
+
 
     updateProfile: async(req, res) => {
         try {
@@ -198,18 +357,7 @@ module.exports = {
                 data: error.message
             })
         }
+    },
 
-
-    // keepLogin: async(req, res) => {
-    //     res.status(201).send({
-    //         isError: false, 
-    //         message: 'Keep Login',
-    //         data: {
-    //             token: req.headers.auth
-    //         }
-    //     })
-    // }
 } 
-
-
 
