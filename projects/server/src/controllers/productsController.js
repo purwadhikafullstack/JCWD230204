@@ -70,7 +70,7 @@ module.exports = {
                 findProducts = await products.findAll({
                     include: [{model: category}, {model:products_detail}],
                     attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
-                    where: {'$category.category': {[Op.like]: `%${search}%`}}
+                    where: {'$category.category$': {[Op.like]: `%${search}%`}}
                 })
             }
 

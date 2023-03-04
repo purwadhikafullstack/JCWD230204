@@ -115,7 +115,7 @@ export default function ProductPage(){
                     <div className='flex flex-col gap-3'>
                         <input type='text' ref={search} placeholder='filter...'/>
                         <select value={filter} onChange={(event) => setFilter(event.target.value)}>
-                            <option value={'ProductName'}>Product Name</option>
+                            <option value={'ProductsName'}>Product Name</option>
                             <option value={'category'}>Category</option>
                         </select>
                         <button onClick={handleFilter}>filter</button>
