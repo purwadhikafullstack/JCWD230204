@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import Banner from '../assets/img/banner2.jpg';
 
@@ -12,8 +12,10 @@ export default function LandingPage(){
     const [recommended, setRecommended] = useState([]);
     const [newProducts, setNewProducts] = useState([]);
 
+    const Navigate = useNavigate()
+
     let getProducts = async() => {
-        let response = await axios.get('http://localhost:8000/products/get');
+        let response = await axios.get(`http://localhost:8000/products/get`);
         console.log(response.data.data);
         setProducts(response.data.data);
     }
@@ -52,7 +54,7 @@ export default function LandingPage(){
 
     return(
         <>
-        <div className='flex flex-col justify-center gap-3 px-6'>
+        <div className='flex flex-col justify-center gap-3 px-6 mb-4'>
             {/* banner */}
             <div className="h-[400px] flex justify-center">
                 <img src={Banner} alt="" className="h-[400px] object-scale-down"/>
@@ -65,14 +67,13 @@ export default function LandingPage(){
                         categories ? categories.map((value, index) => {
                             return(
                                 <>
-                                <Link to={null}>
+                                <div>
                                 <div className="border rounded-md w-[500px] h-[100px] bg-slate-200 hover:bg-slate-100" key={index}>
                                     <div className="text-center font-bold text-2xl">
                                         {value.category}
                                     </div>
-                                    
                                 </div>
-                                </Link>
+                                </div>
                                 </>
                             )
                         }) : <h1>No Product Found!</h1>
@@ -82,7 +83,7 @@ export default function LandingPage(){
             {/* recommended for you */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">Recommended for you</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         recommended.length ?
                         recommended.map((value,index) => {
@@ -99,15 +100,11 @@ export default function LandingPage(){
                                     <div className="flex justify-center">
                                         Tangerang Selatan
                                     </div>
-                                    {/* <div className="flex justify-center">
-                                        <button className="bg-green-300 rounded-lg p-2 w-[150px]">add to cart</button>
-                                    </div> */}
                                 </div>
                                 </>
                             )
                         }) : <h1>No Product Found!</h1>
                     }
-                    {/* cards */}
                     
                     
                 </div>
@@ -115,7 +112,7 @@ export default function LandingPage(){
             {/* new products */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">What's New</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         newProducts.length ?
                         newProducts.map((value,index) => {
@@ -158,7 +155,7 @@ export default function LandingPage(){
             {/* promo */}
             <div className="h-[450px] border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold ">Promo</h1>
-                <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                     {
                         promo.length ?
                         promo.map((value, index) => {
@@ -191,12 +188,12 @@ export default function LandingPage(){
             {/* all products */}
             <div className=" border p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">All Products</h1>
-                    <div className="grid xl:grid-cols-7 md:grid-cols-3 gap-4">
+                    <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                             {
                                 products.length ? products.map((value, index) => {
                                     return(
                                         <>
-                                        <Link to={null}>
+                                        <div key={value.id} onClick={() => Navigate(`/Details/${value.id}`)}>
                                         <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                             <div className="bg-slate-300 rounded-t-lg">
                                                 <img src={value.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
@@ -212,30 +209,12 @@ export default function LandingPage(){
                                                 }
                                             </div>
                                         </div>
-                                        </Link>
+                                        </div>
                                         </>
                                     )
                                 }) : <h1>No Product Found!</h1>
                             }
                     </div>
-            </div>
-            {/* footer */}
-            <div className="h-[300px] border bg-slate-600 flex justify-around p-5">
-                <div>
-                    <h1 className="text-xl font-bold">Gamepedia</h1>
-                    <p className="text-sm">One stop service for all gaming stuff</p>
-                    <p>email: support@gamepedia.com phone: (021)123456789</p>
-                    <p>copyright 2023</p>
-                </div>
-                <div>
-                <ul className="flex flex-col gap-5">
-                    <li className="hover:text-white">Categories</li>
-                    <li className="hover:text-white">Deals</li>
-                    <li className="hover:text-white">What's New</li>
-                    <li className="hover:text-white">Delivery</li>
-                    <li className="hover:text-white">Accounts</li>
-                </ul>
-                </div>
             </div>
         </div>
         </>

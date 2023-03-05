@@ -1,5 +1,6 @@
 const {sequelize} = require('./../models');
 
+
 const db = require('./../models/index');
 const products = db.products;
 const category = db.category;
@@ -9,10 +10,18 @@ const discounts_categories = db.discount_category;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
 
+const {Op} = require('sequelize');
+
 module.exports = {
     getAllProducts: async(req, res) => {
+        const {sortBy, sortType, filter, search} = req.query
+        const productsPerPage = parseInt(req.query.productsPerPage) || 10
+        const currentPage = parseInt(req.query.currentPage) || 1
+        console.log(sortBy, sortType, filter, search)
+        let findProducts;
+        
         try {
-            let findProducts = await products.findAll({
+             findProducts = await products.findAll({
                 include: [
                     {
                         model: products_detail,
@@ -25,16 +34,110 @@ module.exports = {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"]
                         }
+                    },
+                    {
+                        model: category,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     }
                 ]
             })
-            console.log(findProducts)
+
+            //template for filter by products name
+            // Product.findAll({
+            //     include: [{ model: Category }, { model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price'], [Sequelize.col('Category.category'), 'category']],
+            //     where: { products_name: { [Sequelize.Op.like]: '%sony%' } }
+            //   });
+
+            //template for filter by category name
+            // Product.findAll({
+            //     include: [{ model: Category }, { model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price'], [Sequelize.col('Category.category'), 'category']],
+            //     where: { '$Category.category$': { [Sequelize.Op.like]: '%acces%' } }
+            //   });
+              
+            //filter products
+            // filter by products name
+            if(filter === 'productsName' ){
+                findProducts = await products.findAll({
+                    include: [{model: category}, {model:products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    where: {products_name: {[Op.like]: `%${search}%`}}
+                })
+            } else if(filter === 'category'){
+                findProducts = await products.findAll({
+                    include: [{model: category}, {model:products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    where: {'$category.category$': {[Op.like]: `%${search}%`}}
+                })
+            }
+
+            //template for sort by name
+            // Product.findAll({
+            //     include: [{ model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price']],
+            //     order: [['products_name', 'ASC']]
+            //   });
+
+            //template for sort by price
+            // Product.findAll({
+            //     include: [{ model: ProductDetail }],
+            //     attributes: ['products_name', [Sequelize.col('ProductDetail.description'), 'description'], [Sequelize.col('ProductDetail.price'), 'price']],
+            //     order: [[Sequelize.col('ProductDetail.price'), 'ASC']]
+            //   });
+                            
+
+            //sort products
+            //sort by name asc
+            if(sortBy === 'name' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [['products_name', 'ASC']]
+                  });
+                  
+            } else
+            
+            if(sortBy === 'name' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [['products_name', 'DESC']]
+                })
+            } else
+            //sort by price asc
+            if(sortBy === 'price' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [[sequelize.col('products_details.price'), 'ASC']]
+                })
+            } else
+            //if sort by product price order descending then sort product by product price descending
+            if(sortBy === 'price' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    include: [{model: products_detail}],
+                    attributes: ['products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    order: [[sequelize.col('products_details.price'), 'DESC']]
+                })
+            }
+
+            // const indexOfLastItem = page * itemsPerPage;
+            // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+            // const currentItems = products.slice(indexOfFirstItem, indexOfLastItem)
+            // const totalPage = Math.ceil(products.length / itemsPerPage)
+            // const paginate = (pageNumber) => setPage(pageNumber)
+
+            // console.log(findProducts)
 
             res.status(200).send({
                 isError: false,
                 message: "get data sucess",
                 data: findProducts
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -42,8 +145,34 @@ module.exports = {
                 data: error.message
             })
         }
-        
+    },
 
+    getProductDetail: async(req, res) => {
+        try{
+            const {id} = req.query
+            console.log(id)
+            let findProductDetail = await products_detail.findAll({
+                where: {products_id: id},
+                include: {
+                    model: products,
+                    
+                }
+            })
+
+            res.status(200).send({
+                isError: false,
+                message: "get detail success",
+                data: findProductDetail
+            })
+
+        } catch(error){
+            res.status(404).send({
+                isError: true,
+                message: "get detail failed",
+                data: error.message
+            })
+        }
+        
     },
 
     getCategory: async(req, res) => {
@@ -56,6 +185,7 @@ module.exports = {
                 message: "get data sucess",
                 data: findCategory
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -75,6 +205,7 @@ module.exports = {
                 message: "get data sucess",
                 data: findPromo
             })
+
         } catch (error) {
             res.status(404).send({
                 isError: true,
@@ -141,6 +272,122 @@ module.exports = {
                 isError: false,
                 message: "recommended products found",
                 data: findRecommendedProducts
+            })
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
+        }
+    },
+
+    filterBy: async(req, res) => {
+        try {
+            const {filter, search} = req.query
+            console.log(filter, search)
+            let findProducts;
+            
+            // if filter by category then filter product by category
+            if(filter === 'productsName' ){
+                findProducts = await products.findAll({
+                    where: {
+                        'products_name': {
+                            [Op.like]: `%${search}%`
+                        }
+                    }
+                })
+            } else if(filter === 'category'){
+                findProducts = await products.findAll({
+                    include: [{
+                        model: category,
+                        attributes: ['category'],
+                        where: {
+                            'category': {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    }]
+                })
+            } else {
+                null
+            }
+
+            console.log("findProducts", findProducts)
+
+          res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findProducts
+            })
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
+        }
+    },
+
+    sortBy: async(req,res) => {
+        const {sortBy, sortType} = req.query
+        let findProducts;
+        
+        try {
+            
+            if(sortBy === 'name' && sortType === 'asc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
+                        model: products_detail,
+                        attributes: ['price', 'description'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['products_name', 'ASC']],
+                })
+            } else
+            //if sort by product name order descending then sort product by product name descending
+            if(sortBy === 'name' && sortType === 'desc'){
+                findProducts = await products.findAll({
+                    attributes: ['products_name',],
+                    include: {
+                        model: products_detail,
+                        attributes: ['price', 'description']
+                    },
+                    order: [['products_name', 'DESC']],
+                })
+            } else
+            //if sort by product price order ascending then sort product by product price ascending
+            if(sortBy === 'price' && sortType === 'asc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'ASC']]
+                })
+            } else
+            //if sort by product price order descending then sort product by product price descending
+            if(sortBy === 'price' && sortType === 'desc'){
+                findProducts = await products_detail.findAll({
+                    attributes: ['price', 'description'],
+                    include: {
+                        model: products,
+                        attributes: ['products_name'],
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                    order: [['price', 'DESC']]
+                })
+            }
+
+            console.log(findProducts)
+
+            res.status(200).send({
+                isError: false,
+                message: "get data sucess",
+                data: findProducts
             })
         } catch (error) {
             res.status(404).send({
