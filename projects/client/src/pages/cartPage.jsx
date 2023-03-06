@@ -23,18 +23,20 @@ export default function Cart(){
 
     return(
         <>
-        <h1>Cart</h1>
+        <div className='flex justify-center'>
+            <div className='flex flex-col border p-5'>
+            <h1>Cart</h1>
+            <div>
+                <div>cart Table</div>
+            </div>
+            <div>
+                <div>total</div>
+            </div>
 
-        <div>
-            <div>products Table</div>
-        </div>
-
-        <div>
-            <div>total</div>
-        </div>
-
-        <div>
-            <div>checkout</div>
+            <div>
+                <div>checkout</div>
+            </div>
+            </div>
         </div>
         </>
     )

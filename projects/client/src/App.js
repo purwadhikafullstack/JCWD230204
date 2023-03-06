@@ -12,6 +12,7 @@ import Profiling from "./pages/profiling";
 import EditProfileForm from "./pages/editProfile";
 import ProductsPage from "./pages/productsPage";
 import ProductsDetails from "./pages/productDetails";
+import Cart from "./pages/cartPage";
 // import cors from "cors";
 export default function App() {
   const Navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function App() {
         </div>
         <div className="flex gap-7 items-center">
           <input type="text" placeholder="Search" className="border rounded-full text-center h-[50px] w-[400px]"/>
-          <AiOutlineShoppingCart className="text-2xl"/>
+          <AiOutlineShoppingCart onClick={() => Navigate('/cart')} className="text-2xl"/>
           <button className="bg-green-400 border rounded-full w-[100px] h-[50px] p-2">Register</button>
         </div>
       </div>
@@ -51,6 +52,7 @@ export default function App() {
         <Route path="/EditProfile" element={<EditProfileForm/>}/>
         <Route path="/Products" element={<ProductsPage/>}/>
         <Route path="/Details/:id" element={<ProductsDetails/>}/>
+        <Route path="/cart" element={<Cart/>}/>
       </Routes>
 
       {/* footer */}

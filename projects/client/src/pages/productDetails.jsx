@@ -17,6 +17,7 @@ export default function ProductDetails(){
     const getProducts = async() => {
         try {
             const response = await axios.get(`http://localhost:8000/products/getDetail?id=${id}`)
+            console.log(response)
             setProduct(response.data.data)
         } catch (error) {
             console.log(error)
@@ -42,6 +43,11 @@ export default function ProductDetails(){
         }
     }
 
+    const addToCartHandler = async() => {
+        console.log(quantity)
+        await axios.get(`http://localhost:8000/products/add?product_id=${id}&quantity=${parseInt(quantity)}`)
+    }
+
     useEffect(() => {
         getProducts()
         getCategory()
@@ -50,39 +56,6 @@ export default function ProductDetails(){
     return(
         <>
         <div className="flex gap-4 mx-10 mb-4">
-            {/* sidebar */}
-            {/* <div className="border w-[300px] p-4 flex flex-col gap-4">
-                <div>
-                    <h1 className="text-xl font-bold ">Category</h1>
-                    <ul>
-                        {
-                            category.map((cat, index) => {
-                                return(
-                                    <li key={index}>{cat.category}</li>
-                                )
-                            })
-                        }
-                    </ul>
-                </div>
-                <div className='flex flex-col'>
-                    <div>
-                        <h1 className='text-xl font-bold'>Sort by</h1>
-                    </div>
-                    <div className='flex gap-3'>
-                        <input ref={sort} type="radio" value="name" name="sort" onChange={handleSort}/>Name
-                        <input  type="radio" value="price" name="sort" onChange={handleSort}/>Price
-                    </div>
-                </div>
-                <div className='flex flex-col'>
-                    <div>
-                        <h1 className='text-xl font-bold'>Filter By</h1>
-                    </div>
-                    <div className='flex gap-3'>
-                        <input ref={filter} type="radio" value="name" name="sort" onChange={handleFilter}/>Products Name
-                        <input type="radio" value="name" name="sort" onChange={handleFilter}/>Category
-                    </div>
-                </div>
-            </div> */}
             {/* products details */}
             {console.log(id)}
             <div className="border w-[1000px]">
@@ -113,7 +86,7 @@ export default function ProductDetails(){
                             <button onClick={countMinHandler}>-</button>
                         </div>
                         <div>
-                            <button className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>
+                            <button onClick={ addToCartHandler} className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>
                         </div>
                     </div>
                 </div>
