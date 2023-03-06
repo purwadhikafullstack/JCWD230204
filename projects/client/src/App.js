@@ -4,12 +4,16 @@ import Applogo from "./assets/img/1.svg"
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import "./App.css";
 import LandingPage from "./pages/landingPage";
-import EditProfile from "./pages/editProfile";
-import Activation from "./pages/activation"
 import Register from "./pages/register"
+import Activation from "./pages/activation"
 import Login from "./pages/login"
 import Profiling from "./pages/profiling";
+import EditProfile from "./pages/editProfile";
 import EditProfileForm from "./pages/editProfile";
+import ResetPassword from './pages/resetPassword';
+import ForgotPassword from './pages/forgotPassword';
+import NotFound from './pages/notfound';
+// import ChangePassword from "./pages/changePassword";
 import ProductsPage from "./pages/productsPage";
 import ProductsDetails from "./pages/productDetails";
 // import cors from "cors";
@@ -45,10 +49,15 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/register" element={<Register/>} />
-        <Route path="/login" element={<Login/>} />
         <Route path="/activation/:id" element={<Activation/>} />
+        <Route path="/login" element={<Login/>} />
         <Route path="/Profiling" element={<Profiling/>}/>
+        <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/EditProfile" element={<EditProfileForm/>}/>
+        <Route path="/resetPassword" element={<ResetPassword/>} />
+        <Route path="/forgotPassword" element={<ForgotPassword/>} />
+        <Route path="/notFound" element={<NotFound/>} />
+        {/* <Route path="/changePassword" element={<ChangePassword/>}/> */}
         <Route path="/Products" element={<ProductsPage/>}/>
         <Route path="/Details/:id" element={<ProductsDetails/>}/>
       </Routes>
@@ -75,4 +84,6 @@ export default function App() {
     </div>
   );
 }
+
+export default App
 
