@@ -5,12 +5,7 @@ import {Link, useParams} from 'react-router-dom'
 export default function ProductDetails(){
     const [category, setCategory] = useState([])
     const [product, setProduct] = useState([])
-    const [sortByproduct, setSortByProduct] = useState([])
-    const [filterByproduct, setFilterByProduct] = useState([])
     const [quantity, setQuantity] = useState(1)
-
-    const sort = useRef(null)
-    const filter = useRef(null)
 
     const {id} = useParams()
 
@@ -81,9 +76,9 @@ export default function ProductDetails(){
                             <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
                         </div>
                         <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
-                            <button onClick={countPlusHandler}>+</button>
-                            <div>{quantity}</div>
                             <button onClick={countMinHandler}>-</button>
+                            <div>{quantity}</div>
+                            <button onClick={countPlusHandler}>+</button>
                         </div>
                         <div>
                             <button onClick={ addToCartHandler} className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>

@@ -283,115 +283,20 @@ module.exports = {
         }
     },
 
-    filterBy: async(req, res) => {
+    getCart: async(req, res) => {
         try {
-            const {filter, search} = req.query
-            console.log(filter, search)
-            let findProducts;
-            
-            // if filter by category then filter product by category
-            if(filter === 'productsName' ){
-                findProducts = await products.findAll({
-                    where: {
-                        'products_name': {
-                            [Op.like]: `%${search}%`
-                        }
-                    }
-                })
-            } else if(filter === 'category'){
-                findProducts = await products.findAll({
-                    include: [{
-                        model: category,
-                        attributes: ['category'],
-                        where: {
-                            'category': {
-                                [Op.like]: `%${search}%`
-                            }
-                        }
-                    }]
-                })
-            } else {
-                null
-            }
-
-            console.log("findProducts", findProducts)
-
-          res.status(200).send({
-                isError: false,
-                message: "get data sucess",
-                data: findProducts
+            const findCart = await cart.findAll({
+                
             })
-        } catch (error) {
-            res.status(404).send({
-                isError: true,
-                message: "get data failed",
-                data: error.message
-            })
-        }
-    },
-
-    sortBy: async(req,res) => {
-        const {sortBy, sortType} = req.query
-        let findProducts;
-        
-        try {
-            
-            if(sortBy === 'name' && sortType === 'asc'){
-                findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    include: {
-                        model: products_detail,
-                        attributes: ['price', 'description'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['products_name', 'ASC']],
-                })
-            } else
-            //if sort by product name order descending then sort product by product name descending
-            if(sortBy === 'name' && sortType === 'desc'){
-                findProducts = await products.findAll({
-                    attributes: ['products_name',],
-                    include: {
-                        model: products_detail,
-                        attributes: ['price', 'description']
-                    },
-                    order: [['products_name', 'DESC']],
-                })
-            } else
-            //if sort by product price order ascending then sort product by product price ascending
-            if(sortBy === 'price' && sortType === 'asc'){
-                findProducts = await products_detail.findAll({
-                    attributes: ['price', 'description'],
-                    include: {
-                        model: products,
-                        attributes: ['products_name'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['price', 'ASC']]
-                })
-            } else
-            //if sort by product price order descending then sort product by product price descending
-            if(sortBy === 'price' && sortType === 'desc'){
-                findProducts = await products_detail.findAll({
-                    attributes: ['price', 'description'],
-                    include: {
-                        model: products,
-                        attributes: ['products_name'],
-                        exclude: ['created_at', 'updated_at'],
-                    },
-                    order: [['price', 'DESC']]
-                })
-            }
-
-            console.log(findProducts)
 
             res.status(200).send({
                 isError: false,
                 message: "get data sucess",
-                data: findProducts
+                data: findCart
             })
+
         } catch (error) {
-            res.status(404).send({
+            res.status(400).send({
                 isError: true,
                 message: "get data failed",
                 data: error.message
@@ -410,7 +315,8 @@ module.exports = {
                     product_id
                 }
             })
-            
+
+            //validasi data cart
             if(!findProducts){
                 await cart.create({product_id, qty: parseInt(quantity)})
             } else {
@@ -420,7 +326,8 @@ module.exports = {
                     }
                 })
             }
-            //validasi data
+
+            //response
             res.status(200).send({
                 isError: false,
                 message: "add to cart success",
