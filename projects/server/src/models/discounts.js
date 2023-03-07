@@ -11,9 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      discounts.belongsTo(models.products, {
-        foreignKey: 'product_id'
-      })
       discounts.hasMany(models.discount_category, {
         foreignKey: 'discount_id'
       })
@@ -26,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     voucher_value: DataTypes.STRING,
     type: DataTypes.STRING,
-    exppiry_date: DataTypes.DATE
+    expiry_date: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'discounts',

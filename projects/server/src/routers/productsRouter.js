@@ -10,5 +10,6 @@ router.get('/getNewProduct', productsController.getNewProducts);
 router.get('/getRecommended', productsController.getRecommendedProducts);
 router.get('/filterBy', productsController.filterBy);
 router.get('/sortBy', productsController.sortBy);
+router.get('/add', productsController.addToCart);
 
 module.exports = router;
