@@ -125,13 +125,6 @@ module.exports = {
                 })
             }
 
-            // const indexOfLastItem = page * itemsPerPage;
-            // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-            // const currentItems = products.slice(indexOfFirstItem, indexOfLastItem)
-            // const totalPage = Math.ceil(products.length / itemsPerPage)
-            // const paginate = (pageNumber) => setPage(pageNumber)
-
-            // console.log(findProducts)
 
             res.status(200).send({
                 isError: false,
