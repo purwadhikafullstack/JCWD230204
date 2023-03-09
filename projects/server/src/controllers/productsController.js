@@ -257,7 +257,7 @@ module.exports = {
                     }
                   ],
                   group: ['transactions.productId'],
-                  order: [[Sequelize.literal('count'), 'DESC']],
+                  order: [[sequelize.literal('count'), 'DESC']],
                   limit: 10
             })
             console.log(findRecommendedProducts)
@@ -279,7 +279,17 @@ module.exports = {
     getCart: async(req, res) => {
         try {
             const findCart = await cart.findAll({
-                
+                attributes: ['id','qty'],
+                include: [
+                    {model: products,
+                    attributes: ['products_name'],
+                    include: [
+                        {
+                            model: products_detail,
+                            attributes: ['price']
+                        }
+                    ]}
+                ]
             })
 
             res.status(200).send({
@@ -331,6 +341,54 @@ module.exports = {
             res.status(400).send({
                 isError: true,
                 message: "add to cart failed",
+                data: error.message
+            })
+        }
+    },
+
+    removeFromCart: async(req, res) => {
+        try {
+            const {id} = req.query
+            console.log(id)
+
+            //validasi user
+            // const findUser = await users.findOne({
+            //     where: {
+            //         id: user_id
+            //     }
+            // })
+
+            // if(findUser.status === "unconfirmed"){
+            //     res.status(400).send({
+            //         isError: true,
+            //         message: "user unconfirmed, please confirm your email first",
+            //         data: null
+            //     })
+            // }
+
+            //validasi product
+            const findProducts = await cart.findOne({
+                where: {
+                    id: id
+                }
+            })
+            console.log(findProducts)
+
+            //validasi data cart
+            if(!findProducts){
+                await cart.destroy(findProducts)
+            }
+
+            //response
+            res.status(200).send({
+                isError: false,
+                message: "remove from cart success",
+                data: null
+            })
+        } catch (error) {
+            res.status(400).send({
+                isError: true,
+                message: "remove from cart failed",
                 data: error.message
             })
         }
