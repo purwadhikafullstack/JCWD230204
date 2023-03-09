@@ -367,17 +367,20 @@ module.exports = {
             // }
 
             //validasi product
-            const findProducts = await cart.findOne({
-                where: {
-                    id: id
-                }
-            })
-            console.log(findProducts)
+            // const findProducts = await cart.findOne({
+            //     where: {
+            //         id: id
+            //     }
+            // })
+            // console.log(findProducts)
 
             //validasi data cart
-            if(!findProducts){
-                await cart.destroy(findProducts)
-            }
+            await cart.destroy({
+                where: {
+                    id
+                }
+            })
+            
 
             //response
             res.status(200).send({
@@ -389,6 +392,42 @@ module.exports = {
             res.status(400).send({
                 isError: true,
                 message: "remove from cart failed",
+                data: error.message
+            })
+        }
+    },
+
+    updateCart: async(req, res) => {
+        const {id, product_id, newQuantity} = req.query
+        try {
+            //check the item in cart
+            const findItem = await cart.findAll({id})
+
+            if(!findItem.length){
+                res.status(400).send({
+                    isError: true,
+                    message: "item not found",
+                    data: null
+                })
+            }
+
+            //update the quantity
+            await cart.update({qty: newQuantity}, {
+                where: {
+                    product_id
+                }
+            })
+
+            res.status(201).send({
+                isError: false,
+                message: "update cart success",
+                data: null
+            })
+
+        } catch (error) {
+            res.status(400).send({
+                isError: true,
+                message: "update cart failed",
                 data: error.message
             })
         }

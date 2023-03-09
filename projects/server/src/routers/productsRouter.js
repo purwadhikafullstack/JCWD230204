@@ -10,6 +10,7 @@ router.get('/getNewProduct', productsController.getNewProducts);
 router.get('/getRecommended', productsController.getRecommendedProducts);
 router.get('/add', productsController.addToCart);
 router.get('/Cart', productsController.getCart);
-router.get('/delete', productsController.removeFromCart);
+router.delete('/Cart/delete', productsController.removeFromCart);
+router.patch('/Cart/update', productsController.updateCart);
 
 module.exports = router;

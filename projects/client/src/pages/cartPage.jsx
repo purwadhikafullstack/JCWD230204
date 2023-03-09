@@ -26,16 +26,41 @@ export default function Cart(){
     const removeFromCart = async() => {
         //remove from cart function
         try {
-            const response = await axios.delete(`http://localhost:8000/products/delete?id=${cartId}`)
-            console.log(response.data.data)
-            setCart(response.data.data)
+            await axios.delete(`http://localhost:8000/products/Cart/delete?id=${cartId}`)
+            getCart()
+            window.location.reload()
         } catch (error) {
             console.log(error.message)
         }
     }
 
-    const updateQty = async() => {
-        //checkout function
+    const updateQty = async(cartId, newQuantity) => {
+        //update cart automatically updates qty
+        try{
+            await axios.patch(`http://localhost:8000/products/Cart/update?id=${cartId}`, {
+                qty: newQuantity
+            })
+            getCart()
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    const handleQuantityChange = (cartId, newQuantity) => {
+        //handle quantity change
+        updateQty(cartId, newQuantity)
+    }
+
+    const handleDecrease = (cartId, currentQuantity) => {
+        const newQuantity = currentQuantity - 1;
+        if(newQuantity >= 0){
+            handleQuantityChange(cartId, newQuantity)
+        }
+    }
+
+    const handleIncrease = (cartId, currentQuantity) => {
+        const newQuantity = currentQuantity + 1;
+        handleQuantityChange(cartId, newQuantity)
     }
 
     useEffect(() => {
@@ -82,12 +107,12 @@ export default function Cart(){
                         cart.map((value, index) => {
                             return(
                                 <tr>
-                                    <td key={index}>{value.product.products_name}</td>
-                                    <td key={index}>{value.product.products_details[0].price}</td>
+                                    <td key={value.id}>{value.product.products_name}</td>
+                                    <td key={value.id}>Rp.{parseInt(value.product.products_details[0].price).toLocaleString()}</td>
                                     <td><div className='flex gap-3'>
-                                    <button>-</button>
-                                    <div key={index}>{value.qty}</div>
-                                    <button>+</button>
+                                    <button onClick={() => handleDecrease(value.id, value.qty)}>-</button>
+                                    <div key={value.id}>{value.qty}</div>
+                                    <button onClick={() => handleIncrease(value.id, value.qty)}>+</button>
                                 </div></td>
                                 <td>
                                     <button onClick={removeFromCart}>
