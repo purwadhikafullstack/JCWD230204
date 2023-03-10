@@ -398,25 +398,29 @@ module.exports = {
     },
 
     updateCart: async(req, res) => {
-        const {id, product_id, newQuantity} = req.query
+        const {id, option} = req.query
+        console.log(id, option)
         try {
-            //check the item in cart
-            const findItem = await cart.findAll({id})
-
-            if(!findItem.length){
-                res.status(400).send({
-                    isError: true,
-                    message: "item not found",
-                    data: null
-                })
-            }
-
-            //update the quantity
-            await cart.update({qty: newQuantity}, {
+            const findItem = await cart.findOne({
                 where: {
-                    product_id
+                    id
                 }
             })
+            console.log()
+
+            if(option === "plus"){
+                await cart.update({qty: findItem.qty + 1}, {
+                    where: {
+                        id
+                    }
+                })
+            } else if(option === "min") {
+                await cart.update({qty: findItem.qty - 1}, {
+                    where: {
+                        id
+                    }
+                })
+            } 
 
             res.status(201).send({
                 isError: false,

@@ -11,6 +11,6 @@ router.get('/getRecommended', productsController.getRecommendedProducts);
 router.get('/add', productsController.addToCart);
 router.get('/Cart', productsController.getCart);
 router.delete('/Cart/delete', productsController.removeFromCart);
-router.patch('/Cart/update', productsController.updateCart);
+router.get('/update', productsController.updateCart);
 
 module.exports = router;
