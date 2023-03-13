@@ -16,6 +16,7 @@ import NotFound from './pages/notfound';
 // import ChangePassword from "./pages/changePassword";
 import ProductsPage from "./pages/productsPage";
 import ProductsDetails from "./pages/productDetails";
+import Cart from "./pages/cartPage";
 // import cors from "cors";
 export default function App() {
   const Navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function App() {
           <input type="text" placeholder="Search" className="border rounded-full text-center h-[40px] w-[900px]"/>
         </div>
         <div className="flex gap-4 items-center">
-          <AiOutlineShoppingCart className="text-2xl text-white"/>
+          <AiOutlineShoppingCart onClick={() => Navigate('/cart')} className="text-2xl text-white"/>
           <button onClick={() => {Navigate("/register")}} className="bg-[#443C68] rounded-full w-[100px] h-[40px] p-2 text-white">Register</button>
           <button onClick={() => {Navigate("/login")}} className="bg-[#443C68] rounded-full w-[100px] h-[40px] p-2 text-white">Login</button>
         </div>
@@ -67,6 +68,7 @@ export default function App() {
         {/* <Route path="/changePassword" element={<ChangePassword/>}/> */}
         <Route path="/Products" element={<ProductsPage/>}/>
         <Route path="/Details/:id" element={<ProductsDetails/>}/>
+        <Route path="/cart" element={<Cart/>}/>
       </Routes>
 
       {/* footer */}

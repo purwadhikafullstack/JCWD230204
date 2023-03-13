@@ -8,7 +8,9 @@ router.get('/getCat', productsController.getCategory);
 router.get('/getPromo', productsController.getPromo);
 router.get('/getNewProduct', productsController.getNewProducts);
 router.get('/getRecommended', productsController.getRecommendedProducts);
-router.get('/filterBy', productsController.filterBy);
-router.get('/sortBy', productsController.sortBy);
+router.get('/add', productsController.addToCart);
+router.get('/Cart', productsController.getCart);
+router.delete('/Cart/delete', productsController.removeFromCart);
+router.get('/update', productsController.updateCart);
 
 module.exports = router;
