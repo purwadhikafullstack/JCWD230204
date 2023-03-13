@@ -49,57 +49,15 @@ export default function ProductDetails(){
 
     return(
         <>
-        <div className="flex gap-4 mx-10 mb-4">
-            {/* sidebar */}
-            {/* <div className="border w-[300px] p-4 flex flex-col gap-4">
-                <div>
-                    <h1 className="text-xl font-bold ">Category</h1>
-                    <ul>
-                        {
-                            category.map((cat, index) => {
-                                return(
-                                    <li key={index}>{cat.category}</li>
-                                )
-                            })
-                        }
-                    </ul>
-                </div>
-                <div className='flex flex-col'>
-                    <div>
-                        <h1 className='text-xl font-bold'>Sort by</h1>
-                    </div>
-                    <div className='flex gap-3'>
-                        <input ref={sort} type="radio" value="name" name="sort" onChange={handleSort}/>Name
-                        <input  type="radio" value="price" name="sort" onChange={handleSort}/>Price
-                    </div>
-                </div>
-                <div className='flex flex-col'>
-                    <div>
-                        <h1 className='text-xl font-bold'>Filter By</h1>
-                    </div>
-                    <div className='flex gap-3'>
-                        <input ref={filter} type="radio" value="name" name="sort" onChange={handleFilter}/>Products Name
-                        <input type="radio" value="name" name="sort" onChange={handleFilter}/>Category
-                    </div>
-                </div>
-            </div> */}
+        <div className="flex justify-center gap-4 py-4 bg-black">
             {/* products details */}
-            {console.log(id)}
-            <div className="border w-[1000px]">
-                <div>
-                    <h1>Breadcrumbs</h1>
-                </div>
+            <div className="bg-[#393053] rounded-lg w-[1000px]">
                 <div className='flex justify-around h-[700px]'>
-                    <div className='border flex flex-col items-center w-[400px]'>
+                    <div className=' flex border flex-col items-center w-[400px]'>
                         <div>big pict</div>
-                        <div className='flex gap-4'>
-                            <div>small pict</div>
-                            <div>small pict</div>
-                            <div>small pict</div>
-                        </div>
                     </div>
                     {console.log(product)}
-                    <div className='border flex flex-col items-center gap-4 w-[400px] p-4'>
+                    <div className=' flex flex-col items-center gap-4 w-[400px] p-4'>
                         <div>{console.log(product[0])}
                             <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
                             <p className='text-md'>{product[0] ? product[0].description : null}</p>
@@ -107,19 +65,19 @@ export default function ProductDetails(){
                         <div>
                             <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
                         </div>
-                        <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
+                        <div className=' p-2 flex bg-slate-200 gap-4 rounded-full'>
                             <button onClick={countPlusHandler}>+</button>
                             <div>{quantity}</div>
                             <button onClick={countMinHandler}>-</button>
                         </div>
                         <div>
-                            <button className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>
+                            <button className='bg-[#443C68] p-3 rounded-full text-white'>Add to Cart</button>
                         </div>
                     </div>
                 </div>
             </div>
             {/* ads */}
-            <div className="border w-[300px]">ads</div>
+            <div className=" w-[300px]">ads</div>
         </div>
         </>
     )

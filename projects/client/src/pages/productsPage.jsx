@@ -75,9 +75,9 @@ export default function ProductPage(){
 
     return(
         <>
-        <div className="flex gap-4 mx-10">
+        <div className="flex gap-4 bg-[#443C68] py-4">
             {/* sidebar nav */}
-            <div className="border w-[300px] p-4 flex flex-col gap-4">
+            <div className="w-[300px] p-4 flex flex-col gap-4 text-white ">
                 <div>
                     <h1 className="text-xl font-bold ">Category</h1>
                     <ul>
@@ -90,18 +90,18 @@ export default function ProductPage(){
                         }
                     </ul>
                 </div>
-                <div className='flex flex-col'>
+                <div className='flex flex-col gap-4'>
                     <div>
                         <h1 className='text-xl font-bold'>Sort by</h1>
                     </div>
-                    <div className='flex gap-3'>
+                    <div className='flex flex-col align-center gap-4 text-black'>
                         <select value={sort} onChange={(event) => setSort(event.target.value)}>
                             <option value={'options'}>options</option>
                             <option value={'name'}>Name</option>
                             <option value={'price'}>Price</option>
                         </select>
                     </div>
-                    <div>
+                    <div className='flex flex-col align-center gap-4 text-black'>
                         <select value={sortType} onChange={(event) => setSortType(event.target.value)}>
                             <option value={'asc'}>ascending</option>
                             <option value={'desc'}>descending</option>
@@ -112,25 +112,26 @@ export default function ProductPage(){
                     <div>
                         <h1 className='text-xl font-bold'>Filter By</h1>
                     </div>
-                    <div className='flex flex-col gap-3'>
-                        <input type='text' ref={search} placeholder='filter...'/>
+                    <div className='flex flex-col gap-3 text-black'>
+                        <input type='text' ref={search} placeholder='filter...' className='rounded-lg h-[30px] pl-3'/>
                         <select value={filter} onChange={(event) => setFilter(event.target.value)}>
                             <option value={'ProductsName'}>Product Name</option>
                             <option value={'category'}>Category</option>
                         </select>
-                        <button onClick={handleFilter}>filter</button>
+                        <button onClick={handleFilter} className="text-white">filter</button>
                     </div>
                 </div>
                 
             </div>
             {/* main content */}
-            <div className="border w-[1000px] p-5 flex flex-col gap-4 mb-4">
+            <div className=" w-[1000px] p-5 flex flex-col gap-4 mb-4 bg-[#393053] rounded-lg">
                 <div>
-                    <h1 className="text-xl font-bold">Products</h1>
+                    <h1 className="text-xl text-white font-bold">Products</h1>
                 </div>
-                <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-3">
+                <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-3 relative z-0">
                     {
                         currentItems.length ? currentItems.map((product) => {
+                            console.log(product.id)
                             return(
                                 <div key={product.id} onClick={() => Navigate(`/Details/${product.id}`)}>
                                     
@@ -138,12 +139,12 @@ export default function ProductPage(){
                                         <div className="bg-slate-300 rounded-t-lg">
                                             <img src={product.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                         </div>
-                                        <div className="flex gap-4 justify-around px-2">
+                                        <div className="flex flex-col gap-4 justify-around text-white px-2">
                                             <h2 className="text-sm " key={product.id}>{product.products_name}</h2>
                                             {
                                                 product.products_details.map((product, index) => {
                                                     return(
-                                                        <h2 className="text-sm" key={index}>Rp.{product.price.toLocaleString()}</h2>
+                                                        <h2 className="text-sm" key={index}>Rp.{parseInt(product.price).toLocaleString()}</h2>
                                                     )
                                                 })
                                             }
@@ -167,7 +168,7 @@ export default function ProductPage(){
                     </div>
                 </div>
             </div>
-            <div className="border w-[300px]">
+            <div className=" w-[300px]">
                 {/* <img src={BannerVertical} alt="" className='object-fill' /> */}
                 <h1>banner</h1>
             </div>

@@ -1,6 +1,6 @@
 
 import { Routes, Route, Link, useNavigate} from "react-router-dom";
-import Applogo from "./assets/img/1.svg"
+import Applogo from "./assets/img/gamepedia-logo-3.png"
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import "./App.css";
 import LandingPage from "./pages/landingPage";
@@ -23,26 +23,33 @@ export default function App() {
   let onProducts = () => {
     Navigate("/products");
   }
+
+  const onHome = () => {
+    Navigate("/");
+  }
   return (
     <div className="App">
       {/* navbar */}
-      <div className="flex justify-around gap-10 h-[100px] items-center drop-shadow-lg">
+      <div className="flex justify-center gap-10 h-[90px] items-center drop-shadow-lg bg-[#18122B] sticky top-0 z-50">
         <div onClick={() => Navigate('/')}>
           <img src={Applogo} alt="logo" className="w-[200px]"/>
         </div>
         <div>
-          <ul className="flex gap-5">
-            <li className="hover:border-b-2" onClick={onProducts}>Categories</li>
-            <li className="hover:border-b-2">Deals</li>
-            <li className="hover:border-b-2">What's New</li>
-            <li className="hover:border-b-2">Delivery</li>
+          <input type="text" placeholder="Search" className="border rounded-full text-center h-[40px] w-[900px]"/>
+        </div>
+        <div className="flex gap-4 items-center">
+          <AiOutlineShoppingCart className="text-2xl text-white"/>
+          <button onClick={() => {Navigate("/register")}} className="bg-[#443C68] rounded-full w-[100px] h-[40px] p-2 text-white">Register</button>
+          <button onClick={() => {Navigate("/login")}} className="bg-[#443C68] rounded-full w-[100px] h-[40px] p-2 text-white">Login</button>
+        </div>
+      </div>
+
+      <div>
+          <ul className="flex gap-5 items-center pl-5 bg-[#18122B] h-[50px]">
+            <li className="hover:border-b-2 text-white" onClick={onHome}>Home</li>
+            <li className="hover:border-b-2 text-white">Delivery</li>
+            <li className="hover:border-b-2 text-white" onClick={onProducts}>All Products</li>
           </ul>
-        </div>
-        <div className="flex gap-7 items-center">
-          <input type="text" placeholder="Search" className="border rounded-full text-center h-[50px] w-[400px]"/>
-          <AiOutlineShoppingCart className="text-2xl"/>
-          <button className="bg-green-400 border rounded-full w-[100px] h-[50px] p-2">Register</button>
-        </div>
       </div>
 
       <Routes>
@@ -63,8 +70,8 @@ export default function App() {
       </Routes>
 
       {/* footer */}
-      <div className="h-[300px] border bg-slate-600 flex justify-around p-5">
-          <div>
+      <div className="h-[300px] bg-[#393053] flex justify-around p-5">
+          <div className="text-white">
               <h1 className="text-xl font-bold">Gamepedia</h1>
               <p className="text-sm">One stop service for all gaming stuff</p>
               <p>email: support@gamepedia.com phone: (021)123456789</p>
@@ -72,11 +79,9 @@ export default function App() {
           </div>
           <div>
           <ul className="flex flex-col gap-5">
-              <li className="hover:text-white">Categories</li>
-              <li className="hover:text-white">Deals</li>
-              <li className="hover:text-white">What's New</li>
-              <li className="hover:text-white">Delivery</li>
-              <li className="hover:text-white">Accounts</li>
+              <li onClick={onProducts} className="text-white">Categories</li>
+              <li className="text-white">Delivery</li>
+              <li className="text-white">Accounts</li>
           </ul>
           </div>
       </div>
@@ -84,6 +89,4 @@ export default function App() {
     </div>
   );
 }
-
-export default App
 

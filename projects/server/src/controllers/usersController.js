@@ -359,7 +359,4 @@ module.exports = {
         }
     },
 
-} 
-
 }
-
