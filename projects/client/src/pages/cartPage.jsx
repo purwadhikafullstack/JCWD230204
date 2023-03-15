@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineArrowRight, AiFillDelete } from "react-icons/ai";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -10,6 +10,7 @@ export default function Cart() {
   const [total, setTotal] = useState(0);
 
   const { id } = useParams();
+  const Navigate = useNavigate();
 
   const getCart = async () => {
     //add to cart function
@@ -19,6 +20,12 @@ export default function Cart() {
       );
       // console.log(response.data.data[0].id)
       setCart(response.data.data);
+      console.log(response.data.data)
+      let total = 0;
+      response.data.data.forEach((value) => {
+        total += value.product.products_details[0].price * value.qty;
+      })
+      setTotal(total)
       setCartId(response.data.data[0].id);
       setNewQuantity(response.data.data[0].qty);
       console.log(response.data.data[0].qty);
@@ -59,9 +66,9 @@ export default function Cart() {
 
   return (
     <>
-      <div className="flex justify-center m-5 gap-3">
+      <div className="flex justify-center text-white gap-3 bg-[#18122B]">
         <div className="flex flex-col border-b-2 p-9 w-[500px] h-[600px] gap-4">
-          <h1 className="text-2xl font-bold border-b-2 border-black">Cart</h1>
+          <h1 className="text-2xl font-bold border-b-2 border-white">Cart</h1>
           <table className="table-auto">
             <thead>
               <tr>
@@ -71,7 +78,7 @@ export default function Cart() {
               </tr>
             </thead>
             <tbody>
-              {cart.map((value, index) => {
+              {cart.length ? cart.map((value, index) => {
                 return (
                   <tr key={value.id}>
                     <td>{value.product.products_name}</td>
@@ -99,12 +106,12 @@ export default function Cart() {
                     </td>
                   </tr>
                 );
-              })}
+              }) : <tr><td>Cart is empty</td></tr>}
             </tbody>
           </table>
         </div>
         <div className="border-b-2 p-6 flex flex-col gap-4 w-[300px] h-[400px] ">
-            <div className="text-2xl font-bold border-b-2 border-black">Summary</div>
+            <div className="text-2xl font-bold border-b-2 border-white">Summary</div>
             <table>
                 <thead>
                     <tr>
@@ -115,7 +122,7 @@ export default function Cart() {
                 <tbody>
                     <tr>
                         <td>total price</td>
-                        <td>Rp.0</td>
+                        <td>Rp.{total.toLocaleString()}</td>
                     </tr>
                     <tr>
                         <td>discount</td>
@@ -123,11 +130,11 @@ export default function Cart() {
                     </tr>
                     <tr>
                         <td>subtotal</td>
-                        <td>Rp.0</td>
+                        <td>Rp.{total.toLocaleString()}</td>
                     </tr>
                 </tbody>
             </table>
-            <button className="self-end flex items-center gap-3">
+            <button onClick={() => Navigate('/checkout')} className="self-end flex items-center gap-3">
                 <div>checkout</div>
                 <div>
                 <AiOutlineArrowRight />

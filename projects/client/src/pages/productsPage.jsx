@@ -1,7 +1,8 @@
-import {Link, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState, useRef } from 'react'
 
+// import imgprod from './../assets/img/assets_products/ps4.jpg'
 // import BannerVertical from './../assets/img/banner-vert-1.png'
 
 
@@ -75,7 +76,7 @@ export default function ProductPage(){
 
     return(
         <>
-        <div className="flex gap-4 bg-[#443C68] py-4">
+        <div className="flex gap-4 bg-[#261C2C] py-4">
             {/* sidebar nav */}
             <div className="w-[300px] p-4 flex flex-col gap-4 text-white ">
                 <div>
@@ -129,15 +130,15 @@ export default function ProductPage(){
                     <h1 className="text-xl text-white font-bold">Products</h1>
                 </div>
                 <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-3 relative z-0">
-                    {
+                   {
                         currentItems.length ? currentItems.map((product) => {
-                            console.log(product.id)
+                            console.log(product)
                             return(
                                 <div key={product.id} onClick={() => Navigate(`/Details/${product.id}`)}>
                                     
                                     <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                         <div className="bg-slate-300 rounded-t-lg">
-                                            <img src={product.products_image} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
+                                            <img key={product.id} src={(product.products_images[0].url)} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
                                         </div>
                                         <div className="flex flex-col gap-4 justify-around text-white px-2">
                                             <h2 className="text-sm " key={product.id}>{product.products_name}</h2>
@@ -146,7 +147,7 @@ export default function ProductPage(){
                                                     return(
                                                         <h2 className="text-sm" key={index}>Rp.{parseInt(product.price).toLocaleString()}</h2>
                                                     )
-                                                })
+                                                 })
                                             }
                                         </div>
                                     </div>

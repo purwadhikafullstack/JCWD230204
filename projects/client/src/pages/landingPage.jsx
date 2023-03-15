@@ -53,15 +53,15 @@ export default function LandingPage(){
 
     return(
         <>
-        <div className='flex flex-col justify-center gap-3 px-6 pb-4 pt-4 bg-[#18122B]'>
+        <div className='flex flex-col justify-center gap-3 px-6 pb-4 pt-4 bg-[#261C2C]'>
             {/* banner */}
-            <div className="h-[400px] flex justify-center">
+            <div className="h-[400px] flex justify-center px-7">
                 <img src={Banner} alt="" className="h-[400px] object-scale-down"/>
             </div>
             {/* categories */}
             <div className=" rounded-lg bg-[#635985] flex flex-col items-center gap-4 py-5">
                 <div className="text-xl font-bold">Browse Category</div>
-                <div className="flex gap-3 md:flex-col">
+                <div className="flex gap-3 md:flex-col xl:flex-row">
                     {
                         categories ? categories.map((value, index) => {
                             return(
@@ -178,7 +178,7 @@ export default function LandingPage(){
                 </div>
             </div>
             {/* all products */}
-            <div className=" rounded-lg bg-[#635985] p-5 flex flex-col gap-4">
+            <div className=" rounded-lg bg-[#5C527F] p-5 flex flex-col gap-4">
                 <h1 className="text-xl font-bold">All Products</h1>
                     <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
                             {

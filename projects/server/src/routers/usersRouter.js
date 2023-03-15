@@ -9,6 +9,7 @@ router.post('/keep-login', tokenVerify);
 router.patch('/activation/:id', usersController.activation);
 router.post('/forgot-password', usersController.forgotPassword);
 router.patch('/reset-password/:id', usersController.resetPassword);
+router.patch('/change-password', tokenVerify, usersController.changePassword);
 router.post('/notFound', usersController.notFound);
 router.patch('/update', usersController.updateProfile);
 router.patch('/updateProfile/:id', usersController.updateProfile);

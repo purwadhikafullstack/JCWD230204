@@ -63,14 +63,14 @@ module.exports = {
             // filter by products name
             if(filter === 'productsName' ){
                 findProducts = await products.findAll({
-                    include: [{model: category}, {model:products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    include: [{model: category, required: true}, {model:products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category'], [sequelize.col('products_images.url'), 'url']],
                     where: {products_name: {[Op.like]: `%${search}%`}}
                 })
             } else if(filter === 'category'){
                 findProducts = await products.findAll({
-                    include: [{model: category}, {model:products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    include: [{model: category, required: true}, {model:products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category'], [sequelize.col('products_images.url'), 'url']],
                     where: {'$category.category$': {[Op.like]: `%${search}%`}}
                 })
             }
@@ -94,8 +94,8 @@ module.exports = {
             //sort by name asc
             if(sortBy === 'name' && sortType === 'asc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [['products_name', 'ASC']]
                   });
                   
@@ -103,27 +103,32 @@ module.exports = {
             
             if(sortBy === 'name' && sortType === 'desc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [['products_name', 'DESC']]
                 })
             } else
             //sort by price asc
             if(sortBy === 'price' && sortType === 'asc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [[sequelize.col('products_details.price'), 'ASC']]
                 })
             } else
             //if sort by product price order descending then sort product by product price descending
             if(sortBy === 'price' && sortType === 'desc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [[sequelize.col('products_details.price'), 'DESC']]
                 })
             }
+
+            const findImg = await products_image.findAll({
+                include: [{model: products}],
+            })
+            console.log(findProducts)
 
 
             res.status(200).send({
@@ -296,6 +301,7 @@ module.exports = {
                 isError: false,
                 message: "get data sucess",
                 data: findCart
+                
             })
 
         } catch (error) {

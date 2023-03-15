@@ -8,6 +8,7 @@ export default function Register (){
     const [email, setEmail] = useState ('');
     const [password, setPassword] = useState ('');
     const [phone, setPhone] = useState (0);
+    const [isSubmitting, setIsSubmitting] = useState (false);
 
     const Navigate = useNavigate()
 
@@ -16,6 +17,7 @@ export default function Register (){
             const {data}= await axios.post('http://localhost:8000/users/register', {username:name, email:email, password:password, phone_number:phone});
             console.log(data);
              toast.success (data.message)
+             setIsSubmitting(false)
              setTimeout(()=> {
                 Navigate("/login")
              }, 2000)
@@ -24,6 +26,12 @@ export default function Register (){
             toast.error (error.response.data.message);     
         }
     }; 
+
+    const handleSubmitButton = (event) => {
+        event.preventDefault();
+        setIsSubmitting(true);
+        handleSubmit();
+    }
   
   return (
     <>
@@ -57,7 +65,7 @@ export default function Register (){
                 <br />
                 </form>
 
-                <button onClick={()=> handleSubmit()} className=" bg-white p-2 border rounded-md text-center" type="submit">Register</button>
+                <button onClick={handleSubmitButton} className=" bg-white p-2 border rounded-md text-center" type="submit">Register</button>
 
 
                 <p> Already have an account? <a href="/login" className=" text-red-700 underline">Login here </a></p>
