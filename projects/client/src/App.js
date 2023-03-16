@@ -17,7 +17,7 @@ import ChangePassword from "./pages/changePassword";
 import ProductsPage from "./pages/productsPage";
 import ProductsDetails from "./pages/productDetails";
 import Cart from "./pages/cartPage";
-import CheckoutPage from "./pages/checkoutPage";
+import ShippingPage from "./pages/shippingPage";
 // import cors from "cors";
 export default function App() {
   const Navigate = useNavigate();
@@ -112,11 +112,10 @@ export default function App() {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/changePassword" element={<ChangePassword />} />
         <Route path="/notFound" element={<NotFound />} />
-        {/* <Route path="/changePassword" element={<ChangePassword/>}/> */}
         <Route path="/Products" element={<ProductsPage />} />
         <Route path="/Details/:id" element={<ProductsDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/shipping" element={<ShippingPage />} />
       </Routes>
 
       {/* footer */}

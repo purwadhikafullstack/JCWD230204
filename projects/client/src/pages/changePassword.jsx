@@ -26,19 +26,6 @@ export default function ChangePassword (){
     
 	let onChangePassword = async () => {
 		try {
-            // if (!confirmPassword.current.value) {
-            //     setData("Please input your confirm password");
-            // } else if (confirmPassword.current.value.length < 8 && password.current.value.length < 8) {
-            //     setData("Password less than 8 character, please input more");
-            // } else if (
-            //     !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/.test(
-            //         confirmPassword.current.value, password.current.value
-            //     )
-            // ) {
-            //     setData("Password must contain number and capital");
-            // } else {
-            //     setData("");
-            // }
 
 			setDisabled(true);
 
@@ -62,23 +49,6 @@ export default function ChangePassword (){
 			setDisabled(false);
 		}
 	};
-
-    // let validateOldPassword = async () => {
-    //     try {
-	// 		let { data } = await axios.post("http://localhost:8000/user/", {
-	// 			password: password.current.value,
-	// 		});
-	// 		localStorage.setItem("token", `${data.data.token}`);
-	// 		setname(data.data.name);
-	// 		toast.success(data);
-	// 		password.current.value = "";
-	// 	} catch (error) {
-	// 		toast.error(error.response.data.message);
-	// 	} finally {	
-	// 	}
-	// };
-    
-
 
     return (
         <>

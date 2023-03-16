@@ -66,9 +66,9 @@ export default function Cart() {
 
   return (
     <>
-      <div className="flex justify-center text-white gap-3 bg-[#18122B]">
-        <div className="flex flex-col border-b-2 p-9 w-[500px] h-[600px] gap-4">
-          <h1 className="text-2xl font-bold border-b-2 border-white">Cart</h1>
+      <div className="flex justify-center gap-3 bg-[#18122B] items-center">
+        <div className="flex flex-col border-b-2 p-9 m-4 w-[500px] h-[600px] gap-4 bg-white rounded-xl">
+          <h1 className="text-2xl font-bold border-b-2 border-black">Cart</h1>
           <table className="table-auto">
             <thead>
               <tr>
@@ -110,37 +110,37 @@ export default function Cart() {
             </tbody>
           </table>
         </div>
-        <div className="border-b-2 p-6 flex flex-col gap-4 w-[300px] h-[400px] ">
-            <div className="text-2xl font-bold border-b-2 border-white">Summary</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>total price</td>
-                        <td>Rp.{total.toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td>discount</td>
-                        <td>Rp.0</td>
-                    </tr>
-                    <tr>
-                        <td>subtotal</td>
-                        <td>Rp.{total.toLocaleString()}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onClick={() => Navigate('/checkout')} className="self-end flex items-center gap-3">
-                <div>checkout</div>
-                <div>
-                <AiOutlineArrowRight />
-                </div>
-          </button>
-        </div>
+        { cart.length ? (
+          <div className="border-b-2 p-6 flex flex-col gap-4 w-[300px] h-[400px] bg-white rounded-xl">
+          <div className="text-2xl font-bold border-b-2 border-black">Summary</div>
+          <table>
+              <thead>
+                  <tr>
+                      <th></th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>total price</td>
+                      <td>Rp.{total.toLocaleString()}</td>
+                  </tr>
+                  <tr>
+                      <td>discount</td>
+                      <td>Rp.0</td>
+                  </tr>
+                  <tr>
+                      <td>subtotal</td>
+                      <td>Rp.{total.toLocaleString()}</td>
+                  </tr>
+              </tbody>
+          </table>
+          {
+            cart.length ? <button onClick={() => Navigate('/shipping')} className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300 "><div>shipping</div><AiOutlineArrowRight/></button> :
+            <button disabled className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300"><div>shipping</div><AiOutlineArrowRight/></button>
+          }
+      </div>
+        ) : null}
       </div>
     </>
   );

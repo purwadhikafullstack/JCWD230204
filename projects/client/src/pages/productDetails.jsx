@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {useState, useEffect, useRef} from 'react'
 import {Link, useParams} from 'react-router-dom'
+import {toast, Toaster} from 'react-hot-toast'
 
 export default function ProductDetails(){
     const [category, setCategory] = useState([])
@@ -39,8 +40,18 @@ export default function ProductDetails(){
     }
 
     const addToCartHandler = async() => {
-        console.log(quantity)
-        await axios.get(`http://localhost:8000/products/add?product_id=${id}&quantity=${parseInt(quantity)}`)
+        try {
+            console.log(quantity)
+            const token = localStorage.getItem("token")
+            await axios.get(`http://localhost:8000/products/add?product_id=${id}&quantity=${parseInt(quantity)}`, {
+                headers: { token }
+            })
+            toast.success('Product added to cart')
+        } catch (error) {
+            console.log(error.message)
+        }
+        
+        
     }
 
     useEffect(() => {
@@ -72,7 +83,8 @@ export default function ProductDetails(){
                             <button onClick={countPlusHandler}>+</button>
                         </div>
                         <div>
-                            <button onClick={ addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to Cart</button>
+                            {localStorage.getItem("token") ? <button onClick={addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button> : <Link to='/login'><button className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button></Link>}
+                            {/* <button onClick={ addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to Cart</button> */}
                         </div>
                     </div>
                 </div>

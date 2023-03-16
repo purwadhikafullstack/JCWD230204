@@ -13,11 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       transactions_log.belongsTo(models.transactions, {
         foreignKey: 'transaction_id',
+      }),
+      transactions_log.belongsTo(models.transactions_status, {
+        foreignKey: 'transaction_status_id',
       })
     }
   }
   transactions_log.init({
-    name: DataTypes.STRING
+    datetime: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'transactions_log',

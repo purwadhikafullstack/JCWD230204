@@ -37,7 +37,7 @@ export default function CheckoutPage(){
             setTotal(total)
             
         } catch (error) {
-            
+            console.log(error.message)
         }
     }
 
@@ -190,7 +190,7 @@ export default function CheckoutPage(){
                     <p>Subtotal : {subtotal}</p>
                     <p>Shipping : Rp.{parseInt(ongkir).toLocaleString()}</p>
                     <p>Total    : {total}</p>
-                    <button onClick={PlaceOrder} className="p-5 bg-green-300 rounded-lg">Place Order</button>
+                    <button onClick={PlaceOrder} className="p-5 bg-green-300 rounded-lg">Checkout</button>
                 </div>
             </div>
         </div>

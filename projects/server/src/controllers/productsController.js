@@ -1,4 +1,5 @@
 const {sequelize} = require('./../models');
+const jwt = require('jsonwebtoken');
 
 
 const db = require('./../models/index');
@@ -10,6 +11,7 @@ const discounts_categories = db.discount_category;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
 const cart = db.carts;
+const users = db.users;
 
 const {Op} = require('sequelize');
 
@@ -315,9 +317,36 @@ module.exports = {
 
     addToCart: async(req, res) => {
         const {product_id, quantity} = req.query
-        // console.log(products_id, quantity)
-        console.log('masukkk')
+
         try {
+            //check token
+            const token = req.headers.token
+            //obtain id from token
+            const decodedToken = jwt.decode(token, {complete: true})
+            const id = decodedToken.payload.id
+
+            const findUser = await users.findOne({
+                where: {
+                    id
+                }
+            })
+
+            //check user
+            if(!findUser){
+                res.status(400).send({
+                    isError: true,
+                    message: "user not found",
+                    data: {}
+                })
+            }
+
+            if(findUser.status === "unconfirmed"){
+                res.status(400).send({
+                    isError: true,
+                    message: "user not confirmed, please confirmed your email",
+                    data: null
+                })
+            }
 
             const findProducts = await cart.findOne({
                 where: {
@@ -325,9 +354,9 @@ module.exports = {
                 }
             })
 
-            //validasi data cart
+            //data cart validation
             if(!findProducts){
-                await cart.create({product_id, qty: parseInt(quantity)})
+                await cart.create({product_id, qty: parseInt(quantity), user_id: id})
             } else {
                 await cart.update({qty: parseInt(findProducts.qty) + parseInt(quantity)}, {
                     where: {
@@ -340,7 +369,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: "add to cart success",
-                data: findProducts
+                data: null
             })
 
         } catch (error) {
@@ -356,29 +385,6 @@ module.exports = {
         try {
             const {id} = req.query
             console.log(id)
-
-            //validasi user
-            // const findUser = await users.findOne({
-            //     where: {
-            //         id: user_id
-            //     }
-            // })
-
-            // if(findUser.status === "unconfirmed"){
-            //     res.status(400).send({
-            //         isError: true,
-            //         message: "user unconfirmed, please confirm your email first",
-            //         data: null
-            //     })
-            // }
-
-            //validasi product
-            // const findProducts = await cart.findOne({
-            //     where: {
-            //         id: id
-            //     }
-            // })
-            // console.log(findProducts)
 
             //validasi data cart
             await cart.destroy({

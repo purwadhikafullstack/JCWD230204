@@ -85,16 +85,15 @@ module.exports = {
     },
 
     activation: async(req, res) => {
+        let {id} = req.body
+        
         try {
-            // Step-1 Ambil id dari req.params
-            let {id} = req.body
 
-            // Step-2 Update status Unconfirmed -> Confirmed
             await users.update(
                 {status: 'Confirmed'},
                 {
                     where: {
-                        id:id
+                        id
                     }
                 }
             )
@@ -109,8 +108,8 @@ module.exports = {
                 console.log(error)
                 res.status(404).send({
                     isError: true,
-                    message: error.message,
-                    data: error
+                    message: "Activation Failed",
+                    data: error.message
                 })
             }
          },

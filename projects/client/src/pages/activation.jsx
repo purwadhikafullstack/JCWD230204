@@ -9,7 +9,7 @@ export default function Activation(){
 
     const confirm = async() => {
         try {
-            let {data}= await axios.patch('http://localhost:8000/users/activation/id', {id:Location.pathname.slice(12)})
+            await axios.patch('http://localhost:8000/users/activation/id', {id:Location.pathname.slice(12)})
             setTimeout(()=> {
                 Navigate("/login")
             }, 3000)
