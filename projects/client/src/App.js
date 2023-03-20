@@ -51,11 +51,19 @@ export default function App() {
             className="border rounded-full text-center h-[40px] w-[900px]"
           />
         </div>
+        
         <div className="flex gap-4 items-center">
-          <AiOutlineShoppingCart
+          {localStorage.getItem("token") ? (
+            <AiOutlineShoppingCart
             onClick={() => Navigate("/cart")}
             className="text-2xl text-white"
           />
+          ) : (
+            <AiOutlineShoppingCart
+            onClick={() => toast("Please login to continue")}
+            className="text-2xl text-white"
+          />
+          )}
           {localStorage.getItem("token") ? (
             <>
             <div className="flex gap-4 text-white">

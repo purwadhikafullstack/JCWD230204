@@ -20,7 +20,7 @@ export default function Login(){
 				password: password.current.value,
 			});
 			localStorage.setItem("token", `${data.data.data.token}`);
-			toast.success("register success");
+			toast.success("login success");
 			email.current.value = "";
 			password.current.value = "";
 			setTimeout(() => {

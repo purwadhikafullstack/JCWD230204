@@ -1,10 +1,14 @@
-const sequelize = require('./../models')
+const {sequelize} = require('./../models')
 const db = require('../models/index')
 const users = db.users
+const products = db.products
+const products_detail = db.products_detail
 const Transaction = db.transactions
 const TransactionDetail = db.transactions_detail
 const TransactionLog = db.transactions_log
 const cart = db.carts
+
+const jwt = require('jsonwebtoken')
 
 module.exports = {
 
@@ -28,7 +32,7 @@ module.exports = {
 
     addTransaction: async (req, res) => {
         const { cartItem, address, city, state, zip, country, shipping, total } = req.body
-        const t = sequelize.transaction()
+        const t = await sequelize.transaction()
 
         try {
             //get token from headers
@@ -58,10 +62,15 @@ module.exports = {
                 })
             }
 
+            //set expired time
+            const interval = 6300000 // 1.75 hours
+            const currentTime = new Date()
+            const expiredTime = new Date(currentTime.getTime() + interval);
+
             //create transaction
             const transaction = await Transaction.create({
                 date: new Date(),
-                expiry_date: new Date(),
+                expiry_date: expiredTime,
                 // user_id: id,
                 address: address,
                 city: city,
@@ -73,19 +82,28 @@ module.exports = {
                 transaction_status_id: 1,
             }, { transaction: t })
             const cartItems = await cart.findAll({
-                where: [
-                    { user_id: id },
-                    { cart_id: cartItem}
+                where: { user_id: id },
+                attributes: ['id', 'qty', 'user_id'],
+                include: [
+                  {
+                    model: products,
+                    attributes: ['products_name'],
+                    include: [
+                      {
+                        model: products_detail,
+                        attributes: ['price']
+                      }
+                    ]
+                  }
                 ]
-            })
+              });
+            console.log(cartItems)
 
             //create transaction detail
             const transactionDetails = cartItems.map((item) => {
                 return {
                     transaction_id: transaction.id,
-                    product_id: item.product_id,
-                    qty: item.qty,
-                    total_price: item.total_price,
+                    product_name: item.product_name,
                 }
             })
             await TransactionDetail.bulkCreate(transactionDetails, { transaction: t })
@@ -97,7 +115,8 @@ module.exports = {
                 date: new Date(),
             }, { transaction: t })
 
-            await cart.destroy({where: {id: cartItem}}, {transaction: t})
+            //delete cart
+            await cart.destroy({where: {user_id: id}}, {transaction: t})
 
             await t.commit()
             res.status(200).send({
@@ -115,4 +134,8 @@ module.exports = {
             })
         }
     },
+
+    uploadPaymentProof: async(req, res) => {
+
+    }
 }

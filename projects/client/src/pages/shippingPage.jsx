@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast, Toaster } from 'react-hot-toast';
+
+import ConfirmationModal from '../components/confirmationModal';
 
 export default function CheckoutPage(){
     // const [cart, setCart] = useState([])
@@ -16,6 +19,7 @@ export default function CheckoutPage(){
     const [ongkir, setOngkir] = useState(0)
     const [subtotal, setSubtotal] = useState(0)
     const [total, setTotal] = useState(0)
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { id } = useParams()
 
@@ -42,21 +46,35 @@ export default function CheckoutPage(){
     }
 
     const PlaceOrder = async() => {
+
+        const token = localStorage.getItem('token')
         
-        const data = {
-            cartItem: id,
-            address: inputAddress.current.value,
-            city: destination,
-            state: province,
-            zip: inputZip.current.value,
-            country: inputCountry.current.value,
-            shipping: courier,
-            total: total
-        }
+        // const data = {
+        //     cartItem: id,
+        //     address: inputAddress.current.value,
+        //     city: destination,
+        //     state: province,
+        //     zip: inputZip.current.value,
+        //     country: inputCountry.current.value,
+        //     shipping: courier,
+        //     total: total
+        // }
 
         try{
-            const response = await axios.post('http://localhost:8000/products/Checkout', data)
+            const response = await axios.post('http://localhost:8000/transaction/order', {
+                cartItem: id,
+                address: inputAddress.current.value,
+                city: destination,
+                state: province,
+                zip: inputZip.current.value,
+                country: inputCountry.current.value,
+                shipping: courier,
+                total: total
+            }, {
+                headers: {token}
+            })
             console.log(response)
+            toast("Order Placed")
         }
         catch(error){
             console.log(error.message)
@@ -132,7 +150,7 @@ export default function CheckoutPage(){
         <>
         {ongkir}
         <div className="flex justify-center bg-[#261C2C] p-4">
-            <div className="flex gap-10 justify-center p-5 bg-white w-[950px] m-12 rounded-lg">
+            <div className="flex gap-10 justify-center p-5 bg-white w-[1200px] m-12 rounded-lg">
                 <div className="flex flex-col gap-4">
                     <h1>Shipping</h1>
                     <input ref={inputAddress} type='text' placeholder='address'/>
@@ -190,9 +208,21 @@ export default function CheckoutPage(){
                     <p>Subtotal : {subtotal}</p>
                     <p>Shipping : Rp.{parseInt(ongkir).toLocaleString()}</p>
                     <p>Total    : {total}</p>
-                    <button onClick={PlaceOrder} className="p-5 bg-green-300 rounded-lg">Checkout</button>
+                    <button onClick={() => {setShowConfirmationModal(true)}} className="p-5 bg-green-300 rounded-lg">Checkout</button>
                 </div>
             </div>
+            {showConfirmationModal && (
+                <ConfirmationModal
+                message="are you sure you want to perform this transaction?"
+                onConfirm={() => {
+                    PlaceOrder()
+                    setShowConfirmationModal(false)
+                }}
+                onCancel={() => setShowConfirmationModal(false)}
+                />
+            )
+            }
+            <Toaster/>
         </div>
         </>
     )

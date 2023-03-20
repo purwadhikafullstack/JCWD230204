@@ -411,28 +411,30 @@ module.exports = {
 
     updateCart: async(req, res) => {
         const {id, option} = req.query
-        console.log(id, option)
+        
         try {
             const findItem = await cart.findOne({
                 where: {
                     id
                 }
             })
-            console.log()
 
             if(option === "plus"){
-                await cart.update({qty: findItem.qty + 1}, {
+                await cart.update({qty: parseInt(findItem.qty) + 1}, {
                     where: {
                         id
                     }
                 })
             } else if(option === "min") {
-                await cart.update({qty: findItem.qty - 1}, {
+                await cart.update({qty: parseInt(findItem.qty) - 1}, {
                     where: {
                         id
                     }
                 })
-            } 
+            } else {
+
+            }
+
 
             res.status(201).send({
                 isError: false,
