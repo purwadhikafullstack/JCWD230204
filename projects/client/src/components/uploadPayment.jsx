@@ -4,6 +4,8 @@ import axios from 'axios'
 export default function UploadPayment() {
     const [file, setFile] = useState(null)
 
+    const token = localStorage.getItem('token')
+
     const handleFile = (event) => {
         setFile(event.target.files[0])
     }
@@ -11,11 +13,11 @@ export default function UploadPayment() {
     const handleUpload = async() => {
         try {
             const formData = new FormData()
-            formData.append('file', file)
+            formData.append('images', file)
             const response = await axios.post(`http://localhost:8000/transaction/uploadPayment`, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'token': localStorage.getItem('token')
+                    token: token
                 }
             })
             console.log(response)
@@ -28,9 +30,9 @@ export default function UploadPayment() {
 
     return(
         <>
-        <div>
+        <div className='flex flex-col gap-4 justify-center'>
             <input type='file' onChange={handleFile} />
-            <button onClick={handleUpload}>Upload PaymentProof</button>
+            <button onClick={handleUpload}>Upload Payment Proof</button>
         </div>
         </>
     )

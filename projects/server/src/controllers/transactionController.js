@@ -174,6 +174,7 @@ module.exports = {
         const t = await sequelize.transaction()
         try{
             const token = req.headers.token
+            console.log(token)
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
 
@@ -200,8 +201,8 @@ module.exports = {
                     data: null
                 })
             }
-
-            if(!req.file){
+            console.log(req.files)
+            if(!req.files){
                 res.status(400).send({
                     isError: true,
                     message: 'please upload your payment proof',
@@ -210,7 +211,8 @@ module.exports = {
             }
 
             // Your payment proof file path can be stored in a variable like this:
-            let paymentProofFilePath = req.file.path;
+            let paymentProofFilePath = req.files.path;
+            console.log(paymentProofFilePath)
 
             let updatePaymentProof = await Transaction.update(
                 { payment_proof: paymentProofFilePath },
@@ -226,7 +228,12 @@ module.exports = {
             })
 
         } catch(error){
-
+            await t.rollback();
+            res.status(400).send({
+                isError: true,
+                message: 'upload payment proof failed',
+                data: error.message
+            })
         }
     },
 
