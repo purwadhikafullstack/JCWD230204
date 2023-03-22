@@ -1,4 +1,5 @@
 const {sequelize} = require('./../models');
+const jwt = require('jsonwebtoken');
 
 
 const db = require('./../models/index');
@@ -10,6 +11,7 @@ const discounts_categories = db.discount_category;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
 const cart = db.carts;
+const users = db.users;
 
 const {Op} = require('sequelize');
 
@@ -63,14 +65,14 @@ module.exports = {
             // filter by products name
             if(filter === 'productsName' ){
                 findProducts = await products.findAll({
-                    include: [{model: category}, {model:products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    include: [{model: category, required: true}, {model:products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category'], [sequelize.col('products_images.url'), 'url']],
                     where: {products_name: {[Op.like]: `%${search}%`}}
                 })
             } else if(filter === 'category'){
                 findProducts = await products.findAll({
-                    include: [{model: category}, {model:products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category']],
+                    include: [{model: category, required: true}, {model:products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('category.category'), 'category'], [sequelize.col('products_images.url'), 'url']],
                     where: {'$category.category$': {[Op.like]: `%${search}%`}}
                 })
             }
@@ -94,8 +96,8 @@ module.exports = {
             //sort by name asc
             if(sortBy === 'name' && sortType === 'asc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [['products_name', 'ASC']]
                   });
                   
@@ -103,27 +105,32 @@ module.exports = {
             
             if(sortBy === 'name' && sortType === 'desc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [['products_name', 'DESC']]
                 })
             } else
             //sort by price asc
             if(sortBy === 'price' && sortType === 'asc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [[sequelize.col('products_details.price'), 'ASC']]
                 })
             } else
             //if sort by product price order descending then sort product by product price descending
             if(sortBy === 'price' && sortType === 'desc'){
                 findProducts = await products.findAll({
-                    include: [{model: products_detail}],
-                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price']],
+                    include: [{model: products_detail, required: true}, {model:products_image, required: true}],
+                    attributes: ['id', 'products_name', [sequelize.col('products_details.description'), 'description'], [sequelize.col('products_details.price'), 'price'], [sequelize.col('products_images.url'), 'url']],
                     order: [[sequelize.col('products_details.price'), 'DESC']]
                 })
             }
+
+            const findImg = await products_image.findAll({
+                include: [{model: products}],
+            })
+            console.log(findProducts)
 
 
             res.status(200).send({
@@ -296,6 +303,7 @@ module.exports = {
                 isError: false,
                 message: "get data sucess",
                 data: findCart
+                
             })
 
         } catch (error) {
@@ -309,9 +317,36 @@ module.exports = {
 
     addToCart: async(req, res) => {
         const {product_id, quantity} = req.query
-        // console.log(products_id, quantity)
-        console.log('masukkk')
+
         try {
+            //check token
+            const token = req.headers.token
+            //obtain id from token
+            const decodedToken = jwt.decode(token, {complete: true})
+            const id = decodedToken.payload.id
+
+            const findUser = await users.findOne({
+                where: {
+                    id
+                }
+            })
+
+            //check user
+            if(!findUser){
+                res.status(400).send({
+                    isError: true,
+                    message: "user not found",
+                    data: {}
+                })
+            }
+
+            if(findUser.status === "unconfirmed"){
+                res.status(400).send({
+                    isError: true,
+                    message: "user not confirmed, please confirmed your email",
+                    data: null
+                })
+            }
 
             const findProducts = await cart.findOne({
                 where: {
@@ -319,9 +354,9 @@ module.exports = {
                 }
             })
 
-            //validasi data cart
+            //data cart validation
             if(!findProducts){
-                await cart.create({product_id, qty: parseInt(quantity)})
+                await cart.create({product_id, qty: parseInt(quantity), user_id: id})
             } else {
                 await cart.update({qty: parseInt(findProducts.qty) + parseInt(quantity)}, {
                     where: {
@@ -334,7 +369,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: "add to cart success",
-                data: findProducts
+                data: null
             })
 
         } catch (error) {
@@ -350,29 +385,6 @@ module.exports = {
         try {
             const {id} = req.query
             console.log(id)
-
-            //validasi user
-            // const findUser = await users.findOne({
-            //     where: {
-            //         id: user_id
-            //     }
-            // })
-
-            // if(findUser.status === "unconfirmed"){
-            //     res.status(400).send({
-            //         isError: true,
-            //         message: "user unconfirmed, please confirm your email first",
-            //         data: null
-            //     })
-            // }
-
-            //validasi product
-            // const findProducts = await cart.findOne({
-            //     where: {
-            //         id: id
-            //     }
-            // })
-            // console.log(findProducts)
 
             //validasi data cart
             await cart.destroy({
@@ -399,28 +411,30 @@ module.exports = {
 
     updateCart: async(req, res) => {
         const {id, option} = req.query
-        console.log(id, option)
+        
         try {
             const findItem = await cart.findOne({
                 where: {
                     id
                 }
             })
-            console.log()
 
             if(option === "plus"){
-                await cart.update({qty: findItem.qty + 1}, {
+                await cart.update({qty: parseInt(findItem.qty) + 1}, {
                     where: {
                         id
                     }
                 })
             } else if(option === "min") {
-                await cart.update({qty: findItem.qty - 1}, {
+                await cart.update({qty: parseInt(findItem.qty) - 1}, {
                     where: {
                         id
                     }
                 })
-            } 
+            } else {
+
+            }
+
 
             res.status(201).send({
                 isError: false,

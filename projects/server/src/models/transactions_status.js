@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       transactions_status.hasMany(models.transactions, {
         foreignKey: 'transaction_status_id',
+      }),
+      transactions_status.hasMany(models.transactions_log, {
+        foreignKey: 'transaction_status_id',
       })
     }
   }

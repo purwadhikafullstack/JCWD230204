@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {useState, useEffect, useRef} from 'react'
 import {Link, useParams} from 'react-router-dom'
+import {toast, Toaster} from 'react-hot-toast'
 
 export default function ProductDetails(){
     const [category, setCategory] = useState([])
@@ -39,8 +40,18 @@ export default function ProductDetails(){
     }
 
     const addToCartHandler = async() => {
-        console.log(quantity)
-        await axios.get(`http://localhost:8000/products/add?product_id=${id}&quantity=${parseInt(quantity)}`)
+        try {
+            console.log(quantity)
+            const token = localStorage.getItem("token")
+            await axios.get(`http://localhost:8000/products/add?product_id=${id}&quantity=${parseInt(quantity)}`, {
+                headers: { token }
+            })
+            toast.success('Product added to cart')
+        } catch (error) {
+            console.log(error.message)
+        }
+        
+        
     }
 
     useEffect(() => {
@@ -50,44 +61,36 @@ export default function ProductDetails(){
 
     return(
         <>
-        <div className="flex gap-4 mx-10 mb-4">
+        <div className="flex justify-center gap-4 py-4 bg-[#1c1c1c]">
             {/* products details */}
-            {console.log(id)}
-            <div className="border w-[1000px]">
-                <div>
-                    <h1>Breadcrumbs</h1>
-                </div>
+            <div className="bg-[#6d6d6d] rounded-lg w-[1000px]">
                 <div className='flex justify-around h-[700px]'>
-                    <div className='border flex flex-col items-center w-[400px]'>
+                    <div className=' flex border flex-col items-center w-[400px]'>
                         <div>big pict</div>
-                        <div className='flex gap-4'>
-                            <div>small pict</div>
-                            <div>small pict</div>
-                            <div>small pict</div>
-                        </div>
                     </div>
                     {console.log(product)}
-                    <div className='border flex flex-col items-center gap-4 w-[400px] p-4'>
+                    <div className=' flex flex-col items-center gap-4 w-[400px] p-4 text-[#cfcfcf]'>
                         <div>{console.log(product[0])}
                             <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
                             <p className='text-md'>{product[0] ? product[0].description : null}</p>
                         </div>
                         <div>
-                            <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
+                            <h1 className='text-xl font-bold'>Rp. {product[0] ? parseInt(product[0].price).toLocaleString() : null}</h1>
                         </div>
-                        <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
+                        <div className='border p-2 flex bg-slate-200 gap-4 rounded-full text-black'>
                             <button onClick={countMinHandler}>-</button>
                             <div>{quantity}</div>
                             <button onClick={countPlusHandler}>+</button>
                         </div>
                         <div>
-                            <button onClick={ addToCartHandler} className='bg-green-400 p-3 border rounded-full'>Add to Cart</button>
+                            {localStorage.getItem("token") ? <button onClick={addToCartHandler} className='bg-[#db2b39] p-3 rounded-full text-white'>Add to cart</button> : <Link to='/login'><button className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button></Link>}
+                            {/* <button onClick={ addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to Cart</button> */}
                         </div>
                     </div>
                 </div>
             </div>
             {/* ads */}
-            <div className="border w-[300px]">ads</div>
+            <div className=" w-[300px]">ads</div>
         </div>
         </>
     )

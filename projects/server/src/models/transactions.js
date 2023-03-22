@@ -28,7 +28,14 @@ module.exports = (sequelize, DataTypes) => {
   transactions.init({
     date: DataTypes.DATE,
     expiry_date: DataTypes.DATE,
-    payment_proof: DataTypes.STRING
+    payment_proof: DataTypes.STRING,
+    address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    state: DataTypes.STRING,
+    postal_code: DataTypes.STRING,
+    shipping: DataTypes.STRING,
+    total: DataTypes.INTEGER,
+    user_id: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'transactions',

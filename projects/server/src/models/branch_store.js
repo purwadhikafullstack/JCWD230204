@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
   branch_store.init({
     branch_name: DataTypes.STRING,
     address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    province: DataTypes.STRING,
     longitude: DataTypes.STRING,
     latitude: DataTypes.STRING
   }, {

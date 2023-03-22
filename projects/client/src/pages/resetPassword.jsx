@@ -26,8 +26,8 @@ export default function ResetPassword (){
 			setDisabled(true);
 
 			let { data } = await axios.patch(
-				"http://localhost:8000/user/reset-password/id",
-				{ id: location.pathname.slice(16), password: password.current.value, confiemPassword: confirmPassword.current.value }
+				"http://localhost:8000/users/resetPassword/id",
+				{ id: location.pathname.slice(16), password: password.current.value, confirmPassword: confirmPassword.current.value }
 			);
 
 			toast.success(data.message);
