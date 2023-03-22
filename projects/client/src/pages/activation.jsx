@@ -9,7 +9,7 @@ export default function Activation(){
 
     const confirm = async() => {
         try {
-            let {data}= await axios.patch('http://localhost:8000/users/activation/id', {id:Location.pathname.slice(12)})
+            await axios.patch('http://localhost:8000/users/activation/id', {id:Location.pathname.slice(12)})
             setTimeout(()=> {
                 Navigate("/login")
             }, 3000)
@@ -25,7 +25,7 @@ export default function Activation(){
     return (
         <>
         <div className='activation container flex justify-center align-center items-center'>
-            <div className='flex flex-col justify-center items-center h-[500px] w-[600px] border border-black'>
+            <div className='flex flex-col justify-center items-center h-[500px] w-[600px]'>
                 <div className='my-5'>
                     <h1 className='font-bold text-lg'>Your Account Verified!</h1>
                 </div>

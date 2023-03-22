@@ -11,11 +11,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      branch_store.belongsTo(models.admin, {
+        foreignKey: 'admin_id'
+      }),
+      branch_store.hasMany(models.branch_products, {
+        foreignKey: 'branch_id',
+      })
     }
   }
   branch_store.init({
     branch_name: DataTypes.STRING,
     address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    province: DataTypes.STRING,
     longitude: DataTypes.STRING,
     latitude: DataTypes.STRING
   }, {
