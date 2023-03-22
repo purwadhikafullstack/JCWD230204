@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 
 import ConfirmationModal from '../components/confirmationModal';
@@ -27,6 +27,8 @@ export default function CheckoutPage(){
     const inputZip = useRef('')
     const inputCountry = useRef('')
 
+    const Navigate = useNavigate()
+
     const getCart = async() => {
         try {
             const response = await axios.get(`http://localhost:8000/products/Cart?id=${id}`)
@@ -48,17 +50,6 @@ export default function CheckoutPage(){
     const PlaceOrder = async() => {
 
         const token = localStorage.getItem('token')
-        
-        // const data = {
-        //     cartItem: id,
-        //     address: inputAddress.current.value,
-        //     city: destination,
-        //     state: province,
-        //     zip: inputZip.current.value,
-        //     country: inputCountry.current.value,
-        //     shipping: courier,
-        //     total: total
-        // }
 
         try{
             const response = await axios.post('http://localhost:8000/transaction/order', {
@@ -216,9 +207,16 @@ export default function CheckoutPage(){
                 message="are you sure you want to perform this transaction?"
                 onConfirm={() => {
                     PlaceOrder()
+                    Navigate('/uploadPayment')
                     setShowConfirmationModal(false)
                 }}
-                onCancel={() => setShowConfirmationModal(false)}
+                onCancel={() => {
+                    setShowConfirmationModal(false)
+                    setTimeout(() => {
+                        Navigate('/cart')
+                    }, 1000)
+                    
+                }}
                 />
             )
             }

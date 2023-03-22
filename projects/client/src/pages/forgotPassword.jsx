@@ -14,7 +14,7 @@ export default function ForgotPassword(){
 	let onForgotPassword = async () => {
 		try {
 			setDisabled(true);
-			let { data } = await axios.post("http://localhost:8000/user/forgot-password",
+			let { data } = await axios.post("http://localhost:8000/users/forgot-password",
 				{ email: email.current.value }
 			);
 			toast.success(data.message);
@@ -69,7 +69,7 @@ export default function ForgotPassword(){
 
 						<button
 							onClick={() => onForgotPassword ()}
-							disabledd={disabled}
+							disabled={disabled}
 							type="submit"
 							className="inline-flex w-full items-center justify-center mt-8 px-8 py-4 font-sans font-semibold tracking-wide hover:bg-red-600 text-black bg-green-500 rounded-lg h-[50px]"
 						>

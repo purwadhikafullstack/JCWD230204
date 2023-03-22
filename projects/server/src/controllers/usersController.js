@@ -187,7 +187,7 @@ module.exports = {
         }
     },
 
-    forgotPassword: async (req, res) => {
+    forgotPassword: async(req, res) => {
         try {
             let { email } = req.body;
 
@@ -213,7 +213,7 @@ module.exports = {
             const username = findEmail.dataValues.username;
 
             const template = await fs.readFile(
-                "./template/resetPassword.html",
+                "C:/Users/OWNER/Desktop/Final Project Gamepedia/JCWD230204/projects/server/src/template/resetPassword.html",
                 "utf-8"
             );
             const templateToCompile = await handlebars.compile(template);

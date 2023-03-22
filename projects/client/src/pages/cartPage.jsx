@@ -66,7 +66,7 @@ export default function Cart() {
 
   return (
     <>
-      <div className="flex justify-center gap-3 bg-[#18122B] items-center">
+      <div className="flex justify-center gap-3 bg-[#1c1c1c] items-center">
         <div className="flex flex-col border-b-2 p-9 m-4 w-[500px] h-[600px] gap-4 bg-white rounded-xl">
           <h1 className="text-2xl font-bold border-b-2 border-black">Cart</h1>
           <table className="table-auto">

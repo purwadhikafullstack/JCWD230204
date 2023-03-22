@@ -76,7 +76,7 @@ export default function ProductPage(){
 
     return(
         <>
-        <div className="flex gap-4 bg-[#261C2C] py-4">
+        <div className="flex gap-4 bg-[#1c1c1c] py-4">
             {/* sidebar nav */}
             <div className="w-[300px] p-4 flex flex-col gap-4 text-white ">
                 <div>
@@ -125,7 +125,7 @@ export default function ProductPage(){
                 
             </div>
             {/* main content */}
-            <div className=" w-[1000px] p-5 flex flex-col gap-4 mb-4 bg-[#393053] rounded-lg">
+            <div className=" w-[1000px] p-5 flex flex-col gap-4 mb-4 bg-[#6d6d6d] rounded-lg">
                 <div>
                     <h1 className="text-xl text-white font-bold">Products</h1>
                 </div>

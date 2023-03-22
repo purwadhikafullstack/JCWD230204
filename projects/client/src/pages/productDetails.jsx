@@ -61,29 +61,29 @@ export default function ProductDetails(){
 
     return(
         <>
-        <div className="flex justify-center gap-4 py-4 bg-black">
+        <div className="flex justify-center gap-4 py-4 bg-[#1c1c1c]">
             {/* products details */}
-            <div className="bg-[#393053] rounded-lg w-[1000px]">
+            <div className="bg-[#6d6d6d] rounded-lg w-[1000px]">
                 <div className='flex justify-around h-[700px]'>
                     <div className=' flex border flex-col items-center w-[400px]'>
                         <div>big pict</div>
                     </div>
                     {console.log(product)}
-                    <div className=' flex flex-col items-center gap-4 w-[400px] p-4'>
+                    <div className=' flex flex-col items-center gap-4 w-[400px] p-4 text-[#cfcfcf]'>
                         <div>{console.log(product[0])}
                             <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
                             <p className='text-md'>{product[0] ? product[0].description : null}</p>
                         </div>
                         <div>
-                            <h1 className='text-xl font-bold'>Rp. {product[0] ? product[0].price : null}</h1>
+                            <h1 className='text-xl font-bold'>Rp. {product[0] ? parseInt(product[0].price).toLocaleString() : null}</h1>
                         </div>
-                        <div className='border p-2 flex bg-slate-200 gap-4 rounded-full'>
+                        <div className='border p-2 flex bg-slate-200 gap-4 rounded-full text-black'>
                             <button onClick={countMinHandler}>-</button>
                             <div>{quantity}</div>
                             <button onClick={countPlusHandler}>+</button>
                         </div>
                         <div>
-                            {localStorage.getItem("token") ? <button onClick={addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button> : <Link to='/login'><button className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button></Link>}
+                            {localStorage.getItem("token") ? <button onClick={addToCartHandler} className='bg-[#db2b39] p-3 rounded-full text-white'>Add to cart</button> : <Link to='/login'><button className='bg-[#443C68] p-3 rounded-full text-white'>Add to cart</button></Link>}
                             {/* <button onClick={ addToCartHandler} className='bg-[#443C68] p-3 rounded-full text-white'>Add to Cart</button> */}
                         </div>
                     </div>
