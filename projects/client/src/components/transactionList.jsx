@@ -28,8 +28,8 @@ export default function TransactionList() {
         <>
         <div className='flex flex-col gap-4'>
             <h1>Transaction List</h1>
-            <table >
-                <thead>
+            <table className='border-collapse border table-auto border-slate-200'>
+                <thead className='border border-slate-100 bg-slate-100 p-4'>
                     <tr>
                         <td>Transaction Id</td>
                         <td>Transaction Date</td>
@@ -37,7 +37,7 @@ export default function TransactionList() {
                         
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='border border-slate-100 p-4'>
                     {
                         transactionList.map((transaction) => {
                             return(
@@ -51,6 +51,12 @@ export default function TransactionList() {
                     }
                 </tbody>
             </table>
+
+            <div className='flex gap-4 justify-center items-center border rounded-xl p-4 m-2'>
+                <h1>id</h1>
+                <h1>date</h1>
+                <h1>status</h1>
+            </div>
         </div>
         </>
     )

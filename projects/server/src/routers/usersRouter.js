@@ -13,5 +13,6 @@ router.patch('/change-password', tokenVerify, usersController.changePassword);
 router.post('/notFound', usersController.notFound);
 router.patch('/update', usersController.updateProfile);
 router.patch('/updateProfile/:id', usersController.updateProfile);
+router.get('/profile', tokenVerify, usersController.getProfile);
 
 module.exports = router;

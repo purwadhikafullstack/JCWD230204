@@ -22,6 +22,8 @@ import UploadPayment from "./pages/uploadPayment";
 import Dashboard from "./pages/dashboard";
 import AdminLogin from "./pages/loginadmin";
 import DashboardUsers from "./pages/dashboardUser";
+
+import { MdOutlineSpaceDashboard, MdLogin, MdLogout, MdOutlineSearch } from "react-icons/md";
 // import cors from "cors";
 export default function App() {
   const Navigate = useNavigate();
@@ -49,10 +51,11 @@ export default function App() {
           <img src={Applogo} alt="logo" className="w-[200px]" />
         </div>
         <div>
+          <MdOutlineSearch/>
           <input
             type="text"
             placeholder="Search"
-            className="border rounded-full text-center h-[40px] w-[900px]"
+            className="border rounded-full text-start pl-4 h-[40px] w-[900px]"
           />
         </div>
         
@@ -75,11 +78,11 @@ export default function App() {
               onClick={() => {
                 Navigate("/user/dashboard");
               }}
-              className="bg-[#db2b39] rounded-full w-[140px] h-[40px] p-2 text-white"
+              className="bg-[#db2b39] rounded-full flex gap-3 items-center w-[140px] h-[40px] p-2 text-white"
             >
-              Dashboard
+             <MdOutlineSpaceDashboard/> Dashboard
             </button>
-            <button onClick={onLogout}>logout</button>
+            <button className="flex gap-3 items-center" onClick={onLogout}>logout <MdLogout/> </button>
             </div>
             </>
             
@@ -89,9 +92,9 @@ export default function App() {
               onClick={() => {
                 Navigate("/login");
               }}
-              className="bg-[#db2b39] rounded-full w-[100px] h-[40px] p-2 text-white"
+              className="bg-[#db2b39] rounded-full flex gap-3 justify-center items-center w-[100px] h-[40px] p-2 text-white"
             >
-              Login
+            Login <MdLogin/>
             </button>
             </>
             

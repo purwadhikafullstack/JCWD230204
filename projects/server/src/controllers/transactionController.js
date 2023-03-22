@@ -10,7 +10,6 @@ const TransactionStatus = db.transactions_status
 const cart = db.carts
 
 const jwt = require('jsonwebtoken')
-const { request } = require('express')
 
 module.exports = {
 
@@ -61,7 +60,7 @@ module.exports = {
     },
 
     addTransaction: async (req, res) => {
-        const { cartItem, address, city, state, zip, country, shipping, total } = req.body
+        const { address, city, state, zip, country, shipping, total } = req.body
         const t = await sequelize.transaction()
 
         try {
@@ -108,7 +107,7 @@ module.exports = {
                 postal_code: zip,
                 country: country,
                 shipping: shipping,
-                total: totalPrice,
+                total: total,
                 transaction_status_id: 1,
             }, { transaction: t })
             const cartItems = await cart.findAll({
@@ -118,27 +117,30 @@ module.exports = {
                   {
                     model: products,
                     attributes: ['products_name'],
+                    include: [
+                        {
+                            model: products_detail,
+                            attributes: ['price']
+                          }
+                    ]
                     
                   },
-                  {
-                    model: products_detail,
-                    attributes: ['price']
-                  }
+                  
                 ]
               });
-            console.log(cartItems)
+            console.log(cartItems[0].dataValues.product.dataValues.products_details[0].price)
 
-            const totalPrice = cartItems.reduce((acc, item) => {
-                return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
-            }, 0)
+            // const totalPrice = cartItems.reduce((acc, item) => {
+            //     return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
+            // }, 0)
 
             //create transaction detail
             const transactionDetails = cartItems.map((item) => {
                 return {
                     transaction_id: transaction.id,
-                    product_name: item.dataValues.product[0].product_name,
-                    qty: item.dataValues.qty,
-                    price: item.product[0].products_detail.price,
+                    product_name: item[0].dataValues.product.dataValues.products_name,
+                    qty: item[0].dataValues.qty,
+                    price: item[0].dataValues.product.dataValues.products_details[0].price,
                 }
             })
             await TransactionDetail.bulkCreate(transactionDetails, { transaction: t })
@@ -157,7 +159,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: 'place order success',
-                data: null,
+                data: cartItems,
             })
 
         } catch(error){
@@ -211,8 +213,8 @@ module.exports = {
             }
 
             // Your payment proof file path can be stored in a variable like this:
-            let paymentProofFilePath = req.files.path;
-            console.log(paymentProofFilePath)
+            let paymentProofFilePath = req.files.images[0].path;
+            console.log(req.files.images[0].path)
 
             let updatePaymentProof = await Transaction.update(
                 { payment_proof: paymentProofFilePath },
