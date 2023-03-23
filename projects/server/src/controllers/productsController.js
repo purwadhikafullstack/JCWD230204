@@ -152,13 +152,20 @@ module.exports = {
         try{
             const {id} = req.query
             console.log(id)
-            let findProductDetail = await products_detail.findAll({
-                where: {products_id: id},
-                include: {
-                    model: products,
-                    
-                }
-            })
+            let findProductDetail = await await products.findAll({
+                attributes: ['id', 'products_name'],
+                include: [
+                  {
+                    model: products_detail,
+                    attributes: ['desc', 'price']
+                  },
+                  {
+                    model: products_image,
+                    attributes: ['url']
+                  }
+                ],
+                where: {id: id}
+              });
             console.log(findProductDetail)
             res.status(200).send({
                 isError: false,

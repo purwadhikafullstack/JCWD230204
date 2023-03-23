@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import axios from 'axios'
 import {toast} from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom' 
+import { useNavigate, useParams } from 'react-router-dom' 
 
 export default function UploadPayment() {
     const [file, setFile] = useState(null)
+    const { id } = useParams()
 
     const token = localStorage.getItem('token')
     const Navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function UploadPayment() {
         try {
             const formData = new FormData()
             formData.append('images', file)
-            const response = await axios.post(`http://localhost:8000/transaction/uploadPayment`, formData, {
+            const response = await axios.post(`http://localhost:8000/transaction/uploadPayment/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     token: token

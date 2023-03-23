@@ -128,7 +128,7 @@ module.exports = {
                   
                 ]
               });
-            console.log(cartItems[0].dataValues.product.dataValues.products_details[0].price)
+            console.log(cartItems[0].dataValues.qty, cartItems[0].dataValues.product.dataValues.products_name, cartItems[0].dataValues.product.dataValues.products_details[0].price)
 
             // const totalPrice = cartItems.reduce((acc, item) => {
             //     return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
@@ -138,9 +138,9 @@ module.exports = {
             const transactionDetails = cartItems.map((item) => {
                 return {
                     transaction_id: transaction.id,
-                    product_name: item[0].dataValues.product.dataValues.products_name,
-                    qty: item[0].dataValues.qty,
-                    price: item[0].dataValues.product.dataValues.products_details[0].price,
+                    product_name: item.dataValues.product.dataValues.products_name,
+                    qty: item.dataValues.qty,
+                    price: item.dataValues.product.dataValues.products_details[0].price,
                 }
             })
             await TransactionDetail.bulkCreate(transactionDetails, { transaction: t })
@@ -180,6 +180,8 @@ module.exports = {
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
 
+            const { transaction_id } = req.params
+
             const findUser = await users.findOne({
                 where: {id}
             })
@@ -193,7 +195,7 @@ module.exports = {
             }
 
             const findTransaction = await Transaction.findOne({
-                where: {user_id: id}
+                where: [{user_id: id}, {id: transaction_id}]
             })
 
             if(!findTransaction){
@@ -217,10 +219,15 @@ module.exports = {
             console.log(req.files.images[0].path)
 
             let updatePaymentProof = await Transaction.update(
-                { payment_proof: paymentProofFilePath },
-                {where: {user_id: id}},
+                { payment_proof: paymentProofFilePath, transaction_status_id: 2 },
+                {where: [{user_id: id}, {id: transaction_id}]},
                 {transaction: t}
             )
+
+            await TransactionLog.update({
+                transaction_status_id: 2,
+            }, {where: [{transaction_id}]},
+            {transaction: t})
 
             await t.commit();
             res.status(200).send({
@@ -244,6 +251,8 @@ module.exports = {
             const token = req.headers.token
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
+
+            const {transaction_id} = req.params.id
 
             const findUser = await users.findOne({
                 where: {id}
@@ -294,4 +303,64 @@ module.exports = {
             })
         }
     },
+
+    confirmOrder: async(req, res) => {
+        const token = req.params.token
+        const tokenDecode = jwt.decode(token, { complete: true })
+        const id = tokenDecode.payload.id
+        const {action} = req.body;
+
+        try {
+            const findUser = await users.findOne({ where: {id}})
+            if(!findUser){
+                res.status(400).send({
+                    isError: true,
+                    message: 'user not found',
+                    data: null
+                })
+            }
+
+            const findTransaction = await Transaction.findAll({
+                where: {
+                    user_id: id
+                }
+            })
+
+            if(!findTransaction){
+                res.status(400).send({
+                    isError: true,
+                    message: 'transaction not found',
+                    data: null
+                })
+            }
+
+            const findTransactionLog = await TransactionLog.findAll({
+                where: {transaction_id: findTransaction.id}
+            })
+
+            if(!findTransactionLog){
+                res.status(400).send({
+                    isError: true,
+                    message: 'transaction log not found',
+                    data: null
+                })
+            }
+
+            Transaction.update({
+                transaction_status_id: 5
+            })
+
+            TransactionLog.update({
+                transaction_status_id: 5
+            })
+
+            res.status(200).send({
+                isError: false,
+                message: 'confirm order success',
+                data: null
+            })
+        } catch (error) {
+            
+        }
+    }
 }

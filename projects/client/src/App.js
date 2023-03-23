@@ -1,6 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
-import Applogo from "./assets/img/gamepedia-logo-3.png";
+import Applogo from "./assets/img/gamepedia-logo-4.png";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import "./App.css";
 import LandingPage from "./pages/landingPage";
@@ -132,7 +132,7 @@ export default function App() {
         <Route path="/Details/:id" element={<ProductsDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/shipping" element={<ShippingPage />} />
-        <Route path="/uploadPayment" element={<UploadPayment />} />
+        <Route path="/uploadPayment/:id" element={<UploadPayment />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/login" element={<AdminLogin />} />
       </Routes>
