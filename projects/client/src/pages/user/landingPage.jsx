@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
-import Banner from '../assets/img/banner2.jpg';
+import Banner from '.././../assets/img/banner2.jpg';
 
 export default function LandingPage(){
     const [products, setProducts] = useState([]);
