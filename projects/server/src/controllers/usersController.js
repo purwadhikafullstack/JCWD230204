@@ -29,11 +29,11 @@ module.exports = {
             const {username, email, password, phone_number} = req.body
 
             // step 2: validasi
-            if(!username || !email || !password || !phone_number )
+            if(!username.length || !email.length || !password.length || !phone_number.length )
             return res.status(404).send({
                 isError: true,
                 message: 'Input is required',
-                data: error 
+                data: null
             })
         
             // step 3: check ke database, username & email nya exist
@@ -41,20 +41,22 @@ module.exports = {
                 where: {
                         email
                 }
-            }, {transaction: t})
+            })
             if(findEmail)
                 return res.status(404).send({
                     isError: true,
                     message: 'email already exist',
                     data: null
                 })
+                console.log(findEmail)
 
             // step 4: simpan data ke database 
             const resCreateUser = await users.create({id: uuidv4(), username, email, password: await hashPassword(password), phone_number, status: 'unconfirmed'}, {transaction: t})
 
 
             // step 5 : kirim email
-            const template = await fs.readFile('C:/Users/OWNER/Desktop/Final Project Gamepedia/JCWD230204/projects/server/src/template/confirmation.html', 'utf-8')
+            const template = await fs.readFile('./src/template/confirmation.html', 'utf-8')
+            console.log(template)
             const templateToCompile = await handlebars.compile(template)
             const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/activation/${resCreateUser.id}`,})
                 
@@ -213,7 +215,7 @@ module.exports = {
             const username = findEmail.dataValues.username;
 
             const template = await fs.readFile(
-                "C:/Users/OWNER/Desktop/Final Project Gamepedia/JCWD230204/projects/server/src/template/resetPassword.html",
+                './src/template/resetPassword.html',
                 "utf-8"
             );
             const templateToCompile = await handlebars.compile(template);
@@ -244,8 +246,26 @@ module.exports = {
 
     resetPassword: async (req, res) => {
         try {
-            let { id, password, confirmPassword } = req.body;
-            if (!password)
+            let { password, confirmPassword } = req.body;
+            let {id} = req.uid;
+
+            console.log(id)
+
+            let findUser = await users.findOne({
+                where: {
+                    id
+                }
+            })
+
+            if(!findUser){
+                res.status(400).send({
+                    isError: true,
+                    message: "user not found",
+                    data: null
+                })
+            }
+
+            if (!password.length&&!confirmPassword.length)
                 return res.status(404).send({
                     isError: true,
                     message: "Please Input Your Password",
@@ -268,6 +288,7 @@ module.exports = {
                     },
                 }
             );
+            
 
             res.status(201).send({
                 isError: false,
@@ -349,33 +370,7 @@ module.exports = {
         }
     },
 
-    notFound: async(req, res) => {
-        try {
-            let {id} = req.body
 
-            await users.update(
-                {status: 'Confirmed'},
-                {
-                    where: {
-                        id:id
-                    }
-                }
-            )
-
-            res.status(200).send({
-                isError: false, 
-                message: 'Account Verified!',
-                data: null 
-            })
-            } catch (error) {
-                console.log(error)
-                res.status(404).send({
-                    isError: true,
-                    message: error.message,
-                    data: error
-                })
-            }
-         },
 
 
     updateProfile: async(req, res) => {
