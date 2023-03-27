@@ -7,7 +7,6 @@ export default function ProductDetails(){
     const [category, setCategory] = useState([])
     const [product, setProduct] = useState([])
     const [quantity, setQuantity] = useState(1)
-    const [image, setImage] = useState([])
 
     const {id} = useParams()
 
@@ -16,7 +15,6 @@ export default function ProductDetails(){
             const response = await axios.get(`http://localhost:8000/products/getDetail?id=${id}`)
             console.log(response)
             setProduct(response.data.data)
-            setImage(response.data.data[0].products_images)
         } catch (error) {
             console.log(error)
         }
@@ -68,11 +66,11 @@ export default function ProductDetails(){
             <div className="bg-[#6d6d6d] rounded-lg w-[1000px]">
                 <div className='flex justify-around h-[700px]'>
                     <div className=' flex border flex-col items-center w-[400px]'>
-                        <div><img src={image} alt=""/></div>
+                        <div><img src={`http://localhost:8000/Public/products/${product[0] ? product[0].products_image[0].url : null}`} alt=""/></div>
                     </div>
-                    {console.log(product)}
                     <div className=' flex flex-col justify-center items-center gap-4 w-[400px] p-4 text-[#cfcfcf]'>
-                        <div>{console.log(product[0])}
+                        <div>
+                            {console.log(product[0].products_images[0].url)}
                             <h1 className='text-xl font-bold'>{product[0] ? product[0].products_name : null}</h1>
                             <p className='text-md'>{product[0] ? product[0].products_details[0].desc : null}</p>
                         </div>

@@ -42,6 +42,8 @@ export default function TransactionList() {
         }
     }
 
+    const sortByHandler = async(e) => {}
+
     useEffect(() => {
         getTransactionList()
     },[])
@@ -49,6 +51,33 @@ export default function TransactionList() {
         <>
         <div className='flex flex-col gap-4'>
             <h1>Transaction List</h1>
+            <div className='flex self-start gap-4'>
+                <div>Sort By:</div>
+                <div>
+                    <select>
+                        <option value="date">Date</option>
+                        <option value="invoice No.">Status</option>
+                    </select>
+                </div>
+                <div className='flex gap-4'>
+                    <div>Filter By:</div>
+                    <div>
+                        <select>
+                            <option value="date">Date</option>
+                            <option value="invoice">Invoice</option>
+                            <option value="orderStatus">Order Status</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" placeholder='search'/>
+                    </div>
+                    <div>
+                        <button>Search</button>
+                    </div>
+                </div>
+            </div>
+            
+            
             <table className='border-collapse border table-auto border-slate-200'>
                 <thead className='border border-slate-100 bg-slate-100 p-4'>
                     <tr>

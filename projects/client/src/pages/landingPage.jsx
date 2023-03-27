@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import Banner from '../assets/img/banner2.jpg';
+import facebookIcon from '../assets/img/icons8-facebook-color/icons8-facebook-96.png'
+import instagramIcon from '../assets/img/icons8-instagram-color/icons8-instagram-96.png';
+import twitterIcon from '../assets/img/icons8-twitter-color/icons8-twitter-96.png';
 
 export default function LandingPage(){
     const [products, setProducts] = useState([]);
@@ -121,7 +124,7 @@ export default function LandingPage(){
                                         <div key={value.id} onClick={() => Navigate(`/Details/${value.id}`)}>
                                         <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                             <div className="bg-slate-300 rounded-t-lg">
-                                                <img src={value.products_image} alt="" className="h-[250px] w-[200px] rounded-t-lg"/>
+                                                <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
                                             </div>
                                             <div className="flex  justify-center px-2">
                                                 <h2 className="text-sm " key={index}>{value.products_name}</h2>
@@ -133,6 +136,25 @@ export default function LandingPage(){
                                 }) : <h1>No Product Found!</h1>
                             }
                     </div>
+            </div>
+            {/* social media */}
+            <div className="flex flex-col p-5 mx-20 justify-center items-center gap-4 text-white">
+                <h1>Follow Our Social</h1>
+                <div className='flex gap-4 justify-center items-center'>
+                    <div className='p-3 rounded-xl border flex flex-col items-center'> 
+                    <img src={facebookIcon} alt="" /> 
+                    <h3>Facebook</h3>
+                    </div>
+                    <div className='p-3 rounded-xl border flex flex-col items-center'> 
+                    <img src={instagramIcon} alt="" /> 
+                    <h3>Instagram</h3>
+                    </div>
+                    <div className='p-3 rounded-xl border flex flex-col items-center'> 
+                    <img src={twitterIcon} alt="" /> 
+                    <h3>Twitter</h3>
+                    </div>
+                </div>
+               
             </div>
         </div>
         </>

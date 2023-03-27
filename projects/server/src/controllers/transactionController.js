@@ -37,6 +37,9 @@ module.exports = {
                 where: {user_id: id},
             })
 
+            //filterby status
+            
+
             if(!transaction){
                 res.status(400).send({
                     isError: true,
