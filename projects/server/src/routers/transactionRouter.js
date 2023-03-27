@@ -7,7 +7,7 @@ const upload = require('../middleware/upload');
 
 router.get('/get', transactionController.getTransaction);
 router.post('/order', tokenVerify, transactionController.addTransaction);
-router.post('/uploadPayment', tokenVerify, upload, transactionController.uploadPaymentProof);
+router.post('/uploadPayment/:transaction_id', tokenVerify, upload, transactionController.uploadPaymentProof);
 router.patch('/cancel', tokenVerify, transactionController.cancelOrder);
 
 module.exports = router;

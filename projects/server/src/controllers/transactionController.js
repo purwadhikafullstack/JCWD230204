@@ -10,7 +10,6 @@ const TransactionStatus = db.transactions_status
 const cart = db.carts
 
 const jwt = require('jsonwebtoken')
-const { request } = require('express')
 
 module.exports = {
 
@@ -38,6 +37,9 @@ module.exports = {
                 where: {user_id: id},
             })
 
+            //filterby status
+            
+
             if(!transaction){
                 res.status(400).send({
                     isError: true,
@@ -61,7 +63,7 @@ module.exports = {
     },
 
     addTransaction: async (req, res) => {
-        const { cartItem, address, city, state, zip, country, shipping, total } = req.body
+        const { address, city, state, zip, country, shipping, total } = req.body
         const t = await sequelize.transaction()
 
         try {
@@ -108,7 +110,7 @@ module.exports = {
                 postal_code: zip,
                 country: country,
                 shipping: shipping,
-                total: totalPrice,
+                total: total,
                 transaction_status_id: 1,
             }, { transaction: t })
             const cartItems = await cart.findAll({
@@ -118,27 +120,30 @@ module.exports = {
                   {
                     model: products,
                     attributes: ['products_name'],
+                    include: [
+                        {
+                            model: products_detail,
+                            attributes: ['price']
+                          }
+                    ]
                     
                   },
-                  {
-                    model: products_detail,
-                    attributes: ['price']
-                  }
+                  
                 ]
               });
-            console.log(cartItems)
+            console.log(cartItems[0].dataValues.qty, cartItems[0].dataValues.product.dataValues.products_name, cartItems[0].dataValues.product.dataValues.products_details[0].price)
 
-            const totalPrice = cartItems.reduce((acc, item) => {
-                return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
-            }, 0)
+            // const totalPrice = cartItems.reduce((acc, item) => {
+            //     return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
+            // }, 0)
 
             //create transaction detail
             const transactionDetails = cartItems.map((item) => {
                 return {
                     transaction_id: transaction.id,
-                    product_name: item.dataValues.product[0].product_name,
+                    product_name: item.dataValues.product.dataValues.products_name,
                     qty: item.dataValues.qty,
-                    price: item.product[0].products_detail.price,
+                    price: item.dataValues.product.dataValues.products_details[0].price,
                 }
             })
             await TransactionDetail.bulkCreate(transactionDetails, { transaction: t })
@@ -157,7 +162,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: 'place order success',
-                data: null,
+                data: cartItems,
             })
 
         } catch(error){
@@ -174,8 +179,11 @@ module.exports = {
         const t = await sequelize.transaction()
         try{
             const token = req.headers.token
+            console.log(token)
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
+
+            const { transaction_id } = req.params
 
             const findUser = await users.findOne({
                 where: {id}
@@ -190,7 +198,7 @@ module.exports = {
             }
 
             const findTransaction = await Transaction.findOne({
-                where: {user_id: id}
+                where: [{user_id: id}, {id: transaction_id}]
             })
 
             if(!findTransaction){
@@ -200,8 +208,8 @@ module.exports = {
                     data: null
                 })
             }
-
-            if(!req.file){
+            console.log(req.files)
+            if(!req.files){
                 res.status(400).send({
                     isError: true,
                     message: 'please upload your payment proof',
@@ -210,13 +218,19 @@ module.exports = {
             }
 
             // Your payment proof file path can be stored in a variable like this:
-            let paymentProofFilePath = req.file.path;
+            let paymentProofFilePath = req.files.images[0].path;
+            console.log(req.files.images[0].path)
 
             let updatePaymentProof = await Transaction.update(
-                { payment_proof: paymentProofFilePath },
-                {where: {user_id: id}},
+                { payment_proof: paymentProofFilePath, transaction_status_id: 2 },
+                {where: [{user_id: id}, {id: transaction_id}]},
                 {transaction: t}
             )
+
+            await TransactionLog.update({
+                transaction_status_id: 2,
+            }, {where: [{transaction_id}]},
+            {transaction: t})
 
             await t.commit();
             res.status(200).send({
@@ -226,7 +240,12 @@ module.exports = {
             })
 
         } catch(error){
-
+            await t.rollback();
+            res.status(400).send({
+                isError: true,
+                message: 'upload payment proof failed',
+                data: error.message
+            })
         }
     },
 
@@ -235,6 +254,8 @@ module.exports = {
             const token = req.headers.token
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
+
+            const {transaction_id} = req.params.id
 
             const findUser = await users.findOne({
                 where: {id}
@@ -285,4 +306,64 @@ module.exports = {
             })
         }
     },
+
+    confirmOrder: async(req, res) => {
+        const token = req.params.token
+        const tokenDecode = jwt.decode(token, { complete: true })
+        const id = tokenDecode.payload.id
+        const {action} = req.body;
+
+        try {
+            const findUser = await users.findOne({ where: {id}})
+            if(!findUser){
+                res.status(400).send({
+                    isError: true,
+                    message: 'user not found',
+                    data: null
+                })
+            }
+
+            const findTransaction = await Transaction.findAll({
+                where: {
+                    user_id: id
+                }
+            })
+
+            if(!findTransaction){
+                res.status(400).send({
+                    isError: true,
+                    message: 'transaction not found',
+                    data: null
+                })
+            }
+
+            const findTransactionLog = await TransactionLog.findAll({
+                where: {transaction_id: findTransaction.id}
+            })
+
+            if(!findTransactionLog){
+                res.status(400).send({
+                    isError: true,
+                    message: 'transaction log not found',
+                    data: null
+                })
+            }
+
+            Transaction.update({
+                transaction_status_id: 5
+            })
+
+            TransactionLog.update({
+                transaction_status_id: 5
+            })
+
+            res.status(200).send({
+                isError: false,
+                message: 'confirm order success',
+                data: null
+            })
+        } catch (error) {
+            
+        }
+    }
 }

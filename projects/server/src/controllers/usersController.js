@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid')
 // import model
 const db = require('./../models/index');
 const users = db.users;
+const profiles = db.profiles;
 
 // import hash
 const {hashPassword, hashMatch} = require('./../lib/hash')
@@ -52,6 +53,10 @@ module.exports = {
 
             // step 4: simpan data ke database 
             const resCreateUser = await users.create({id: uuidv4(), username, email, password: await hashPassword(password), phone_number, status: 'unconfirmed'}, {transaction: t})
+
+            const resCreateProfile = await profiles.create({
+                users_id: resCreateUser.id
+            })
 
 
             // step 5 : kirim email
@@ -187,6 +192,58 @@ module.exports = {
                 data: null,
             });
         }
+    },
+
+    getProfile: async (req, res) => {
+        let token = req.headers.token;
+        let tokenDecode = jwt.decode(token, { complete: true });
+        let id = tokenDecode.payload.id;
+
+        try {
+            const findUser = await users.findOne({
+                where: { id }
+            })
+
+            if(!findUser){
+                return res.status(404).send({
+                    isError: true,
+                    message: 'User Not Found',
+                    data: null
+                })
+            }
+
+            const findProfile = await profiles.findAll({
+                where: {
+                    user_id: id,
+                },
+                include: ['id', 'name', 'gender', 'birthdate', 'profilePictUrl']
+            })
+
+            if(!findProfile){
+                return res.status(404).send({
+                    isError: true,
+                    message: 'Profile Not Found',
+                    data: null
+                })
+            }
+
+            res.status(200).send({
+                isError: false,
+                message: 'Get Profile Success',
+                data: findProfile
+            })
+            
+        } catch (error) {
+            res.status(500).send({
+                isError: true,
+                message: error.message,
+                data: null
+            })
+        }
+    },
+
+    editProfilePict: async(req,res) => {
+
     },
 
     forgotPassword: async(req, res) => {

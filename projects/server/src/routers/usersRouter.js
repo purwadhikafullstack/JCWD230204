@@ -12,5 +12,6 @@ router.patch('/resetPassword/:id', usersController.resetPassword);
 router.patch('/change-password', tokenVerify, usersController.changePassword);
 router.patch('/update', usersController.updateProfile);
 router.patch('/updateProfile/:id', usersController.updateProfile);
+router.get('/profile', tokenVerify, usersController.getProfile);
 
 module.exports = router;

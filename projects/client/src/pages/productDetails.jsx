@@ -66,16 +66,16 @@ export default function ProductDetails(){
             <div className="bg-[#6d6d6d] rounded-lg w-[1000px]">
                 <div className='flex justify-around h-[700px]'>
                     <div className=' flex border flex-col items-center w-[400px]'>
-                        <div>big pict</div>
+                        <div><img src={`http://localhost:8000/Public/products/${product[0] ? product[0].products_image[0].url : null}`} alt=""/></div>
                     </div>
-                    {console.log(product)}
-                    <div className=' flex flex-col items-center gap-4 w-[400px] p-4 text-[#cfcfcf]'>
-                        <div>{console.log(product[0])}
-                            <h1 className='text-xl font-bold'>{product[0] ? product[0].product.products_name : null}</h1>
-                            <p className='text-md'>{product[0] ? product[0].description : null}</p>
+                    <div className=' flex flex-col justify-center items-center gap-4 w-[400px] p-4 text-[#cfcfcf]'>
+                        <div>
+                            {console.log(product[0].products_images[0].url)}
+                            <h1 className='text-xl font-bold'>{product[0] ? product[0].products_name : null}</h1>
+                            <p className='text-md'>{product[0] ? product[0].products_details[0].desc : null}</p>
                         </div>
                         <div>
-                            <h1 className='text-xl font-bold'>Rp. {product[0] ? parseInt(product[0].price).toLocaleString() : null}</h1>
+                            <h1 className='text-xl font-bold'>Rp. {product[0] ? parseInt(product[0].products_details[0].price).toLocaleString() : null}</h1>
                         </div>
                         <div className='border p-2 flex bg-slate-200 gap-4 rounded-full text-black'>
                             <button onClick={countMinHandler}>-</button>
@@ -89,8 +89,6 @@ export default function ProductDetails(){
                     </div>
                 </div>
             </div>
-            {/* ads */}
-            <div className=" w-[300px]">ads</div>
         </div>
         </>
     )

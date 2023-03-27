@@ -1,6 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
-import Applogo from "./assets/img/gamepedia-logo-3.png";
+import Applogo from "./assets/img/gamepedia-logo-4.png";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import "./App.css";
 
@@ -73,7 +73,7 @@ export default function App() {
         <Route path="/user/Details/:id" element={<ProductsDetails />} />
         <Route path="/user/cart" element={<Cart />} />
         <Route path="/user/shipping" element={<ShippingPage />} />
-        <Route path="/user/uploadPayment" element={<UploadPayment />} />
+        <Route path="/user/uploadPayment/:id" element={<UploadPayment />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/branchadmin" element={<BranchAdmin/>}/>
