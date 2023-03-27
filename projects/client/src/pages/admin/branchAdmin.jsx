@@ -1,31 +1,26 @@
 import axios from "axios";
-import { useRef } from "react";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import LoadingSpin from "react-loading-spin";
 import { useNavigate } from "react-router-dom";
 
 
-export default function Login(){
+export default function LoginAdmin(){
 	
-	const email = useRef();
-	const password = useRef();
+	const [email,setEmail] = useState();
+	const [password,setPassword] = useState();
 	const Navigate = useNavigate();
 
-	let onLogin = async () => {
+	let handleSubmit = async () => {
 		try {
 			
-			let data = await axios.post("http://localhost:8000/users/login", {
-				email: email.current.value,
-				password: password.current.value,
+			let data = await axios.post("http://localhost:8000/admin/branchAdmin", {
+				email: email,
+				password: password,
 			});
-			localStorage.setItem("token", `${data.data.data.token}`);
-			toast.success("login success");
-			email.current.value = "";
-			password.current.value = "";
+			toast.success("new branch admin registered");
 			setTimeout(() => {
-				Navigate("/");
-			}, 1000);
+				Navigate("/admin/dashboard");
+			}, 2000);
 		} catch (error) {
 			toast.error(error.response.data.message);
 		}
@@ -36,7 +31,7 @@ export default function Login(){
             <div className=" container h-screen flex justify-center align-center items-center">
                 <div className=" bg-zinc-300 rounded-lg p-10 w-[350px] flex flex-col gap-3 justify-center border border-zinc-500">
 
-                    <h2 className="font-semibold text-2x1 tracking-wide text-center">LOGIN</h2>
+                    <h2 className="font-semibold text-2x1 tracking-wide text-center">BRANCH ADMIN REGISTER</h2>
 
                         <div>
                         <label 
@@ -47,7 +42,7 @@ export default function Login(){
 
                         <input 
                             className=" text-zinc-600 outline-none px-5 h-10 border rounded-md border-sm w-full" 
-                            ref={email}
+                            value={email} onChange={(e) => setEmail(e.target.value)}
                             type="email" 
                             placeholder="enter your email address" 
                             required />{" "}
@@ -63,7 +58,7 @@ export default function Login(){
 
                         <input 
                             className=" text-zinc-600 outline-none px-5 h-10 border rounded-md border-sm w-full"
-                            ref={password}
+                            value={password} onChange={(e) => setPassword(e.target.value)}
                             type="password"
                             placeholder="enter your password" 
                             required/>
@@ -72,32 +67,14 @@ export default function Login(){
                         </div>
 
 						<button
-							onClick={() => onLogin()}
+							onClick={() =>handleSubmit()}
 							type="submit"
 							className="inline-flex w-full items-center justify-center mt-8 px-8 py-4 font-sans font-semibold tracking-wide hover:bg-red-600 text-black bg-green-500 rounded-lg h-[60px]"
 						>
-							login
+							register
 						</button>
                         
-                        <a
-							className=" text-red-500 flex justify-end content-end mt-[10px] "
-							href="/forgotPassword">
-							Forgot Password?
-						</a>
-
-                        <a
-							className=" justify-center underline text-[14px] text-red-500 flex mt-[12px] "
-							href="/loginadmin">
-							Log in as admin
-						</a>
-
-						<div className=" mt-[15px] flex items-center justify-center text-slate-400 text-[12px] ">
-							<p>Don't have an account? </p>
-							<a href="/register" className=" text-red-500 underline">
-								Register Now
-							</a>
 							<Toaster />
-						</div>
                     </div>
              </div>
         </>

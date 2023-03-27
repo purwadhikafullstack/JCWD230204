@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 
-import ConfirmationModal from '../components/confirmationModal';
+import ConfirmationModal from '.././../components/confirmationModal';
 
 export default function CheckoutPage(){
     // const [cart, setCart] = useState([])

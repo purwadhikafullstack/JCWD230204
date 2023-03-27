@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import {useNavigate, Routes, Route} from 'react-router-dom'
 import axios from 'axios'
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
-import TransactionList from '../components/transactionList'
+import TransactionList from '.././../components/transactionList'
 
 export default function DashboardUser(){
 
@@ -14,6 +17,8 @@ export default function DashboardUser(){
 
     return(
         <>
+        <NavbarUser/>
+        <HomeMenu/>
         <div className="flex justify-center gap-4">
             <div className="flex flex-col gap-4 w-[200px] h-[700px] border my-4 p-4">
                  {/* sidebar */}
@@ -40,6 +45,7 @@ export default function DashboardUser(){
                 }
             </div>
         </div>
+        <Footer/>
         </>
     )
 }
