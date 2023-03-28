@@ -237,6 +237,12 @@ module.exports = {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"]
                         }
+                    },
+                    {
+                        model: products_image,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     }
                 ]
             })
@@ -455,6 +461,14 @@ module.exports = {
                 message: "update cart failed",
                 data: error.message
             })
+        }
+    },
+
+    stockHistory: async(req, res) => {
+        try {
+            
+        } catch (error) {
+            
         }
     }
 }

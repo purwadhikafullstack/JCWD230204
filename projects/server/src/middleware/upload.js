@@ -40,4 +40,21 @@ multerResult(req, res, function(err){
 })
 }
 
-module.exports = uploadPaymentImage, uploadProducts
+const uploadProfilePicture = (req, res, next) => {
+    const multerResult = multerUpload.fields([{ name: 'profile_picture' }])
+    multerResult(req, res, function (err) {
+      try {
+        if (err) throw err
+        req.profilePicture = req.files.profile_picture[0]
+        next()
+      } catch (error) {
+        return res.status(400).send({
+          isError: true,
+          message: error.message,
+          data: null
+        })
+      }
+    })
+  }
+
+module.exports = {uploadPaymentImage, uploadProducts, uploadProfilePicture}

@@ -15,6 +15,7 @@ module.exports = {
 
     getTransaction: async (req, res) => {
         try {
+            const {sortBy, sortType, filterBy, startDate, endDate, query} = req.query
             const token = req.headers.token
             const decodedToken = jwt.decode(token, { complete: true })
             const id = decodedToken.payload.id
@@ -38,6 +39,91 @@ module.exports = {
             })
 
             //filterby status
+            if(filterBy === "date"){
+                const transactions = await Transaction.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [{
+                      model: TransactionDetail,
+                      attributes: ['product_name', 'qty', 'total_price']
+                    }],
+                    where: {
+                      date: {
+                        [Op.between]: [startDate, endDate]
+                      }
+                    },
+                    order: [['date', 'ASC']],
+                  });
+
+            } else if(filterBy === "status"){
+                const transactions = await Transactions.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [
+                      {
+                        model: TransactionDetail,
+                        attributes: ['product_name', 'qty', 'total_price']
+                      },
+                      {
+                        model: TransactionStatus,
+                        attributes: ['status_name'],
+                        where: {
+                          status_name: {
+                            [Op.like]: `%${query}%`
+                          }
+                        }
+                      }
+                    ],
+                    order: [['date', 'DESC']]
+                  });
+
+            } else if(filterBy === "orderID"){
+                const transactions = await Transaction.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [
+                      {
+                        model: TransactionDetail,
+                        attributes: ['product_name', 'qty', 'total_price']
+                      },
+                      {
+                        model: TransactionStatus,
+                        attributes: ['status_name']
+                      }
+                    ],
+                    where: {
+                      id: {
+                        [Op.like]: `%${query}%`
+                      }
+                    },
+                    order: [['date', 'DESC']]
+                  });
+
+            }
+
+            //sortby
+            if(sortBy === "orderID" &&  sortType === "asc"){
+
+            } else if(sortBy === "orderID" && sortType === "desc"){
+
+            } else if(sortBy === "date" && sortType === "asc"){
+                const transactions = await Transactions.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [{
+                      model: TransactionDetail,
+                      attributes: ['product_name', 'qty', 'total_price']
+                    }],
+                    order: [['date', 'ASC']]
+                  });
+
+            } else if(sortBy === "date" && sortType === "desc"){
+                const transactions = await Transaction.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [{
+                      model: TransactionDetail,
+                      attributes: ['product_name', 'qty', 'total_price']
+                    }],
+                    order: [['date', 'DESC']]
+                  });
+
+            }
             
 
             if(!transaction){
