@@ -1,25 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { toast} from "react-hot-toast";
-
 
 export default function HomeMenu(){
     const Navigate = useNavigate();
 
   let onProducts = () => {
-    Navigate("/products");
+    Navigate("/user/products");
   };
 
   const onHome = () => {
     Navigate("/");
   };
 
-  const onLogout = () => {
-    localStorage.removeItem("token")
-    toast("Logged out successfully")
-    setTimeout(() => {
-      window.location.reload()
-    },1000)
-  }
     return(
         <div>
         <ul className="flex gap-5 items-center pl-5 bg-[#6d6d6d] h-[50px]">

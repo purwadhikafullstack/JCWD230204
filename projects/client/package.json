@@ -23,6 +23,7 @@
     "react-loading-spin": "^2.1.9",
     "react-router-dom": "^6.8.1",
     "react-scripts": "^5.0.1",
+    "tw-elements": "^1.0.0-beta1",
     "web-vitals": "^2.1.4"
   },
   "eslintConfig": {

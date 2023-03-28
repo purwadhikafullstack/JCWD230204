@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineArrowRight, AiFillDelete } from "react-icons/ai";
 import { useParams, useNavigate } from "react-router-dom";
+import NavBar from '../../components/navbaruser';
+import HomeMenu from "../../components/homemenu";
+import Footer from '../../components/footer';
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -15,9 +18,8 @@ export default function Cart() {
   const getCart = async () => {
     //add to cart function
     try {
-      const response = await axios.get(
-        `http://localhost:8000/products/Cart?id=${id}`
-      );
+      const url = process.env.REACT_APP_API_GET_CART.replace(":id", id)
+      const response = await axios.get(url);
       // console.log(response.data.data[0].id)
       setCart(response.data.data);
       console.log(response.data.data)
@@ -38,7 +40,7 @@ export default function Cart() {
     //remove from cart function
     try {
       await axios.delete(
-        `http://localhost:8000/products/Cart/delete?id=${cartId}`
+        `http://localhost:8000/api/products/Cart/delete?id=${cartId}`
       );
       getCart();
       window.location.reload();
@@ -51,7 +53,7 @@ export default function Cart() {
     //update cart automatically updates qty
     try {
       await axios.get(
-        `http://localhost:8000/products/update?id=${id}&option=${option}`
+        `http://localhost:8000/api/products/update?id=${id}&option=${option}`
       );
       getCart();
     } catch (error) {
@@ -66,6 +68,10 @@ export default function Cart() {
 
   return (
     <>
+      <div className='bg-[#1c1c1c]'>
+          <NavBar />
+          <HomeMenu />
+      </div>
       <div className="flex justify-center gap-3 bg-[#1c1c1c] items-center">
         <div className="flex flex-col border-b-2 p-9 m-4 w-[500px] h-[600px] gap-4 bg-white rounded-xl">
           <h1 className="text-2xl font-bold border-b-2 border-black">Cart</h1>
@@ -136,12 +142,16 @@ export default function Cart() {
               </tbody>
           </table>
           {
-            cart.length ? <button onClick={() => Navigate('/shipping')} className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300 "><div>shipping</div><AiOutlineArrowRight/></button> :
+            cart.length ? <button onClick={() => Navigate('/user/shipping')} className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300 "><div>shipping</div><AiOutlineArrowRight/></button> :
             <button disabled className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300"><div>shipping</div><AiOutlineArrowRight/></button>
           }
       </div>
         ) : null}
+        <div>
+          {/* product on cart card */}
+        </div>
       </div>
+      <Footer />
     </>
   );
 }

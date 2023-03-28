@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import Banner from '.././../assets/img/banner2.jpg';
+import NavBar from '../../components/navbaruser';
+import HomeMenu from "../../components/homemenu";
+import Footer from '../../components/footer';
 
 export default function LandingPage(){
     const [products, setProducts] = useState([]);
@@ -13,13 +16,13 @@ export default function LandingPage(){
     const Navigate = useNavigate()
 
     let getProducts = async() => {
-        let response = await axios.get(`http://localhost:8000/products/get`);
+        let response = await axios.get(process.env.REACT_APP_API_GET_PRODUCTS);
         console.log(response.data.data);
         setProducts(response.data.data);
     }
 
     let getPromo = async() => {
-        let response = await axios.get('http://localhost:8000/products/getPromo');
+        let response = await axios.get(process.env.REACT_APP_API_GET_PROMO);
         console.log(response.data.data);
         setPromo(response.data.data);
     }
@@ -31,7 +34,7 @@ export default function LandingPage(){
     }
 
     let getNewProducts = async() => {
-        let response = await axios.get('http://localhost:8000/products/getNewProduct/');
+        let response = await axios.get(process.env.REACT_APP_API_GET_NEW_PRODUCTS);
         console.log(response.data.data);
         setNewProducts(response.data.data);
     }
@@ -45,7 +48,13 @@ export default function LandingPage(){
 
     return(
         <>
+        <div className='bg-[#1c1c1c]'>
+            <NavBar className="w-screen"/>
+            <HomeMenu className="w-screen"/>
+        </div>
         <div className='flex flex-col justify-center gap-3 px-6 pb-4 pt-4 bg-[#1c1c1c]'>
+            
+
             {/* banner */}
             <div className="h-[400px] flex justify-center px-7">
                 <img src={Banner} alt="" className="h-[400px] object-scale-down"/>
@@ -60,10 +69,10 @@ export default function LandingPage(){
                         newProducts.map((value,index) => {
                             return(
                                 <>
-                                <div key={value.id} onClick={() => Navigate(`/Details/${value.id}`)}>
+                                <div key={value.id} onClick={() => Navigate(`user/Details/${value.id}`)}>
                                 <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                     <div className="bg-slate-300 rounded-t-lg">
-                                        <img src="https://images.unsplash.com/photo-1626121496372-8e1b2e1b2b1f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="" className="h-[250px] w-[200px] rounded-t-lg"/>
+                                        <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-center px-2">
                                         <h2 className="text-sm " key={index}>{value.products_name}</h2>
@@ -118,10 +127,10 @@ export default function LandingPage(){
                                 products.length ? products.map((value, index) => {
                                     return(
                                         <>
-                                        <div key={value.id} onClick={() => Navigate(`/Details/${value.id}`)}>
+                                        <div key={value.id} onClick={() => Navigate(`user/Details/${value.id}`)}>
                                         <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                             <div className="bg-slate-300 rounded-t-lg">
-                                                <img src={value.products_image} alt="" className="h-[250px] w-[200px] rounded-t-lg"/>
+                                                <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
                                             </div>
                                             <div className="flex  justify-center px-2">
                                                 <h2 className="text-sm " key={index}>{value.products_name}</h2>
@@ -134,6 +143,7 @@ export default function LandingPage(){
                             }
                     </div>
             </div>
+            <Footer />
         </div>
         </>
     )

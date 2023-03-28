@@ -13,7 +13,7 @@ export default function Login(){
 	let onLogin = async () => {
 		try {
 			
-			let data = await axios.post("http://localhost:8000/users/login", {
+			let data = await axios.post(process.env.REACT_APP_API_LOGIN, {
 				email: email.current.value,
 				password: password.current.value,
 			});
@@ -50,6 +50,11 @@ export default function Login(){
                             Email 
                         </label>
                     </div>
+
+                    {/* <div class="relative z-0 w-full mb-6 group">
+      <input type="email" name="floating_email" id="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+      <label for="floating_email" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email address</label>
+  </div> */}
 
 				
 
@@ -120,7 +125,7 @@ export default function Login(){
                     </div>
                     <br/>
                 
-                    <div className="mb-3 flex items-center justify-between">
+                    <div className="mb-3 flex flex-col gap-4 items-center justify-between">
                         <div className="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem]">
                         <input
                             className="relative float-left mt-[0.15rem] mr-[6px] -ml-[1.5rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-primary checked:bg-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:ml-[0.25rem] checked:after:-mt-px checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-t-0 checked:after:border-l-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:ml-[0.25rem] checked:focus:after:-mt-px checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-t-0 checked:focus:after:border-l-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:border-neutral-600 dark:checked:border-primary dark:checked:bg-primary"
@@ -136,7 +141,7 @@ export default function Login(){
                             Forgot password?</a>
                     </div>
 
-                     <div className="text-center lg:text-left">
+                     <div className="text-center flex flex-col lg:text-left">
                             <button
                                 onClick={() => onLogin()}
                                 type="button"
@@ -146,7 +151,7 @@ export default function Login(){
                                 Login
                             </button>
                             
-                        <p className="mt-2 mb-0 pt-1 text-sm font-semibold">
+                        <p className="mt-2 mb-0 pt-1 text-sm flex gap-2 font-semibold">
                             Don't have an account?
                             <a
                                 href="/register"

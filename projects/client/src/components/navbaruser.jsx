@@ -1,18 +1,11 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
-import Applogo from "./../assets/img/gamepedia-logo-3.png"
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import Applogo from "./../assets/img/gamepedia-logo-4.png"
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { MdLogin, MdLogout, MdSpaceDashboard } from "react-icons/md";
 
 export default function NavbarUser(){
     const Navigate = useNavigate();
-
-  let onProducts = () => {
-    Navigate("/products");
-  };
-
-  const onHome = () => {
-    Navigate("/");
-  };
 
   const onLogout = () => {
     localStorage.removeItem("token")
@@ -37,7 +30,7 @@ export default function NavbarUser(){
     <div className="flex gap-4 items-center">
       {localStorage.getItem("token") ? (
         <AiOutlineShoppingCart
-        onClick={() => Navigate("/cart")}
+        onClick={() => Navigate("/user/cart")}
         className="text-2xl text-white"
       />
       ) : (
@@ -53,11 +46,12 @@ export default function NavbarUser(){
           onClick={() => {
             Navigate("/user/dashboard");
           }}
-          className="bg-[#db2b39] rounded-full w-[140px] h-[40px] p-2 text-white"
+          className="bg-[#db2b39] flex items-center justify-center gap-4 rounded-full w-[150px] h-[40px] p-2 text-white"
         >
+          <MdSpaceDashboard className="text-lg" />
           Dashboard
         </button>
-        <button onClick={onLogout}>logout</button>
+        <button className="flex gap-4 items-center justify-center" onClick={onLogout}>logout <MdLogout className="text-lg"/></button>
         </div>
         </>
         
@@ -65,11 +59,13 @@ export default function NavbarUser(){
         <>
         <button
           onClick={() => {
-            Navigate("/login");
+            Navigate("/user/login");
           }}
-          className="bg-[#db2b39] rounded-full w-[100px] h-[40px] p-2 text-white"
+          className="bg-[#db2b39] flex items-center justify-center gap-4 rounded-full w-[100px] h-[40px] p-3 text-white"
         >
+          
           Login
+          <MdLogin className="text-lg" />
         </button>
         </>
         

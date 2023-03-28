@@ -11,13 +11,15 @@ export default function TransactionList() {
 
     const getTransactionList = async() => {
         try {
-            const response = await axios.get('http://localhost:8000/transaction/get', {
+            const response = await axios.get('http://localhost:8000/api/transaction/get', {
                 headers: {
                     token: localStorage.getItem('token')
                 }
             })
             console.log(response.data.data[0].id)
             setTransactionList(response.data.data)
+            //paginations
+            
         } catch (error) {
             console.log(error.message)
         }
@@ -34,7 +36,7 @@ export default function TransactionList() {
 
     const confirmOrder = async(id) => {
         try {
-            await axios.get(`http://localhost:8000/transaction/confirmOrder?id=${id}`, {}, {
+            await axios.get(`http://localhost:8000/api/transaction/confirmOrder?id=${id}`, {}, {
                 headers: {token: localStorage.getItem('token')}
             })
         } catch (error) {

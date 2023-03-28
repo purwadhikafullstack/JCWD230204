@@ -1,7 +1,5 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
-import Applogo from "./assets/img/gamepedia-logo-4.png";
-import { AiOutlineShoppingCart } from "react-icons/ai";
+import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import "./App.css";
 
 // userside
@@ -35,23 +33,6 @@ import Transactions from "./pages/admin/transactions";
 
 // import cors from "cors";
 export default function App() {
-  const Navigate = useNavigate();
-
-  let onProducts = () => {
-    Navigate("/products");
-  };
-
-  const onHome = () => {
-    Navigate("/");
-  };
-
-  const onLogout = () => {
-    localStorage.removeItem("token")
-    toast("Logged out successfully")
-    setTimeout(() => {
-      window.location.reload()
-    },1000)
-  }
   return (
     <div className="App">
 
