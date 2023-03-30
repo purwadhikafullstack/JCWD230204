@@ -8,6 +8,8 @@ const TransactionDetail = db.transactions_detail
 const TransactionLog = db.transactions_log
 const TransactionStatus = db.transactions_status
 const cart = db.carts
+const stockHistory = db.stock_history
+const branchProducts = db.branch_products
 
 const jwt = require('jsonwebtoken')
 
@@ -280,6 +282,31 @@ module.exports = {
                 transaction_id: transaction.id,
                 transaction_status_id: 1,
                 date: new Date(),
+            }, { transaction: t })
+
+            const findstock = await branchProducts.findAll({
+                where: {product_id: cartItems[0].dataValues.product.dataValues.id},
+            })
+            console.log(findstock)
+
+            if(!findstock){
+                res.status(400).send({
+                    isError: true,
+                    message: 'stock not found',
+                    data: null
+                })
+            }
+
+            //update stock
+            const updateStock = findstock.stock - cartItems[0].dataValues.qty
+
+            //create stock history
+            const createStockHistory = await stockHistory.create({
+                event_type: 'purchase',
+                event_date: new Date(),
+                quantity_changed: -cartItems[0].dataValues.qty,
+                remaining_quantity: updateStock,
+                product_id: cartItems[0].dataValues.product.dataValues.id,
             }, { transaction: t })
 
             //delete cart
