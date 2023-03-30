@@ -14,6 +14,6 @@ router.patch('/change-password', tokenVerify, usersController.changePassword);
 router.patch('/update', usersController.updateProfile);
 router.patch('/updateProfile/:id', usersController.updateProfile);
 router.get('/profile', tokenVerify, usersController.getProfile);
-// router.patch('/uploadProfilePicture', tokenVerify, uploadProfilePicture, usersController.uploadProfilePicture);
+router.patch('/uploadProfilePicture', tokenVerify, uploadProfilePicture, usersController.uploadProfilePicture);
 
 module.exports = router;

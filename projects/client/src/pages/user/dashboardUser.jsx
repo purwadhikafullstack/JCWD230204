@@ -37,7 +37,7 @@ export default function DashboardUser(){
             <HomeMenu />
         </div>
         <div className="flex justify-center bg-[#1c1c1c]">
-            <div className="flex flex-col gap-7 w-[200px] h-[700px] border my-4 p-4 rounded-l-xl bg-white">
+            <div className="flex flex-col gap-7 w-[300px] h-[700px] border my-4 p-4 rounded-l-xl bg-white">
                  {/* sidebar */}
                 <div className="text-lg">
                     <ul className="flex flex-col gap-5">
@@ -50,9 +50,8 @@ export default function DashboardUser(){
                 <div>
                     <button onClick={onLogout} className="flex gap-3 items-center">Logout <MdLogout/> </button>
                 </div>
-               
             </div>
-            <div className="w-[800px] h-[700px] border my-4 p-4 rounded-r-xl bg-white">
+            <div className="w-[900px] h-[700px] border my-4 p-4 rounded-r-xl bg-white">
                 {/* content */}
                 {
                     select === "Transaction" ? (<TransactionList />) : 

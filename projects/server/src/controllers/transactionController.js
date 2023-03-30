@@ -14,12 +14,12 @@ const jwt = require('jsonwebtoken')
 module.exports = {
 
     getTransaction: async (req, res) => {
+        const {sortBy, sortType, filterBy, startDate, endDate, query} = req.query
+        const token = req.headers.token
+        const decodedToken = jwt.decode(token, { complete: true })
+        const id = decodedToken.payload.id 
+        let findTransaction;
         try {
-            const {sortBy, sortType, filterBy, startDate, endDate, query} = req.query
-            const token = req.headers.token
-            const decodedToken = jwt.decode(token, { complete: true })
-            const id = decodedToken.payload.id
-
             const findUser = await users.findOne({
                 where: {id}
             })
@@ -32,7 +32,7 @@ module.exports = {
                 })
             }
 
-            const transaction = await Transaction.findAll({
+            findTransaction = await Transaction.findAll({
                 include: [{model: TransactionDetail, attributes: {exclude: ['createdAt', 'updatedAt']}}, {model: TransactionStatus, attributes: {exclude: ['createdAt', 'updatedAt']}}],
                 exclude: ['createdAt', 'updatedAt'],
                 where: {user_id: id},
@@ -40,12 +40,16 @@ module.exports = {
 
             //filterby status
             if(filterBy === "date"){
-                const transactions = await Transaction.findAll({
+                findTransaction = await Transaction.findAll({
                     attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
                     include: [{
                       model: TransactionDetail,
                       attributes: ['product_name', 'qty', 'total_price']
-                    }],
+                    },
+                {
+                    model: TransactionStatus,
+                    attributes: ['status_name']
+                }],
                     where: {
                       date: {
                         [Op.between]: [startDate, endDate]
@@ -54,8 +58,8 @@ module.exports = {
                     order: [['date', 'ASC']],
                   });
 
-            } else if(filterBy === "status"){
-                const transactions = await Transactions.findAll({
+            } else if(filterBy === "orderStatus"){
+                findTransaction = await Transactions.findAll({
                     attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
                     include: [
                       {
@@ -75,8 +79,8 @@ module.exports = {
                     order: [['date', 'DESC']]
                   });
 
-            } else if(filterBy === "orderID"){
-                const transactions = await Transaction.findAll({
+            } else if(filterBy === "invoice"){
+                findTransaction = await Transaction.findAll({
                     attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
                     include: [
                       {
@@ -100,25 +104,57 @@ module.exports = {
 
             //sortby
             if(sortBy === "orderID" &&  sortType === "asc"){
-
-            } else if(sortBy === "orderID" && sortType === "desc"){
-
-            } else if(sortBy === "date" && sortType === "asc"){
-                const transactions = await Transactions.findAll({
+                findTransaction = await Transaction.findAll({
                     attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
                     include: [{
                       model: TransactionDetail,
                       attributes: ['product_name', 'qty', 'total_price']
+                    },
+                    {
+                        model: TransactionStatus,
+                        attributes: ['status_name']
+                    }],
+                    order: [['id', 'ASC']]
+                  });
+
+            } else if(sortBy === "orderID" && sortType === "desc"){
+                findTransaction = await Transaction.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [{
+                      model: TransactionDetail,
+                      attributes: ['product_name', 'qty', 'total_price']
+                    },
+                    {
+                        model: TransactionStatus,
+                        attributes: ['status_name']
+                    }],
+                    order: [['id', 'DESC']]
+                  });
+
+            } else if(sortBy === "date" && sortType === "asc"){
+                findTransaction = await Transaction.findAll({
+                    attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
+                    include: [{
+                      model: TransactionDetail,
+                      attributes: ['product_name', 'qty', 'total_price']
+                    },
+                    {
+                        model: TransactionStatus,
+                        attributes: ['status_name']
                     }],
                     order: [['date', 'ASC']]
                   });
 
             } else if(sortBy === "date" && sortType === "desc"){
-                const transactions = await Transaction.findAll({
+                findTransaction = await Transaction.findAll({
                     attributes: ['id', 'date', 'expiry_date', 'payment_proof', 'address', 'city', 'state', 'postal_code', 'shipping', 'total', 'user_id'],
                     include: [{
                       model: TransactionDetail,
                       attributes: ['product_name', 'qty', 'total_price']
+                    },
+                    {
+                        model: TransactionStatus,
+                        attributes: ['status_name']
                     }],
                     order: [['date', 'DESC']]
                   });
@@ -126,7 +162,7 @@ module.exports = {
             }
             
 
-            if(!transaction){
+            if(!findTransaction){
                 res.status(400).send({
                     isError: true,
                     message: 'transaction not found',
@@ -137,7 +173,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: 'get transaction sucess',
-                data: transaction
+                data: findTransaction
             })
         } catch (error) {
             res.status(500).send({
@@ -185,8 +221,13 @@ module.exports = {
             const currentTime = new Date()
             const expiredTime = new Date(currentTime.getTime() + interval);
 
+            //set unique transaction id
+            const transactionId = Math.floor(Math.random() * 1000000) + Date.now().slice(0,10)
+            console.log(transactionId)
+
             //create transaction
             const transaction = await Transaction.create({
+                id: transactionId,
                 date: new Date(),
                 expiry_date: expiredTime,
                 user_id: id,

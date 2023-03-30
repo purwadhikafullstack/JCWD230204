@@ -23,9 +23,9 @@ export default function Login(){
 			password.current.value = "";
 			setTimeout(() => {
 				Navigate("/");
-			}, 3000);
+			}, 1000);
 		} catch (error) {
-			toast.error(error.response.data.message);
+			toast.error(error.message);
 		}
 	};
 

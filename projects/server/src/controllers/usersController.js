@@ -17,6 +17,7 @@ const {createToken} = require('../lib/jwtoken')
 const transporter = require('./../helpers/transport');
 const fs = require('fs').promises
 const handlebars = require('handlebars');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -192,58 +193,6 @@ module.exports = {
                 data: null,
             });
         }
-    },
-
-    getProfile: async (req, res) => {
-        let token = req.headers.token;
-        let tokenDecode = jwt.decode(token, { complete: true });
-        let id = tokenDecode.payload.id;
-
-        try {
-            const findUser = await users.findOne({
-                where: { id }
-            })
-
-            if(!findUser){
-                return res.status(404).send({
-                    isError: true,
-                    message: 'User Not Found',
-                    data: null
-                })
-            }
-
-            const findProfile = await profiles.findAll({
-                where: {
-                    user_id: id,
-                },
-                include: ['id', 'name', 'gender', 'birthdate', 'profilePictUrl']
-            })
-
-            if(!findProfile){
-                return res.status(404).send({
-                    isError: true,
-                    message: 'Profile Not Found',
-                    data: null
-                })
-            }
-
-            res.status(200).send({
-                isError: false,
-                message: 'Get Profile Success',
-                data: findProfile
-            })
-            
-        } catch (error) {
-            res.status(500).send({
-                isError: true,
-                message: error.message,
-                data: null
-            })
-        }
-    },
-
-    editProfilePict: async(req,res) => {
-
     },
 
     forgotPassword: async(req, res) => {
@@ -427,18 +376,73 @@ module.exports = {
         }
     },
 
+    getProfile: async(req, res) => {
+        const token = req.headers.token;
+        const decodeToken = jwt.decode(token, {complete: true});
+        const id = decodeToken.payload.id;
+        try {
+            const findUser = await users.findOne({id})
+            if(!findUser){
+                res.status(404).send({
+                    isError: true,
+                    message: "User not found",
+                    data: null
+                })
+            }
+            const findProfile = await profiles.findAll({
+                attributes: [
+                  'name', 
+                  'gender', 
+                  'birthdate', 
+                  'profile_pic_url'
+                ],
+                include: [
+                  {
+                    model: users,
+                    attributes: [
+                      'email', 
+                      'username', 
+                      'phone_number'
+                    ]
+                  }
+                ]
+              })
+              
+            if(!findProfile){
+                res.status(404).send({
+                    isError: true,
+                    message: "Profile not found",
+                    data: null
+                })
+            }
 
+            res.status(200).send({
+                isError: false,
+                message: "Get Profile Success",
+                data: findProfile
+            })
+            
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: error.message,
+                data: null
+            })
+        }
+    },
 
 
     updateProfile: async(req, res) => {
+        const t = await sequelize.transaction()
+        const token = req.headers.token;
+        const decodeToken = jwt.decode(token, {complete: true});
+        const id = decodeToken.payload.id;
         try {
             const {name, gender, birthdate, email} = req.body;
-            const {id} = req.params;
             console.log(name, gender, birthdate, id);
 
-            console.log('masuk')
             let findUser = await db.profiles.findAll({
-                where: {id: 1},
+                where: {id},
             })
 
             if (!findUser) {
@@ -456,12 +460,16 @@ module.exports = {
                 birthdate: birthdate,
             }, {
                 where: {id}
-            })
+            }, {transaction: t})
+
             let updateEmail = await users.update({
                 email: email
             }, {
                 where: {id}
-            })
+            }, {transaction: t})
+
+            await t.commit()
+
             res.status(200).send({
                 isError: false,
                 message: "Update profile success",
@@ -469,6 +477,7 @@ module.exports = {
             })
 
         } catch (error) {
+            await t.rollback()
             res.status(404).send({
                 isError: true,
                 message: "Update profile failed",
@@ -476,5 +485,58 @@ module.exports = {
             })
         }
     },
+
+    uploadProfilePicture: async(req, res) => {
+        const t = await sequelize.transaction();
+        const token = req.headers.token
+        const decodeToken = jwt.decode(token, { complete: true })
+        const id = decodeToken.payload.id
+        try {
+
+            const findUser = await users.findOne({ id })
+
+            if(!findUser) {
+                res.status(404).send({
+                    isError: true,
+                    message: "User not found",
+                    data: null
+                })
+            }
+
+            if(!req.files){
+                res.status(404).send({
+                    isError: true,
+                    message: "File not found",
+                    data: null
+                })
+            }
+            
+            let ProfilePictPath = req.files.image[0].path
+
+            let updateProfilePicture = await profiles.update({
+                profile_pic_url: ProfilePictPath
+            }, {
+                where: {
+                    user_id: id
+                }
+            }, {transaction: t})
+
+            await t.commit()
+
+            res.status(200).send({
+                isError: false,
+                message: "Upload profile picture success",
+                data: null
+            })
+
+        } catch (error) {
+            await t.rollback()
+            res.status(404).send({
+                isError: true,
+                message: "Upload profile picture failed",
+                data: error.message
+            })
+        }
+    }
 
 }
