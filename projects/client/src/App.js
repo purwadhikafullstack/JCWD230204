@@ -25,6 +25,7 @@ import DashboardUsers from "./pages/user/dashboardUser";
 // adminside
 import LoginAdmin from "./pages/admin/loginadmin";
 import Dashboard from "./pages/admin/dashboard";
+import BranchDashboard from "./pages/admin/branchDashboard";
 import BranchAdmin from "./pages/admin/branchAdmin";
 import Discount from "./pages/admin/discount";
 import ProductStocks from "./pages/admin/productStocks";
@@ -56,6 +57,7 @@ export default function App() {
         <Route path="/user/shipping" element={<ShippingPage />} />
         <Route path="/user/uploadPayment/:id" element={<UploadPayment />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/branch/dashboard" element={<BranchDashboard/>} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/branchadmin" element={<BranchAdmin/>}/>
         <Route path="/admin/discount" element={<Discount/>}/>

@@ -35,7 +35,7 @@ export default function TransactionList() {
 
     const uploadPaymentHandler = async(id) => {
         try {
-            Navigate(`/uploadPayment/${id}`)
+            Navigate(`/user/uploadPayment/${id}`)
         } catch (error) {
             console.log(error.message)
         }

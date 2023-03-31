@@ -18,7 +18,7 @@ export default function UploadPayment() {
         try {
             const formData = new FormData()
             formData.append('images', file)
-            const response = await axios.post(`http://localhost:8000/transaction/uploadPayment/${id}`, formData, {
+            const response = await axios.post(`http://localhost:8000/api/transaction/uploadPayment/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     token: token

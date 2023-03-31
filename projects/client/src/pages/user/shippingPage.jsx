@@ -30,7 +30,7 @@ export default function CheckoutPage(){
 
     const getCart = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/Cart?id=${id}`)
+            const response = await axios.get(`http://localhost:8000/api/products/Cart?id=${id}`)
             console.log(response.data.data)
             let subtotal = 0;
             let totalprice = 0;
@@ -38,7 +38,7 @@ export default function CheckoutPage(){
                 subtotal += value.product.products_details[0].price * value.qty;
             })
             setSubtotal(subtotal)
-            totalprice = Number(subtotal) + Number(ongkir)
+            totalprice = parseInt(subtotal) + parseInt(ongkir)
             setTotal(totalprice)
             
         } catch (error) {
@@ -51,7 +51,7 @@ export default function CheckoutPage(){
         const token = localStorage.getItem('token')
 
         try{
-            const response = await axios.post('http://localhost:8000/transaction/order', {
+            const response = await axios.post('http://localhost:8000/api/transaction/order', {
                 cartItem: id,
                 address: inputAddress.current.value,
                 city: destination,
@@ -63,7 +63,7 @@ export default function CheckoutPage(){
             }, {
                 headers: {token}
             })
-            console.log(response.data.data.id)
+            console.log(response.data.data)
             toast("Order Placed")
             Navigate(`/user/uploadPayment/${response.data.data.id}`)
         }
@@ -75,7 +75,7 @@ export default function CheckoutPage(){
 
     const getCity = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/rajaOngkir/api/city')
+            const response =await axios.get('http://localhost:8000/api/rajaOngkir/api/city')
             console.log(response.data.data)
             setCity(response.data.data)
 
@@ -86,7 +86,7 @@ export default function CheckoutPage(){
 
     const getProvince = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/rajaOngkir/api/province')
+            const response =await axios.get('http://localhost:8000/api/rajaOngkir/api/province')
             console.log(response.data.data)
             setState(response.data.data)
 
@@ -97,7 +97,7 @@ export default function CheckoutPage(){
 
     const getOngkir = async() => {
         try {
-            const response = await axios.post(`http://localhost:8000/rajaOngkir/api/ongkir`, {
+            const response = await axios.post(`http://localhost:8000/api/rajaOngkir/api/ongkir`, {
                 origin: 501,
                 destination: destination,
                 weight: 1700,

@@ -11,7 +11,7 @@ export default function NavbarUser(){
     localStorage.removeItem("token")
     toast("Logged out successfully")
     setTimeout(() => {
-      window.location.reload()
+      Navigate('/')
     },1000)
   }
     return(

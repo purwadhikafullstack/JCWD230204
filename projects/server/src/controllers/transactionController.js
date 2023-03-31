@@ -12,6 +12,7 @@ const stockHistory = db.stock_history
 const branchProducts = db.branch_products
 
 const jwt = require('jsonwebtoken')
+const {nanoid} = require('nanoid')
 
 module.exports = {
 
@@ -224,12 +225,12 @@ module.exports = {
             const expiredTime = new Date(currentTime.getTime() + interval);
 
             //set unique transaction id
-            const transactionId = Math.floor(Math.random() * 1000000) + Date.now().slice(0,10)
+            const transactionId = nanoid(13)
             console.log(transactionId)
 
             //create transaction
             const transaction = await Transaction.create({
-                id: transactionId,
+                orderId: transactionId,
                 date: new Date(),
                 expiry_date: expiredTime,
                 user_id: id,
@@ -248,7 +249,7 @@ module.exports = {
                 include: [
                   {
                     model: products,
-                    attributes: ['products_name'],
+                    attributes: ['id','products_name'],
                     include: [
                         {
                             model: products_detail,
@@ -260,19 +261,16 @@ module.exports = {
                   
                 ]
               });
-            console.log(cartItems[0].dataValues.qty, cartItems[0].dataValues.product.dataValues.products_name, cartItems[0].dataValues.product.dataValues.products_details[0].price)
-
-            // const totalPrice = cartItems.reduce((acc, item) => {
-            //     return acc + item.dataValues.qty * item.dataValues.product[0].products_detail.price
-            // }, 0)
+            console.log(cartItems[0].dataValues.product.dataValues.id, cartItems[0].dataValues.qty, cartItems[0].dataValues.product.dataValues.products_name, cartItems[0].dataValues.product.dataValues.products_details[0].price)
 
             //create transaction detail
             const transactionDetails = cartItems.map((item) => {
+                const product = item.dataValues.product?.dataValues
                 return {
                     transaction_id: transaction.id,
-                    product_name: item.dataValues.product.dataValues.products_name,
+                    product_name: product?.products_name || '',
                     qty: item.dataValues.qty,
-                    price: item.dataValues.product.dataValues.products_details[0].price,
+                    price: product?.products_details?.[0]?.price || 0,
                 }
             })
             await TransactionDetail.bulkCreate(transactionDetails, { transaction: t })
@@ -284,30 +282,31 @@ module.exports = {
                 date: new Date(),
             }, { transaction: t })
 
-            const findstock = await branchProducts.findAll({
-                where: {product_id: cartItems[0].dataValues.product.dataValues.id},
-            })
-            console.log(findstock)
 
-            if(!findstock){
-                res.status(400).send({
-                    isError: true,
-                    message: 'stock not found',
-                    data: null
-                })
-            }
+            // const findstock = await branchProducts.findOne({
+            //     where: {product_id: cartItems[0].dataValues.product.dataValues.id},
+            // })
+            // console.log(findstock)
 
-            //update stock
-            const updateStock = findstock.stock - cartItems[0].dataValues.qty
+            // if(!findstock){
+            //     res.status(400).send({
+            //         isError: true,
+            //         message: 'stock not found',
+            //         data: null
+            //     })
+            // }
 
-            //create stock history
-            const createStockHistory = await stockHistory.create({
-                event_type: 'purchase',
-                event_date: new Date(),
-                quantity_changed: -cartItems[0].dataValues.qty,
-                remaining_quantity: updateStock,
-                product_id: cartItems[0].dataValues.product.dataValues.id,
-            }, { transaction: t })
+            // //update stock
+            // const updateStock = findstock.stock - cartItems[0].dataValues.qty
+
+            // //create stock history
+            // const createStockHistory = await stockHistory.create({
+            //     event_type: 'purchase',
+            //     event_date: new Date(),
+            //     quantity_changed: -cartItems[0].dataValues.qty,
+            //     remaining_quantity: updateStock,
+            //     product_id: cartItems[0].dataValues.product.dataValues.id,
+            // }, { transaction: t })
 
             //delete cart
             await cart.destroy({where: {user_id: id}}, {transaction: t})
@@ -316,7 +315,7 @@ module.exports = {
             res.status(200).send({
                 isError: false,
                 message: 'place order success',
-                data: cartItems,
+                data: transaction,
             })
 
         } catch(error){
@@ -394,7 +393,9 @@ module.exports = {
             })
 
         } catch(error){
-            await t.rollback();
+            if(t.finished !== "commit"){
+                await t.rollback();
+            }
             res.status(400).send({
                 isError: true,
                 message: 'upload payment proof failed',

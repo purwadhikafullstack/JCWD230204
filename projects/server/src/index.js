@@ -11,12 +11,13 @@ app.use(express.json());
 app.use('/Public', express.static('Public'))
 
 //#region API ROUTES
-const {adminRouter, productsRouter, usersRouter, transactionRouter, rajaOngkirAPIRouter} = require('./routers');
+const {adminRouter, productsRouter, usersRouter, transactionRouter, rajaOngkirAPIRouter, openCageRouter} = require('./routers');
 app.use('/api/admin', adminRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/transaction', transactionRouter);
 app.use('/api/rajaOngkir', rajaOngkirAPIRouter);
+app.use('/api/openCage', openCageRouter)
 
 // NOTE : Add your routes here
 
