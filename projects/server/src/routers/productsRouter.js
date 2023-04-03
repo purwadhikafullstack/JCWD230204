@@ -14,6 +14,7 @@ router.get('/add', tokenVerify, productsController.addToCart);
 router.get('/Cart', productsController.getCart);
 router.delete('/Cart/delete', productsController.removeFromCart);
 router.get('/update', productsController.updateCart);
+router.get('/getDiscount', productsController.discount);
 // router.patch('/updatePicture', uploadProducts, productsController.updatePicture);
 
 module.exports = router;

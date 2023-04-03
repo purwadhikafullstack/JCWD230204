@@ -15,6 +15,7 @@ const categoryProducts = db.category;
 const branchProducts = db.branch_products;
 const stockHistory = db.stock_history;
 const transaction = db.transactions;
+const discount = db.discounts;
 
 // import hash
 const {hashPassword, hashMatch} = require('./../lib/hash')
@@ -469,11 +470,57 @@ module.exports = {
     },
 
     createDiscount: async(req, res) => {
-        const {discount_name, discount_value, product_id} = req.body;
+        const t = await sequelize.transaction()
+        const {discount_name, discount_type, discount_value, product_id, days} = req.body;
         const {admin_id} = req.params
         try{
 
+            const findAdmin = await admin.findByPk(admin_id)
+            if(!findAdmin){
+                res.status(404).send({
+                    isError: true,
+                    message: "Admin not found",
+                    data: null,
+                })
+            }
+            const today = new Date()
+            const expiry_date = new Date(today.setDate(today.getDate() + days))
+            const productIds = product_id
+            const discounts = []
+
+            for(const product_id of productIds){
+                const newDiscount = {
+                    name: discount_name,
+                    type: discount_type,
+                    voucher_value: discount_value,
+                    expiry_date: expiry_date,
+                    admin_id: admin_id,
+                    product_id: product_id
+                };
+
+                discounts.push(newDiscount)
+            }
+
+            console.log(discounts)
+
+            const createDiscount = await discount.bulkCreate(discounts, {transaction: t});
+
+            await t.commit()
+
+            res.status(200).send({
+                isError: false,
+                message: "Create Discount Success",
+                data: createDiscount,
+            })
+
         } catch(error){
+
+            await t.rollback()
+            res.status(400).send({
+                isError: true,
+                message: "Create Discount Failed",
+                data: error.message,
+            })
 
         }
     },

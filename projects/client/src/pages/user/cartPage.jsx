@@ -10,7 +10,10 @@ export default function Cart() {
   const [cart, setCart] = useState([]);
   const [cartId, setCartId] = useState(0);
   const [newQuantity, setNewQuantity] = useState(1);
+  const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [productId, setProductId] = useState(0);
 
   const { id } = useParams();
   const Navigate = useNavigate();
@@ -20,21 +23,40 @@ export default function Cart() {
     try {
       const url = process.env.REACT_APP_API_GET_CART.replace(":id", id)
       const response = await axios.get(url);
-      // console.log(response.data.data[0].id)
       setCart(response.data.data);
       console.log(response.data.data)
       let total = 0;
       response.data.data.forEach((value) => {
-        total += value.product.products_details[0].price * value.qty;
+        const price = value.product.products_details[0].price;
+        total += price * value.qty;
+        getPromo(price)
       })
-      setTotal(total)
+      setSubtotal(total)
       setCartId(response.data.data[0].id);
       setNewQuantity(response.data.data[0].qty);
-      console.log(response.data.data[0].qty);
+      // console.log(response.data.data[0].product.id);
+      setProductId(response.data.data[0].product.id);
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  const getPromo = async(price) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/products/getDiscount?product_id=${productId}`)
+      console.log(response.data.data)
+      setDiscount(response.data.data[0].voucher_value)
+      const type = response.data.data.type
+      if(type === "percent"){
+        setTotal(subtotal - (subtotal * discount / 100))
+      } else {
+        setTotal(subtotal - discount)
+      }
+      console.log(total)
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
 
   const removeFromCart = async () => {
     //remove from cart function
@@ -64,7 +86,7 @@ export default function Cart() {
   useEffect(() => {
     //get cart from db
     getCart();
-  }, []);
+  }, [productId]);
 
   return (
     <>
@@ -129,15 +151,15 @@ export default function Cart() {
               <tbody>
                   <tr>
                       <td>total price</td>
-                      <td>Rp.{total.toLocaleString()}</td>
+                      <td>Rp.{parseInt(subtotal).toLocaleString()}</td>
                   </tr>
                   <tr>
                       <td>discount</td>
-                      <td>Rp.0</td>
+                      <td>Rp.{discount}</td>
                   </tr>
                   <tr>
                       <td>subtotal</td>
-                      <td>Rp.{total.toLocaleString()}</td>
+                      <td>Rp.{Number(total).toLocaleString()}</td>
                   </tr>
               </tbody>
           </table>

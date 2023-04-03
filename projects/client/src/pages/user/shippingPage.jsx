@@ -19,6 +19,8 @@ export default function CheckoutPage(){
     const [subtotal, setSubtotal] = useState(0)
     const [total, setTotal] = useState(0)
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+    const [latitude, setLatitude] = useState('')
+    const [longitude, setLongitude] = useState('')
 
     const { id } = useParams()
 
@@ -47,9 +49,7 @@ export default function CheckoutPage(){
     }
 
     const PlaceOrder = async() => {
-
         const token = localStorage.getItem('token')
-
         try{
             const response = await axios.post('http://localhost:8000/api/transaction/order', {
                 cartItem: id,
@@ -59,7 +59,9 @@ export default function CheckoutPage(){
                 zip: inputZip.current.value,
                 country: inputCountry.current.value,
                 shipping: courier,
-                total: total
+                total: total,
+                latitude: latitude,
+                longitude: longitude
             }, {
                 headers: {token}
             })
@@ -111,11 +113,26 @@ export default function CheckoutPage(){
         }
 
     }
+
+    const getLocation = () => {
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition((position) => {
+                setLatitude(position.coords.latitude)
+                setLongitude(position.coords.longitude)
+                console.log(latitude)
+                console.log(longitude)
+            })
+        }else{
+            alert('Geolocation is not supported by this browser')
+        }
+    }
+
     useEffect(() => {
         getCart()
         getCity()
         getProvince()
-    }, [])
+        getLocation()
+    }, [latitude, longitude])
 
     const handleDestinationChange = (event) => {
         setDestination(event.target.value)
@@ -135,8 +152,6 @@ export default function CheckoutPage(){
     const handleProvinceChange = (event) => {
         setProvince(event.target.value)
     }
-
-
 
     return(
         <>

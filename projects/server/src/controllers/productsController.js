@@ -8,6 +8,7 @@ const category = db.category;
 const products_detail = db.products_detail;
 const products_image = db.products_image;
 const discounts_categories = db.discount_category;
+const discount = db.discounts;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
 const cart = db.carts;
@@ -302,7 +303,7 @@ module.exports = {
                 attributes: ['id','qty'],
                 include: [
                     {model: products,
-                    attributes: ['products_name'],
+                    attributes: ['id', 'products_name'],
                     include: [
                         {
                             model: products_detail,
@@ -466,9 +467,65 @@ module.exports = {
 
     stockHistory: async(req, res) => {
         try {
-            
+            const findStockHistory = await stock_history.findAll({
+                include: ['id', 'event_type', 'quantity_changed', 'remaining_quantity', 'product_id']
+            })
+
+            if(!findStockHistory){
+                res.status(400).send({
+                    isError: true,
+                    message: "stock history not found",
+                    data: {}
+                })
+            }
+
+            res.status(200).send({
+                isError: false,
+                message: "stock history found",
+                data: findStockHistory
+            })
+
         } catch (error) {
-            
+            res.status(400).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
+        }
+    },
+
+    discount: async(req, res) => {
+        const {product_id} = req.query
+
+        try {
+            console.log(product_id)
+            const findDiscount = await discount.findAll({
+                attributes: ['id', 'name', 'voucher_value', 'type', 'expiry_date', 'product_id'],
+                where: {
+                    product_id
+                }
+              });
+
+            if(!findDiscount){
+                res.status(400).send({
+                    isError: true,
+                    message: "discount not found",
+                    data: {}
+                })
+            }
+
+            res.status(200).send({
+                isError: false,
+                message: "discount found",
+                data: findDiscount
+            })
+
+        } catch (error) {
+            res.status(400).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
         }
     }
 }

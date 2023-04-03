@@ -12,5 +12,6 @@ router.post('/createProduct',adminController.createProduct)
 router.post('/updateProduct',adminController.updateProduct)
 router.post('/deleteProduct',adminController.deleteProduct)
 router.get('/getStockHistory',adminController.getStockHistory)
+router.post('/createDiscount/:admin_id',adminController.createDiscount)
 
 module.exports = router;
