@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from "axios";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Link, useNavigate } from 'react-router-dom';
 import Applogo from "../../assets/img/gamepedia-logo-3.png"
@@ -11,14 +11,16 @@ function Signin() {
 	const password = useRef();
 	const Navigate = useNavigate();
 
+  const [role, setRole] = useState('super admin')
+
 	let onLogin = async () => {
 		try {
-			
-			let data = await axios.post("http://localhost:8000/admin/login", {
+			let data = await axios.post("http://localhost:8000/api/admin/login", {
 				email: email.current.value,
 				password: password.current.value,
 			});
-			localStorage.setItem("token", `${data.data.data.token}`);
+      console.log(data.data.data)
+			localStorage.setItem("token", `${data.data.data}`);
 			toast.success("login success");
 			email.current.value = "";
 			password.current.value = "";
@@ -29,6 +31,12 @@ function Signin() {
 			toast.error(error.response.data.message);
 		}
 	};
+
+  const handleSelectRole = (event) => {
+    setRole(event.target.value)
+    console.log(role)
+  }
+
   return (
     <main className="bg-white">
 
@@ -60,9 +68,9 @@ function Signin() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1" htmlFor="role">Your Role <span className="text-rose-500">*</span></label>
-                    <select id="role" className="form-select w-full">
-                      <option>Super Admin</option>
-                      <option>Branch Admin</option>
+                    <select id="role" onChange={handleSelectRole} className="form-select w-full">
+                      <option value={"super admin"}>Super Admin</option>
+                      <option value={"branch admin"}>Branch Admin</option>
                     </select>
                   </div>
                   <div>
