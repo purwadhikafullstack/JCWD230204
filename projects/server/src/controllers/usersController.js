@@ -64,7 +64,7 @@ module.exports = {
             const template = await fs.readFile('./src/template/confirmation.html', 'utf-8')
             console.log(template)
             const templateToCompile = await handlebars.compile(template)
-            const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/activation/${resCreateUser.id}`,})
+            const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/user/activation/${resCreateUser.id}`,})
                 
             await transporter.sendMail({
                 from: 'GAMEPEDIA',
@@ -226,7 +226,7 @@ module.exports = {
             );
             const templateToCompile = await handlebars.compile(template);
             const newTemplate = templateToCompile({
-                username, url: `http://localhost:3000/resetPassword/${findEmail.dataValues.id}`,
+                username, url: `http://localhost:3000/user/resetPassword/${findEmail.dataValues.id}`,
             });
 
             await transporter.sendMail({

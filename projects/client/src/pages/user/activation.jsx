@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect} from "react";
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 export default function Activation(){
     const Navigate = useNavigate()
@@ -11,7 +14,7 @@ export default function Activation(){
         try {
             await axios.patch('http://localhost:8000/users/activation/id', {id:Location.pathname.slice(12)})
             setTimeout(()=> {
-                Navigate("/login")
+                Navigate("/user/login")
             }, 3000)
         } catch (error) {
             console.log(error)  
@@ -24,6 +27,8 @@ export default function Activation(){
 
     return (
         <>
+        <NavbarUser/>
+        <HomeMenu/>
         <div className='activation container flex justify-center align-center items-center'>
             <div className='flex flex-col justify-center items-center h-[500px] w-[600px]'>
                 <div className='my-5'>
@@ -37,6 +42,7 @@ export default function Activation(){
                 </div>
                 </div>
         </div>
+        <Footer/>
         </>
     )
 }

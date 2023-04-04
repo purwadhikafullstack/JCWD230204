@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import EditProfileForm from './editProfile';
 import { Link, Navigate, useNavigate} from 'react-router-dom';
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 export default function Profiling (){
 
@@ -26,6 +29,8 @@ export default function Profiling (){
 
     return(
       <>
+      <NavbarUser/>
+      <HomeMenu/>
       <div className='flex gap-5 justify-center p-10 bg-stone-800 '>
         <div className='border rounded-lg p-7 h-[300px] w-[400px] '>
           <div>
@@ -51,6 +56,7 @@ export default function Profiling (){
           }
         </div>
       </div>
+      <Footer/>
       </>
     )
 }

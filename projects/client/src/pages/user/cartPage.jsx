@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { AiOutlineArrowRight, AiFillDelete } from "react-icons/ai";
 import { useParams, useNavigate } from "react-router-dom";
-import NavBar from '../../components/navbaruser';
+import NavbarUser from "../../components/navbaruser";
 import HomeMenu from "../../components/homemenu";
-import Footer from '../../components/footer';
+import Footer from "../../components/footer";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
@@ -68,7 +68,7 @@ export default function Cart() {
   return (
     <>
       <div className='bg-[#1c1c1c]'>
-          <NavBar />
+          <NavbarUser />
           <HomeMenu />
       </div>
       <div className="flex justify-center gap-3 bg-[#1c1c1c] items-center">
@@ -150,7 +150,7 @@ export default function Cart() {
           {/* product on cart card */}
         </div>
       </div>
-      <Footer />
+      <Footer/>
     </>
   );
 }
