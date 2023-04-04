@@ -9,11 +9,9 @@ import Footer from '../../components/footer';
 export default function Cart() {
   const [cart, setCart] = useState([]);
   const [cartId, setCartId] = useState(0);
-  const [newQuantity, setNewQuantity] = useState(1);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [productId, setProductId] = useState(0);
 
   const { id } = useParams();
   const Navigate = useNavigate();
@@ -21,7 +19,7 @@ export default function Cart() {
   const getCart = async () => {
     //add to cart function
     try {
-      const response = await axios.get(`http://localhost:8000/api/products/Cart`, {
+      const response = await axios.get(process.env.REACT_APP_API_GET_CART, {
         headers: {
           token: localStorage.getItem('token')
         }
@@ -41,9 +39,8 @@ export default function Cart() {
   const removeFromCart = async () => {
     //remove from cart function
     try {
-      await axios.delete(
-        `http://localhost:8000/api/products/Cart/delete?id=${cartId}`
-      );
+      const url = process.env.REACT_APP_API_DELETE_CART.replace(':cartId', cartId)
+      await axios.delete(url);
       getCart();
       window.location.reload();
     } catch (error) {
@@ -54,9 +51,8 @@ export default function Cart() {
   const updateQty = async (id, option) => {
     //update cart automatically updates qty
     try {
-      await axios.get(
-        `http://localhost:8000/api/products/update?id=${id}&option=${option}`
-      );
+      const url = process.env.REACT_APP_API_UPDATE_QTY.replace(':id', id).replace(':option', option)
+      await axios.get(url);
       getCart();
     } catch (error) {
       console.log(error.message);

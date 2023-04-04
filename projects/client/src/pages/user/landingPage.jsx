@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Banner from '.././../assets/img/banner2.jpg';
 import NavBar from '../../components/navbaruser';
@@ -27,12 +27,6 @@ export default function LandingPage(){
         setPromo(response.data.data);
     }
 
-    let getRecommended = async() => {
-        let response = await axios.get('http://localhost:5000/recomendedProducts/');
-        console.log(response.data);
-        setRecommended(response.data);
-    }
-
     let getNewProducts = async() => {
         let response = await axios.get(process.env.REACT_APP_API_GET_NEW_PRODUCTS);
         console.log(response.data.data);
@@ -42,7 +36,6 @@ export default function LandingPage(){
     useEffect(() => {
         getProducts();
         getPromo();
-        getRecommended();
         getNewProducts();
     }, [])
 
@@ -63,16 +56,16 @@ export default function LandingPage(){
             {/* new products */}
             <div className="p-5 mx-20 flex flex-col gap-4 text-white rounded-lg ">
                 <h1 className="text-xl font-bold">What's New</h1>
-                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
+                <div className="grid lg:grid-cols-6 md:grid-cols-1 gap-3">
                     {
                         newProducts.length ?
                         newProducts.map((value,index) => {
                             return(
                                 <>
                                 <div key={value.id} onClick={() => Navigate(`user/Details/${value.id}`)}>
-                                <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
-                                    <div className="bg-slate-300 rounded-t-lg">
-                                        <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
+                                <div className="lg:h-[350px] lg:w-[200px] md:h-[200px] md:w-[500px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
+                                    <div className="bg-stone-800 flex justify-center rounded-t-lg">
+                                        <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover  rounded-t-lg"/>
                                     </div>
                                     <div className="flex gap-4 justify-center px-2">
                                         <h2 className="text-sm " key={index}>{value.products_name}</h2>
@@ -122,26 +115,26 @@ export default function LandingPage(){
             {/* all products */}
             <div className=" rounded-lg p-5 mx-20 text-white flex flex-col gap-4">
                 <h1 className="text-xl font-bold">All Products</h1>
-                    <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-4">
-                            {
-                                products.length ? products.map((value, index) => {
-                                    return(
-                                        <>
-                                        <div key={value.id} onClick={() => Navigate(`user/Details/${value.id}`)}>
-                                        <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
-                                            <div className="bg-slate-300 rounded-t-lg">
-                                                <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
-                                            </div>
-                                            <div className="flex  justify-center px-2">
-                                                <h2 className="text-sm " key={index}>{value.products_name}</h2>
-                                            </div>
+                <div className="grid xl:grid-cols-6 md:grid-cols-3 gap-3">
+                        {
+                            products.length ? products.map((value, index) => {
+                                return(
+                                    <>
+                                    <div key={value.id} onClick={() => Navigate(`user/Details/${value.id}`)}>
+                                    <div className="lg:h-[350px] lg:w-[200px] md:h-[200px] md:w-[500px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
+                                        <div className="bg-stone-800 flex justify-center rounded-t-lg">
+                                            <img src={`http://localhost:8000/Public/products/${value.products_images[0].url}`} alt="" className="h-[250px] w-[200px] object-cover rounded-t-lg"/>
                                         </div>
+                                        <div className="flex  justify-center px-2">
+                                            <h2 className="text-sm " key={index}>{value.products_name}</h2>
                                         </div>
-                                        </>
-                                    )
-                                }) : <h1>No Product Found!</h1>
-                            }
-                    </div>
+                                    </div>
+                                    </div>
+                                    </>
+                                )
+                            }) : <h1>No Product Found!</h1>
+                        }
+                </div>
             </div>
             <Footer />
         </div>

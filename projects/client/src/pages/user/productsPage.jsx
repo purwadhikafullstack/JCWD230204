@@ -143,7 +143,7 @@ export default function ProductPage(){
                                     
                                     <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                         <div className="bg-slate-300 rounded-t-lg">
-                                            <img key={product.id} src={`${process.env.REACT_APP_API_BASE_URL}/Public/products/${product.products_images[0].url}`} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
+                                            <img key={product.id} src={`${process.env.REACT_APP_API_BASE_URL}/Public/products/${product.products_images[0].url}`} alt="" className="h-[200px] w-[200px] object-cover rounded-t-lg"/>
                                         </div>
                                         <div className="flex flex-col gap-4 justify-around text-white px-2">
                                             <h2 className="text-sm " key={product.id}>{product.products_name}</h2>

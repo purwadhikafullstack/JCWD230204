@@ -32,16 +32,10 @@ export default function CheckoutPage(){
 
     const getCart = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/products/Cart?id=${id}`)
+            const response = await axios.get(process.env.REACT_APP_API_GET_CART)
             console.log(response.data.data)
-            let subtotal = 0;
-            let totalprice = 0;
-            response.data.data.forEach((value) => {
-                subtotal += value.product.products_details[0].price * value.qty;
-            })
-            setSubtotal(subtotal)
-            totalprice = parseInt(subtotal) + parseInt(ongkir)
-            setTotal(totalprice)
+            setSubtotal(response.data.totalBeforeDiscount)
+            console.log(subtotal)
             
         } catch (error) {
             console.log(error.message)
@@ -51,7 +45,7 @@ export default function CheckoutPage(){
     const PlaceOrder = async() => {
         const token = localStorage.getItem('token')
         try{
-            const response = await axios.post('http://localhost:8000/api/transaction/order', {
+            const response = await axios.post(process.env.REACT_APP_API_PLACE_ORDER, {
                 cartItem: id,
                 address: inputAddress.current.value,
                 city: destination,
@@ -77,7 +71,7 @@ export default function CheckoutPage(){
 
     const getCity = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/api/rajaOngkir/api/city')
+            const response =await axios.get(process.env.REACT_APP_API_RAJAONGKIR_CITY)
             console.log(response.data.data)
             setCity(response.data.data)
 
@@ -88,18 +82,19 @@ export default function CheckoutPage(){
 
     const getProvince = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/api/rajaOngkir/api/province')
+            const response =await axios.get(process.env.REACT_APP_API_RAJAONGKIR_STATE)
             console.log(response.data.data)
             setState(response.data.data)
 
         } catch (error) {
             console.log(error.message)
+
         }
     }
 
     const getOngkir = async() => {
         try {
-            const response = await axios.post(`http://localhost:8000/api/rajaOngkir/api/ongkir`, {
+            const response = await axios.post(process.env.REACT_APP_API_RAJAONGKIR_COST, {
                 origin: 501,
                 destination: destination,
                 weight: 1700,

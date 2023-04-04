@@ -4,7 +4,6 @@ const cors = require("cors");
 const { join } = require("path");
 
 const PORT = process.env.PORT;
-console.log(process.env.PORT)
 const app = express();
 app.use(cors());
 app.use(express.json());

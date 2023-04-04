@@ -16,14 +16,14 @@ export default function NavbarUser(){
   }
     return(
     <div className="flex justify-center gap-10 h-[90px] items-center drop-shadow-lg bg-[#1c1c1c] sticky top-0 z-50">
-    <div onClick={() => Navigate("/")}>
-      <img src={Applogo} alt="logo" className="w-[200px]" />
+    <div onClick={() => Navigate("/")} className="">
+      <img src={Applogo} alt="logo" className="lg:w-[200px] md:object-scale-down" />
     </div>
     <div>
       <input
         type="text"
         placeholder="Search"
-        className="border rounded-full text-center h-[40px] w-[900px]"
+        className="border rounded-full text-center h-[40px] lg:w-[900px] md:w-[200px]"
       />
     </div>
     

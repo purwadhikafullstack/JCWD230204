@@ -299,8 +299,12 @@ module.exports = {
 
     getCart: async(req, res) => {
         const token = req.headers.token
+        console.log(token)
         const decodedToken = jwt.decode(token, {complete: true})
+        console.log(decodedToken)
         const id = decodedToken.payload.id
+        console.log(id)
+
         try {
             const findCart = await cart.findAll({
                 where: {
