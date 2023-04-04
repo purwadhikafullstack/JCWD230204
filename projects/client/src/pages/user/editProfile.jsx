@@ -1,6 +1,8 @@
-
 import axios from 'axios'
 import { useRef } from 'react'
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 export default function EditProfileForm(){
     const email = useRef();
@@ -28,6 +30,8 @@ export default function EditProfileForm(){
     };
     return(
         <>
+         <NavbarUser/>
+         <HomeMenu/>
             <div className="bg-stone-200 py-24 sm:py-32">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="bg-slate-50 rounded-lg flex flex-col justify-center gap-5 items-center p-4 m-4 border">
@@ -72,7 +76,8 @@ export default function EditProfileForm(){
                         </div>
                     </div>
                 </div>
-            </div>                 
+            </div>  
+            <Footer/>               
         </>
     )
 }

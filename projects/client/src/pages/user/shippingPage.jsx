@@ -2,6 +2,9 @@ import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 import ConfirmationModal from '.././../components/confirmationModal';
 
@@ -150,6 +153,8 @@ export default function CheckoutPage(){
 
     return(
         <>
+        <NavbarUser/>
+        <HomeMenu/>
         {ongkir}
         <div className="flex justify-center bg-[#261C2C] p-4">
             <div className="flex gap-10 justify-center p-5 bg-white w-[1200px] m-12 rounded-lg">
@@ -233,6 +238,7 @@ export default function CheckoutPage(){
             }
             <Toaster/>
         </div>
+        <Footer/>
         </>
     )
 }

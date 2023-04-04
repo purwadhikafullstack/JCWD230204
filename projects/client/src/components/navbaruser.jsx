@@ -65,7 +65,7 @@ export default function NavbarUser(){
         <>
         <button
           onClick={() => {
-            Navigate("/login");
+            Navigate("/user/login");
           }}
           className="bg-[#db2b39] rounded-full w-[100px] h-[40px] p-2 text-white"
         >

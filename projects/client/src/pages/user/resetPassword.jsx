@@ -4,7 +4,9 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 import LoadingSpin from "react-loading-spin";
 import toast, { Toaster } from "react-hot-toast";
-
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 
 export default function ResetPassword (){
@@ -78,6 +80,8 @@ export default function ResetPassword (){
 
     return (
         <>
+		<NavbarUser/>
+        <HomeMenu/>
             <div className=" container h-screen flex justify-center align-center items-center">
                 <div className=" bg-zinc-300 rounded-lg p-10 w-[350px] flex flex-col gap-3 justify-center border border-zinc-500">
 
@@ -172,6 +176,7 @@ export default function ResetPassword (){
 							<Toaster />
 						</div>
                     </div>
+					<Footer/>
         </>
       )
     }

@@ -1,6 +1,9 @@
 import { useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState, useRef } from 'react'
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 // import imgprod from './../assets/img/assets_products/ps4.jpg'
 // import BannerVertical from './../assets/img/banner-vert-1.png'
@@ -76,6 +79,8 @@ export default function ProductPage(){
 
     return(
         <>
+        <NavbarUser/>
+        <HomeMenu/>
         <div className="flex gap-4 bg-[#1c1c1c] py-4">
             {/* sidebar nav */}
             <div className="w-[300px] p-4 flex flex-col gap-4 text-white ">
@@ -174,6 +179,7 @@ export default function ProductPage(){
                 <h1>banner</h1>
             </div>
         </div>
+        <Footer/>
         </>
     )
 }
