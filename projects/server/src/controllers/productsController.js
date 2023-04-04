@@ -268,8 +268,8 @@ module.exports = {
             //find recommended products by the most purchased items in transactions
             let findRecommendedProducts = await transactions.findAll({
                 attributes: [
-                    [Sequelize.literal('products.*'), 'product'],
-                    [Sequelize.fn('COUNT', Sequelize.col('transactions.productId')), 'count']
+                    [sequelize.literal('products.*'), 'product'],
+                    [sequelize.fn('COUNT', sequelize.col('transactions.productId')), 'count']
                   ],
                   include: [
                     {
@@ -298,25 +298,56 @@ module.exports = {
     },
 
     getCart: async(req, res) => {
+        const token = req.headers.token
+        const decodedToken = jwt.decode(token, {complete: true})
+        const id = decodedToken.payload.id
         try {
             const findCart = await cart.findAll({
-                attributes: ['id','qty'],
+                where: {
+                    user_id: id
+                },
                 include: [
-                    {model: products,
-                    attributes: ['id', 'products_name'],
-                    include: [
-                        {
-                            model: products_detail,
-                            attributes: ['price']
-                        }
-                    ]}
-                ]
+                    {
+                        model: products,
+                        attributes: ['id', 'products_name'],
+                        include: [{model: discount},
+                        {model: products_detail,
+                        attributes: ['price']} ],
+                        exclude: ['createdAt', 'updatedAt']
+                    }
+                ],
+                exclude: ['createdAt', 'updatedAt']
+            })
+
+            let totalPriceBeforeDiscount = 0
+            let totalPriceAfterDiscount = 0
+            findCart.forEach((item) => {
+                const productPrice = item.dataValues.product.dataValues.products_details[0].dataValues.price
+                const productQuantity = item.dataValues.qty
+                const discount = item.dataValues.product.dataValues.discounts[0]
+                const productPriceBeforeDiscount = productPrice * productQuantity
+                let discountAmount = 0
+                if(discount){
+                    if(discount.dataValues.type === "percent"){
+                        discountAmount = productPriceBeforeDiscount * (discount.dataValues.voucher_value / 100)
+                    } else {
+                        discountAmount = discount.dataValues.voucher_value
+                    }
+                }
+                const productPriceAfterDiscount = productPriceBeforeDiscount - discountAmount
+                totalPriceBeforeDiscount += productPriceBeforeDiscount
+                totalPriceAfterDiscount += productPriceAfterDiscount
+
+                item.productPriceAfterDiscount = productPriceAfterDiscount
+                item.productPriceBeforeDiscount = productPriceBeforeDiscount
             })
 
             res.status(200).send({
                 isError: false,
                 message: "get data sucess",
-                data: findCart
+                data: findCart,
+                totalAfterDiscount: totalPriceAfterDiscount,
+                totalBeforeDiscount: totalPriceBeforeDiscount,
                 
             })
 
@@ -493,39 +524,4 @@ module.exports = {
             })
         }
     },
-
-    discount: async(req, res) => {
-        const {product_id} = req.query
-
-        try {
-            console.log(product_id)
-            const findDiscount = await discount.findAll({
-                attributes: ['id', 'name', 'voucher_value', 'type', 'expiry_date', 'product_id'],
-                where: {
-                    product_id
-                }
-              });
-
-            if(!findDiscount){
-                res.status(400).send({
-                    isError: true,
-                    message: "discount not found",
-                    data: {}
-                })
-            }
-
-            res.status(200).send({
-                isError: false,
-                message: "discount found",
-                data: findDiscount
-            })
-
-        } catch (error) {
-            res.status(400).send({
-                isError: true,
-                message: "get data failed",
-                data: error.message
-            })
-        }
-    }
 }

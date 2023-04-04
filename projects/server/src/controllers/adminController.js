@@ -314,6 +314,77 @@ module.exports = {
         }
     },
 
+    uploadProductImage: async(req, res) => {
+        const t = await sequelize.transaction()
+        const {admin_id} = req.params
+        const {product_id} = req.body
+        try {
+            const findAdmin = await admin.findOne({
+                where: [
+                    {id: admin_id},
+                    {status: "branch admin"}
+                ]
+            })
+
+            if(!findAdmin){
+                res.status(404).send({
+                    isError: true,
+                    message: "Admin Not Found",
+                    data: null,
+                })
+            }
+
+            const findProduct = await products.findAll({
+                where: {
+                    id: product_id
+                }
+            })
+
+            if(!findProduct){
+                res.status(404).send({
+                    isError: true,
+                    message: "Product Not Found",
+                    data: null,
+                })
+            }
+
+            if(!req.files){
+                res.status(404).send({
+                    isError: true,
+                    message: "Image Not Found",
+                    data: null,
+                })
+            }
+            console.log(req.files)
+            const productImagePath = req.files.images[0].path
+            console.log(productImagePath)
+
+            const uploadProductImage = await productsImage.update({
+                url: productImagePath,
+            }, {
+                where: {
+                    product_id: product_id
+                }
+            }, {transaction: t})
+
+            await t.commit()
+            res.status(200).send({
+                isError: false,
+                message: "Upload Product Image Success",
+                data: null,
+            })
+
+        } catch (error) {
+            await t.rollback()
+            res.status(400).send({
+                isError: true,
+                message: "Upload Product Image Failed",
+                data: error.message,
+            })
+        }
+
+    },
+
     updateProduct: async(req, res) => {
         const t = await sequelize.transaction()
         try {

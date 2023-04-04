@@ -21,42 +21,22 @@ export default function Cart() {
   const getCart = async () => {
     //add to cart function
     try {
-      const url = process.env.REACT_APP_API_GET_CART.replace(":id", id)
-      const response = await axios.get(url);
-      setCart(response.data.data);
-      console.log(response.data.data)
-      let total = 0;
-      response.data.data.forEach((value) => {
-        const price = value.product.products_details[0].price;
-        total += price * value.qty;
-        getPromo(price)
+      const response = await axios.get(`http://localhost:8000/api/products/Cart`, {
+        headers: {
+          token: localStorage.getItem('token')
+        }
       })
-      setSubtotal(total)
+      console.log(response.data.data);
+      setCart(response.data.data);
+      setTotal(response.data.totalAfterDiscount);
+      setSubtotal(response.data.totalBeforeDiscount);
+      setDiscount(response.data.data[0].product.discounts[0].name)
       setCartId(response.data.data[0].id);
-      setNewQuantity(response.data.data[0].qty);
-      // console.log(response.data.data[0].product.id);
-      setProductId(response.data.data[0].product.id);
+      // console.log(response.data.data[0].id)
     } catch (error) {
       console.log(error.message);
     }
   };
-
-  const getPromo = async(price) => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/products/getDiscount?product_id=${productId}`)
-      console.log(response.data.data)
-      setDiscount(response.data.data[0].voucher_value)
-      const type = response.data.data.type
-      if(type === "percent"){
-        setTotal(subtotal - (subtotal * discount / 100))
-      } else {
-        setTotal(subtotal - discount)
-      }
-      console.log(total)
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
 
   const removeFromCart = async () => {
     //remove from cart function
@@ -86,7 +66,8 @@ export default function Cart() {
   useEffect(() => {
     //get cart from db
     getCart();
-  }, [productId]);
+    
+  }, []);
 
   return (
     <>
@@ -155,7 +136,7 @@ export default function Cart() {
                   </tr>
                   <tr>
                       <td>discount</td>
-                      <td>Rp.{discount}</td>
+                      <td>{discount}</td>
                   </tr>
                   <tr>
                       <td>subtotal</td>
