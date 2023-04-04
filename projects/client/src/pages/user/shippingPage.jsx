@@ -6,23 +6,24 @@ import NavbarUser from "../../components/navbaruser";
 import HomeMenu from "../../components/homemenu";
 import Footer from "../../components/footer";
 
-import ConfirmationModal from '.././../components/confirmationModal';
+import ConfirmationModal from '../../components/confirmationModal';
+import NavBar from '../../components/navbaruser';
+import HomeMenu from "../../components/homemenu";
+import Footer from '../../components/footer';
 
 export default function CheckoutPage(){
-    // const [cart, setCart] = useState([])
-    // const [cartId, setCartId] = useState(0)
-    // const [shipping, setShipping] = useState([])
     const [city, setCity] = useState([])
     const [state, setState] = useState([])
     const [province, setProvince] = useState([])
     const [destination, setDestination] = useState([])
     const [service, setService] = useState([])
-    const [services, setServices] = useState([])
     const [courier, setCourier] = useState([])
     const [ongkir, setOngkir] = useState(0)
     const [subtotal, setSubtotal] = useState(0)
     const [total, setTotal] = useState(0)
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+    const [latitude, setLatitude] = useState('')
+    const [longitude, setLongitude] = useState('')
 
     const { id } = useParams()
 
@@ -34,16 +35,10 @@ export default function CheckoutPage(){
 
     const getCart = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/Cart?id=${id}`)
+            const response = await axios.get(process.env.REACT_APP_API_GET_CART)
             console.log(response.data.data)
-            let subtotal = 0;
-            let total = 0;
-            response.data.data.forEach((value) => {
-                subtotal += value.product.products_details[0].price * value.qty;
-            })
-            setSubtotal(subtotal)
-            total = parseInt(subtotal) + parseInt(ongkir)
-            setTotal(total)
+            setSubtotal(response.data.totalBeforeDiscount)
+            console.log(subtotal)
             
         } catch (error) {
             console.log(error.message)
@@ -51,22 +46,9 @@ export default function CheckoutPage(){
     }
 
     const PlaceOrder = async() => {
-
         const token = localStorage.getItem('token')
-        
-        // const data = {
-        //     cartItem: id,
-        //     address: inputAddress.current.value,
-        //     city: destination,
-        //     state: province,
-        //     zip: inputZip.current.value,
-        //     country: inputCountry.current.value,
-        //     shipping: courier,
-        //     total: total
-        // }
-
         try{
-            const response = await axios.post('http://localhost:8000/transaction/order', {
+            const response = await axios.post(process.env.REACT_APP_API_PLACE_ORDER, {
                 cartItem: id,
                 address: inputAddress.current.value,
                 city: destination,
@@ -74,12 +56,15 @@ export default function CheckoutPage(){
                 zip: inputZip.current.value,
                 country: inputCountry.current.value,
                 shipping: courier,
-                total: total
+                total: total,
+                latitude: latitude,
+                longitude: longitude
             }, {
                 headers: {token}
             })
-            console.log(response)
+            console.log(response.data.data)
             toast("Order Placed")
+            Navigate(`/user/uploadPayment/${response.data.data.id}`)
         }
         catch(error){
             console.log(error.message)
@@ -89,7 +74,7 @@ export default function CheckoutPage(){
 
     const getCity = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/rajaOngkir/api/city')
+            const response =await axios.get(process.env.REACT_APP_API_RAJAONGKIR_CITY)
             console.log(response.data.data)
             setCity(response.data.data)
 
@@ -100,18 +85,19 @@ export default function CheckoutPage(){
 
     const getProvince = async() => {
         try {
-            const response =await axios.get('http://localhost:8000/rajaOngkir/api/province')
+            const response =await axios.get(process.env.REACT_APP_API_RAJAONGKIR_STATE)
             console.log(response.data.data)
             setState(response.data.data)
 
         } catch (error) {
             console.log(error.message)
+
         }
     }
 
     const getOngkir = async() => {
         try {
-            const response = await axios.post(`http://localhost:8000/rajaOngkir/api/ongkir`, {
+            const response = await axios.post(process.env.REACT_APP_API_RAJAONGKIR_COST, {
                 origin: 501,
                 destination: destination,
                 weight: 1700,
@@ -119,16 +105,32 @@ export default function CheckoutPage(){
             })
             console.log(response.data.data[0].costs)
             setService(response.data.data[0].costs)
+            
         } catch (error) {
             console.log(error.message)
         }
 
     }
+
+    const getLocation = () => {
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition((position) => {
+                setLatitude(position.coords.latitude)
+                setLongitude(position.coords.longitude)
+                console.log(latitude)
+                console.log(longitude)
+            })
+        }else{
+            alert('Geolocation is not supported by this browser')
+        }
+    }
+
     useEffect(() => {
-        // getCart()
+        getCart()
         getCity()
         getProvince()
-    }, [])
+        getLocation()
+    }, [latitude, longitude])
 
     const handleDestinationChange = (event) => {
         setDestination(event.target.value)
@@ -149,14 +151,20 @@ export default function CheckoutPage(){
         setProvince(event.target.value)
     }
 
-
-
     return(
         <>
+<<<<<<< HEAD
+        <div className='bg-[#1c1c1c]'>
+          <NavBar />
+          <HomeMenu />
+        </div>
+        <div className="flex justify-center bg-[#1c1c1c] p-4">
+=======
         <NavbarUser/>
         <HomeMenu/>
         {ongkir}
         <div className="flex justify-center bg-[#261C2C] p-4">
+>>>>>>> main
             <div className="flex gap-10 justify-center p-5 bg-white w-[1200px] m-12 rounded-lg">
                 <div className="flex flex-col gap-4">
                     <h1>Shipping</h1>
@@ -212,9 +220,9 @@ export default function CheckoutPage(){
                 </div>
                 <div className='flex flex-col gap-4'>
                     <h1>Order Summary</h1>
-                    <p>Subtotal : {subtotal}</p>
+                    <p>Subtotal : Rp.{parseInt(subtotal).toLocaleString()}</p>
                     <p>Shipping : Rp.{parseInt(ongkir).toLocaleString()}</p>
-                    <p>Total    : {total}</p>
+                    <p>Total    : Rp.{parseInt(total).toLocaleString()}</p>
                     <button onClick={() => {setShowConfirmationModal(true)}} className="p-5 bg-green-300 rounded-lg">Checkout</button>
                 </div>
             </div>
@@ -223,13 +231,12 @@ export default function CheckoutPage(){
                 message="are you sure you want to perform this transaction?"
                 onConfirm={() => {
                     PlaceOrder()
-                    Navigate('/uploadPayment')
                     setShowConfirmationModal(false)
                 }}
                 onCancel={() => {
                     setShowConfirmationModal(false)
                     setTimeout(() => {
-                        Navigate('/cart')
+                        Navigate('/user/cart')
                     }, 1000)
                     
                 }}
@@ -238,7 +245,11 @@ export default function CheckoutPage(){
             }
             <Toaster/>
         </div>
+<<<<<<< HEAD
+        <Footer />
+=======
         <Footer/>
+>>>>>>> main
         </>
     )
 }

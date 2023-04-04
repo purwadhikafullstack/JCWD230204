@@ -9,8 +9,9 @@ import Footer from "../../components/footer";
 export default function Cart() {
   const [cart, setCart] = useState([]);
   const [cartId, setCartId] = useState(0);
-  const [newQuantity, setNewQuantity] = useState(1);
+  const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
 
   const { id } = useParams();
   const Navigate = useNavigate();
@@ -18,20 +19,18 @@ export default function Cart() {
   const getCart = async () => {
     //add to cart function
     try {
-      const response = await axios.get(
-        `http://localhost:8000/products/Cart?id=${id}`
-      );
-      // console.log(response.data.data[0].id)
-      setCart(response.data.data);
-      console.log(response.data.data)
-      let total = 0;
-      response.data.data.forEach((value) => {
-        total += value.product.products_details[0].price * value.qty;
+      const response = await axios.get(process.env.REACT_APP_API_GET_CART, {
+        headers: {
+          token: localStorage.getItem('token')
+        }
       })
-      setTotal(total)
+      console.log(response.data.data);
+      setCart(response.data.data);
+      setTotal(response.data.totalAfterDiscount);
+      setSubtotal(response.data.totalBeforeDiscount);
+      setDiscount(response.data.data[0].product.discounts[0].name)
       setCartId(response.data.data[0].id);
-      setNewQuantity(response.data.data[0].qty);
-      console.log(response.data.data[0].qty);
+      // console.log(response.data.data[0].id)
     } catch (error) {
       console.log(error.message);
     }
@@ -40,9 +39,8 @@ export default function Cart() {
   const removeFromCart = async () => {
     //remove from cart function
     try {
-      await axios.delete(
-        `http://localhost:8000/products/Cart/delete?id=${cartId}`
-      );
+      const url = process.env.REACT_APP_API_DELETE_CART.replace(':cartId', cartId)
+      await axios.delete(url);
       getCart();
       window.location.reload();
     } catch (error) {
@@ -53,9 +51,8 @@ export default function Cart() {
   const updateQty = async (id, option) => {
     //update cart automatically updates qty
     try {
-      await axios.get(
-        `http://localhost:8000/products/update?id=${id}&option=${option}`
-      );
+      const url = process.env.REACT_APP_API_UPDATE_QTY.replace(':id', id).replace(':option', option)
+      await axios.get(url);
       getCart();
     } catch (error) {
       console.log(error.message);
@@ -65,12 +62,15 @@ export default function Cart() {
   useEffect(() => {
     //get cart from db
     getCart();
+    
   }, []);
 
   return (
     <>
-     <NavbarUser/>
-     <HomeMenu/>
+      <div className='bg-[#1c1c1c]'>
+          <NavbarUser />
+          <HomeMenu />
+      </div>
       <div className="flex justify-center gap-3 bg-[#1c1c1c] items-center">
         <div className="flex flex-col border-b-2 p-9 m-4 w-[500px] h-[600px] gap-4 bg-white rounded-xl">
           <h1 className="text-2xl font-bold border-b-2 border-black">Cart</h1>
@@ -128,24 +128,27 @@ export default function Cart() {
               <tbody>
                   <tr>
                       <td>total price</td>
-                      <td>Rp.{total.toLocaleString()}</td>
+                      <td>Rp.{parseInt(subtotal).toLocaleString()}</td>
                   </tr>
                   <tr>
                       <td>discount</td>
-                      <td>Rp.0</td>
+                      <td>{discount}</td>
                   </tr>
                   <tr>
                       <td>subtotal</td>
-                      <td>Rp.{total.toLocaleString()}</td>
+                      <td>Rp.{Number(total).toLocaleString()}</td>
                   </tr>
               </tbody>
           </table>
           {
-            cart.length ? <button onClick={() => Navigate('/shipping')} className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300 "><div>shipping</div><AiOutlineArrowRight/></button> :
+            cart.length ? <button onClick={() => Navigate('/user/shipping')} className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300 "><div>shipping</div><AiOutlineArrowRight/></button> :
             <button disabled className="self-end flex items-center gap-3 p-3 rounded-xl bg-green-300"><div>shipping</div><AiOutlineArrowRight/></button>
           }
       </div>
         ) : null}
+        <div>
+          {/* product on cart card */}
+        </div>
       </div>
       <Footer/>
     </>

@@ -1,11 +1,12 @@
 const axios = require('axios');
+require('dotenv').config();
 
 module.exports = {
     getCity: async(req,res) => {
         try {
             const response = await axios.get('https://api.rajaongkir.com/starter/city', {
                 headers: {
-                    key: 'da3f816eed742bb1fe2f8f5c3d8ac512'
+                    key: process.env.RAJAONGKIR_API_KEY,
                 }
             })
 
@@ -27,7 +28,7 @@ module.exports = {
         try {
             const response = await axios.get('https://api.rajaongkir.com/starter/province', {
                 headers: {
-                    key: 'da3f816eed742bb1fe2f8f5c3d8ac512'
+                    key: process.env.RAJAONGKIR_API_KEY,
                 }
             })
 
@@ -54,7 +55,7 @@ module.exports = {
                 origin, destination,weight,courier
             }, {
             headers: {
-                    'key': 'da3f816eed742bb1fe2f8f5c3d8ac512'
+                    'key': process.env.RAJAONGKIR_API_KEY,
                 }
             }, )
 

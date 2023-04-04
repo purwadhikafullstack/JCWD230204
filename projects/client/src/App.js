@@ -28,6 +28,7 @@ import DashboardUsers from "./pages/user/dashboardUser";
 import LoginAdmin from "./pages/admin/loginadmin";
 import Logi from "./pages/admin/logi"
 import Dashboard from "./pages/admin/dashboard";
+import BranchDashboard from "./pages/admin/branchDashboard";
 import AdminManagement from "./pages/admin/adminList"
 import CreateAdmin from "./pages/admin/createadmin"
 import BranchRegister from "./pages/admin/branchregister";
@@ -82,6 +83,7 @@ useEffect(() => {
         
         {/* adminside */}
         <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/branch/dashboard" element={<BranchDashboard/>} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         {/* <Route path="admin/logi" element={<Logi/>}/> */}
         <Route path="/admin/newadmin" element={<CreateAdmin/>}/>

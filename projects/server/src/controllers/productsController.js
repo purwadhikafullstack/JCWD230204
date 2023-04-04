@@ -8,6 +8,7 @@ const category = db.category;
 const products_detail = db.products_detail;
 const products_image = db.products_image;
 const discounts_categories = db.discount_category;
+const discount = db.discounts;
 const transactions = db.transactions;
 const transactions_details = db.transactions_details;
 const cart = db.carts;
@@ -237,6 +238,12 @@ module.exports = {
                         attributes: {
                             exclude: ["createdAt", "updatedAt"]
                         }
+                    },
+                    {
+                        model: products_image,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt"]
+                        }
                     }
                 ]
             })
@@ -261,8 +268,8 @@ module.exports = {
             //find recommended products by the most purchased items in transactions
             let findRecommendedProducts = await transactions.findAll({
                 attributes: [
-                    [Sequelize.literal('products.*'), 'product'],
-                    [Sequelize.fn('COUNT', Sequelize.col('transactions.productId')), 'count']
+                    [sequelize.literal('products.*'), 'product'],
+                    [sequelize.fn('COUNT', sequelize.col('transactions.productId')), 'count']
                   ],
                   include: [
                     {
@@ -291,25 +298,60 @@ module.exports = {
     },
 
     getCart: async(req, res) => {
+        const token = req.headers.token
+        console.log(token)
+        const decodedToken = jwt.decode(token, {complete: true})
+        console.log(decodedToken)
+        const id = decodedToken.payload.id
+        console.log(id)
+
         try {
             const findCart = await cart.findAll({
-                attributes: ['id','qty'],
+                where: {
+                    user_id: id
+                },
                 include: [
-                    {model: products,
-                    attributes: ['products_name'],
-                    include: [
-                        {
-                            model: products_detail,
-                            attributes: ['price']
-                        }
-                    ]}
-                ]
+                    {
+                        model: products,
+                        attributes: ['id', 'products_name'],
+                        include: [{model: discount},
+                        {model: products_detail,
+                        attributes: ['price']} ],
+                        exclude: ['createdAt', 'updatedAt']
+                    }
+                ],
+                exclude: ['createdAt', 'updatedAt']
+            })
+
+            let totalPriceBeforeDiscount = 0
+            let totalPriceAfterDiscount = 0
+            findCart.forEach((item) => {
+                const productPrice = item.dataValues.product.dataValues.products_details[0].dataValues.price
+                const productQuantity = item.dataValues.qty
+                const discount = item.dataValues.product.dataValues.discounts[0]
+                const productPriceBeforeDiscount = productPrice * productQuantity
+                let discountAmount = 0
+                if(discount){
+                    if(discount.dataValues.type === "percent"){
+                        discountAmount = productPriceBeforeDiscount * (discount.dataValues.voucher_value / 100)
+                    } else {
+                        discountAmount = discount.dataValues.voucher_value
+                    }
+                }
+                const productPriceAfterDiscount = productPriceBeforeDiscount - discountAmount
+                totalPriceBeforeDiscount += productPriceBeforeDiscount
+                totalPriceAfterDiscount += productPriceAfterDiscount
+
+                item.productPriceAfterDiscount = productPriceAfterDiscount
+                item.productPriceBeforeDiscount = productPriceBeforeDiscount
             })
 
             res.status(200).send({
                 isError: false,
                 message: "get data sucess",
-                data: findCart
+                data: findCart,
+                totalAfterDiscount: totalPriceAfterDiscount,
+                totalBeforeDiscount: totalPriceBeforeDiscount,
                 
             })
 
@@ -456,5 +498,34 @@ module.exports = {
                 data: error.message
             })
         }
-    }
+    },
+
+    stockHistory: async(req, res) => {
+        try {
+            const findStockHistory = await stock_history.findAll({
+                include: ['id', 'event_type', 'quantity_changed', 'remaining_quantity', 'product_id']
+            })
+
+            if(!findStockHistory){
+                res.status(400).send({
+                    isError: true,
+                    message: "stock history not found",
+                    data: {}
+                })
+            }
+
+            res.status(200).send({
+                isError: false,
+                message: "stock history found",
+                data: findStockHistory
+            })
+
+        } catch (error) {
+            res.status(400).send({
+                isError: true,
+                message: "get data failed",
+                data: error.message
+            })
+        }
+    },
 }

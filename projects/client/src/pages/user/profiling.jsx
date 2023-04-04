@@ -13,12 +13,13 @@ export default function Profiling (){
     const [dataProfile, setDataProfile] = useState([])
 
     const getProfile = async () => {
-      const response = await axios.get('http://localhost:8000/users/profile')
+      const response = await axios.get(process.env.REACT_APP_API_GET_PROFILE)
       console.log(response.data.data)
+      setDataProfile(response.data.data)
     }
 
     useEffect(() => {
-        // getProfile();
+        getProfile();
     })
 
     const handleButtonClick = () => {
@@ -36,12 +37,23 @@ export default function Profiling (){
             img
           </div>
           <h1>username</h1>
+          <div>
+            <button className="p-5 bg-red-500" onClick={handleButtonClick}>Edit Profile</button>
+          </div>
         </div>
         <div className='border rounded-lg w-[700px] h-[600px] p-7'>
-          <p>name : </p>
-          <p>birthdate : </p>
-          <p>gender : </p>
-          <p>address : </p>
+          {
+            dataProfile.map((value, index) => {
+              return(
+                <>
+                <p>name : {value.name}</p>
+                <p>birthdate : {value.birthdate} </p>
+                <p>gender : {value.gender} </p>
+                <p>address : </p>
+                </>
+              )
+            })
+          }
         </div>
       </div>
       <Footer/>

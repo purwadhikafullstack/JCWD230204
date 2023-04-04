@@ -1,6 +1,11 @@
 import { useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState, useRef } from 'react'
+<<<<<<< HEAD
+import NavBar from '../../components/navbaruser';
+import HomeMenu from "../../components/homemenu";
+import Footer from '../../components/footer';
+=======
 import NavbarUser from "../../components/navbaruser";
 import HomeMenu from "../../components/homemenu";
 import Footer from "../../components/footer";
@@ -8,12 +13,12 @@ import Footer from "../../components/footer";
 // import imgprod from './../assets/img/assets_products/ps4.jpg'
 // import BannerVertical from './../assets/img/banner-vert-1.png'
 
+>>>>>>> main
 
 export default function ProductPage(){
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState([])
     const [filter, setFilter] = useState('productsName')
-    // const [search, setSearch] = useState('')
     const [sort, setSort] = useState('name')
     const [sortType, setSortType] = useState('asc')
     
@@ -32,7 +37,8 @@ export default function ProductPage(){
 
     let getProducts = async() => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/get?page=${page}sortBy=${sort}SortType=${sortType}filter=${filter}`)
+            const url = process.env.REACT_APP_API_GET_PRODUCTS_PAGE.replace(':page', page).replace(':sort', sort).replace(':sortType', sortType).replace(':filter', filter)
+            const response = await axios.get(url)
             setProducts(response.data.data)
             
         } catch (error) {
@@ -42,7 +48,7 @@ export default function ProductPage(){
 
     let getCategory = async() => {
         try{
-            const response = await axios.get(`http://localhost:8000/products/getCat`)
+            const response = await axios.get(process.env.REACT_APP_API_GET_CATEGORY)
             setCategory(response.data.data)
         } catch(error){
             console.log(error.message)
@@ -59,7 +65,8 @@ export default function ProductPage(){
         const inputSearch = search.current.value;
         console.log(filter, inputSearch)
         try{
-            const response = await axios.get(`http://localhost:8000/products/get?filter=${filter}&search=${inputSearch}`);
+            const url = process.env.REACT_APP_API_PRODUCTS_FILTER.replace(':filter', filter).replace(':inputSearch', inputSearch)
+            const response = await axios.get(url);
             console.log(response.data.data)
             setProducts(response.data.data)
         } catch (error) {
@@ -69,7 +76,8 @@ export default function ProductPage(){
 
     const handleSort = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/products/get?sortBy=${sort}&sortType=${sortType}`)
+            const url = process.env.REACT_APP_API_PRODUCTS_SORT.replace(':sort', sort).replace(':sortType', sortType)
+            const response = await axios.get(url);
             console.log(response.data.data)
             setProducts(response.data.data)
         } catch (error) {
@@ -79,8 +87,15 @@ export default function ProductPage(){
 
     return(
         <>
+<<<<<<< HEAD
+        <div className='bg-[#1c1c1c]'>
+            <NavBar />
+            <HomeMenu />
+        </div>
+=======
         <NavbarUser/>
         <HomeMenu/>
+>>>>>>> main
         <div className="flex gap-4 bg-[#1c1c1c] py-4">
             {/* sidebar nav */}
             <div className="w-[300px] p-4 flex flex-col gap-4 text-white ">
@@ -139,11 +154,11 @@ export default function ProductPage(){
                         currentItems.length ? currentItems.map((product) => {
                             console.log(product)
                             return(
-                                <div key={product.id} onClick={() => Navigate(`/Details/${product.id}`)}>
+                                <div key={product.id} onClick={() => Navigate(`/user/Details/${product.id}`)}>
                                     
                                     <div className="h-[350px] w-[200px] flex flex-col gap-3 border rounded-lg drop-shadow-lg">
                                         <div className="bg-slate-300 rounded-t-lg">
-                                            <img key={product.id} src={(product.products_images[0].url)} alt="" className="h-[200px] w-[200px] rounded-t-lg"/>
+                                            <img key={product.id} src={`${process.env.REACT_APP_API_BASE_URL}/Public/products/${product.products_images[0].url}`} alt="" className="h-[200px] w-[200px] object-cover rounded-t-lg"/>
                                         </div>
                                         <div className="flex flex-col gap-4 justify-around text-white px-2">
                                             <h2 className="text-sm " key={product.id}>{product.products_name}</h2>
@@ -173,13 +188,13 @@ export default function ProductPage(){
                         }
                     </div>
                 </div>
-            </div>
-            <div className=" w-[300px]">
-                {/* <img src={BannerVertical} alt="" className='object-fill' /> */}
-                <h1>banner</h1>
-            </div>
+            </div>  
         </div>
+<<<<<<< HEAD
+        <Footer />
+=======
         <Footer/>
+>>>>>>> main
         </>
     )
 }

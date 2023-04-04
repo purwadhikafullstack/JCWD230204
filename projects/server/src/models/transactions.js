@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     shipping: DataTypes.STRING,
     total: DataTypes.INTEGER,
     user_id: DataTypes.STRING,
+    orderId: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'transactions',
