@@ -201,7 +201,42 @@ module.exports = {
     },
 
     getAllProducts: async(req, res) => {
+        try {
+            const findProducts = await products.findAll({
+                attributes: ['id', 'products_name'],
+                include: [
+                    {
+                        model: productsDetail,
+                        attributes: ['desc', 'price']
+                    },
+                    {
+                        model: productsImage,
+                        attributes: ['image']
+                    },
+                    {
+                        model: categoryProducts,
+                        attributes: ['category_name']
+                    },
+                    {
+                        model: branchProducts,
+                        attributes: ['branch_id']
+                    }
+                ]
+            })
 
+            res.status(200).send({
+                isError: false,
+                message: "Get All Products Success",
+                data: findProducts,
+            })
+
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "Get All Products Failed",
+                data: error.message,
+            })
+        }
     },
 
     getBranchProducts: async(req, res) => {
