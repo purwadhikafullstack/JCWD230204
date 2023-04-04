@@ -3,6 +3,9 @@ import { useRef, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpin from "react-loading-spin";
+import NavbarUser from "../../components/navbaruser";
+import HomeMenu from "../../components/homemenu";
+import Footer from "../../components/footer";
 
 export default function ForgotPassword(){
     const [disabled, setDisabled] = useState (false);
@@ -43,6 +46,8 @@ export default function ForgotPassword(){
 
     return (
         <>
+		 <NavbarUser/>
+         <HomeMenu/>
             <div className=" container h-screen flex justify-center align-center items-center">
                 <div className=" bg-zinc-300 rounded-lg p-10 w-[350px] flex flex-col gap-3 justify-center border border-zinc-500">
                     
@@ -86,6 +91,7 @@ export default function ForgotPassword(){
                         
                     </div>
              </div>
+			 <Footer/>
         </>
       )
     }
