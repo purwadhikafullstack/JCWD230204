@@ -219,7 +219,7 @@ module.exports = {
                     },
                     {
                         model: branchProducts,
-                        attributes: ['branch_id']
+                        attributes: ['stock']
                     }
                 ]
             })
