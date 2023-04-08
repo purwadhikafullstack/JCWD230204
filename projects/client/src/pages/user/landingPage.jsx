@@ -136,8 +136,8 @@ export default function LandingPage(){
                         }
                 </div>
             </div>
+            <Footer />
         </div>
-        <Footer/>
         </>
     )
 }

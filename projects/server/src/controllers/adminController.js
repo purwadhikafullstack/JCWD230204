@@ -28,11 +28,10 @@ const handlebars = require('handlebars');
 
 
 module.exports = {
-    loginsuperadmin: async(req, res) => {
+    loginsuperadmin: async(req, res) => { 
         try {
-
             // step 1: ambil data dari req.body
-            const { email, password} = req.body
+            const { email, password, } = req.body
 
             // step 2: validasi
             if(!email.length || !password.length)
@@ -43,7 +42,7 @@ module.exports = {
             })
         
             // step 3: check ke database, username & email nya exist
-            let findEmail= await users.findOne({
+            let findEmail= await admin.findOne({
                 where: {
                         email: email
                 }
@@ -51,16 +50,16 @@ module.exports = {
             if(!findEmail)
                 return res.status(404).send({
                     isError: true,
-                    message: 'email not exist',
+                    message: 'email already exist',
                     data: null
                 })
-                console.log(findEmail)
+            //     console.log(findEmail)
 
             // step 4: check password
             if(password !== findEmail.password){
                 return res.status(404).send({
                     isError: true,
-                    message: 'password wrong',
+                    message: 'password is wrong',
                     data: null
                 })
             }
@@ -80,7 +79,6 @@ module.exports = {
             })
 
         } catch (error) {
-  
             res.status(404).send({
                 isError: true, 
                 message: "Login Failed", 
@@ -204,7 +202,42 @@ module.exports = {
     },
 
     getAllProducts: async(req, res) => {
+        try {
+            const findProducts = await products.findAll({
+                attributes: ['id', 'products_name'],
+                include: [
+                    {
+                        model: productsDetail,
+                        attributes: ['desc', 'price']
+                    },
+                    {
+                        model: productsImage,
+                        attributes: ['image']
+                    },
+                    {
+                        model: categoryProducts,
+                        attributes: ['category_name']
+                    },
+                    {
+                        model: branchProducts,
+                        attributes: ['stock']
+                    }
+                ]
+            })
 
+            res.status(200).send({
+                isError: false,
+                message: "Get All Products Success",
+                data: findProducts,
+            })
+
+        } catch (error) {
+            res.status(404).send({
+                isError: true,
+                message: "Get All Products Failed",
+                data: error.message,
+            })
+        }
     },
 
     getBranchProducts: async(req, res) => {
