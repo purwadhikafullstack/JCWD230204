@@ -377,41 +377,6 @@ module.exports = {
         lng: longitude,
       }
 
-      const nearestBranch = await branchStores.findOne({
-        include: [
-          {
-            model: branchProducts,
-            where: {
-              product_id: cartItems[0].dataValues.product.dataValues.id,
-              stock: { [Op.gte]: quantity },
-            },
-          },
-        ],
-        where: sequelize.where(
-          sequelize.fn(
-            'ST_Distance_Sphere',
-            sequelize.col('location'),
-            sequelize.fn(
-              'POINT',
-              userLocation.lng,
-              userLocation.lat
-            ),
-          ),
-          '<',
-          max_distance,
-        ),
-        order: sequelize.fn(
-          'ST_Distance_Sphere',
-          sequelize.col('location'),
-          sequelize.fn(
-            'POINT',
-            userLocation.address.longitude,
-            userLocation.address.latitude,
-          ),
-        ),
-        limit: 1,
-      });
-
       //create transaction detail
       const transactionDetails = cartItems.map((item) => {
         const product = item.dataValues.product?.dataValues;
@@ -435,32 +400,6 @@ module.exports = {
         },
         { transaction: t }
       );
-
-      if(nearestBranch){
-        //calculate stock after checkout
-        const quantity = nearestBranch.dataValues.branch_products[0].dataValues.stock - cartItems[0].dataValues.qty
-
-        //update stock history
-        const stockHistory = await stockHistory.create({
-            branch_id: nearestBranch.id,
-            product_id: cartItems[0].dataValues.product.dataValues.id,
-            quantity_changed: -cartItems[0].dataValues.qty,
-            remaining_quantity: quantity,
-            event_type: 'purchased',
-            event_date: new Date(),
-        }, { transaction: t})
-
-        const updateStock = await branchStores.update({
-            stock: quantity,
-        }, { transaction : t, where: { id: nearestBranch.id}})
-        
-      } else {
-        res.status(400).send({
-          isError: true,
-          message: "stock not found",
-          data: null,
-        });
-      }
 
       //delete cart
       await cart.destroy({ where: { user_id: id } }, { transaction: t });
