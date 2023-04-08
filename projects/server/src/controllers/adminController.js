@@ -28,7 +28,7 @@ const handlebars = require('handlebars');
 
 
 module.exports = {
-    loginsuperadmin: async(req, res) => { 
+    loginsuperadmin: async(req, res) => {
         try {
             // step 1: ambil data dari req.body
             const { email, password, } = req.body
@@ -50,10 +50,9 @@ module.exports = {
             if(!findEmail)
                 return res.status(404).send({
                     isError: true,
-                    message: 'email already exist',
+                    message: 'email not exist',
                     data: null
                 })
-            //     console.log(findEmail)
 
             // step 4: check password
             if(password !== findEmail.password){
