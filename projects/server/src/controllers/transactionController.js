@@ -372,37 +372,6 @@ module.exports = {
       });
       console.log(cartItems[0].dataValues.product.dataValues.id);
 
-      const userLocation = {
-        lat: latitude,
-        lng: longitude,
-      }
-
-      const findStores = await branchStores.findAll({
-        attributes: ["id", "branch_name", "latitude", "longitude", "city", "province", [
-          sequelize.literal(`(6371 * acos(cos(radians(${userLocation.lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLocation.lng})) + sin(radians(${userLocation.lat})) * sin(radians(latitude))))`),
-          'distances'
-        ]],
-      })
-      const findClosestStore = () => {
-        let closestStores;
-        let secondClosestStores;
-
-        findStores.forEach((store) => {
-          if (!closestStores) {
-            closestStores = store;
-          } else if (!secondClosestStores) {
-            secondClosestStores = store;
-          } else if (store.dataValues.distances < closestStores.dataValues.distances) {
-            secondClosestStores = closestStores;
-            closestStores = store;
-          } else if (store.dataValues.distances < secondClosestStores.dataValues.distances) {
-            secondClosestStores = store;
-          }
-        })
-
-        return [closestStores, secondClosestStores];
-      }
-
       //create transaction detail
       const transactionDetails = cartItems.map((item) => {
         const product = item.dataValues.product?.dataValues;
@@ -426,6 +395,38 @@ module.exports = {
         },
         { transaction: t }
       );
+
+      const userLocation = {
+        lat: latitude,
+        lng: longitude,
+      }
+
+      const findStores = await branchStores.findAll({
+        attributes: ["id", "branch_name", "latitude", "longitude", "city", "province", [
+          sequelize.literal(`(6371 * acos(cos(radians(${userLocation.lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLocation.lng})) + sin(radians(${userLocation.lat})) * sin(radians(latitude))))`),
+          'distances'
+        ]],
+      })
+      
+      const findClosestStore = () => {
+        let closestStores;
+        let secondClosestStores;
+
+        findStores.forEach((store) => {
+          if (!closestStores) {
+            closestStores = store;
+          } else if (!secondClosestStores) {
+            secondClosestStores = store;
+          } else if (store.dataValues.distances < closestStores.dataValues.distances) {
+            secondClosestStores = closestStores;
+            closestStores = store;
+          } else if (store.dataValues.distances < secondClosestStores.dataValues.distances) {
+            secondClosestStores = store;
+          }
+        })
+
+        return [closestStores, secondClosestStores];
+      }
 
       //delete cart
       await cart.destroy({ where: { user_id: id } }, { transaction: t });
