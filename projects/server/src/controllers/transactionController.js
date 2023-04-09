@@ -383,7 +383,6 @@ module.exports = {
           'distances'
         ]],
       })
-
       const findClosestStore = () => {
         let closestStores;
         let secondClosestStores;
