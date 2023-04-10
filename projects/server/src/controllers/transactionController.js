@@ -371,6 +371,7 @@ module.exports = {
           },
         ],
       });
+
       console.log(cartItems[0]);
 
       //create transaction detail
@@ -397,6 +398,8 @@ module.exports = {
         { transaction: t }
       );
 
+      console.log(cartItems[0].dataValues.product.dataValues.id);
+
       const userLocation = {
         lat: latitude,
         lng: longitude,
@@ -416,7 +419,6 @@ module.exports = {
           },
         },
       })
-      
       const findClosestStore = () => {
         let closestStores;
         let secondClosestStores;
