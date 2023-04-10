@@ -26,6 +26,7 @@ module.exports = {
         // rollback
         const t = await sequelize.transaction() 
         try {
+            console.log('masuk register')
 
             // step 1: ambil data dari req.body
             const {username, email, password, phone_number} = req.body
@@ -57,13 +58,13 @@ module.exports = {
 
             const resCreateProfile = await profiles.create({
                 users_id: resCreateUser.id
-            })
+            }, {transaction: t})
 
 
             // step 5 : kirim email
-            const template = await fs.readFile('D:/FP/JCWD230204/projects/server/src/template/confirmation.html', 'utf-8')
+            const template = await fs.readFile('C:/Users/OWNER/Desktop/Final Project Gamepedia/JCWD230204/projects/server/src/template/confirmation.html', 'utf-8')
             console.log(template)
-            const templateToCompile = await handlebars.compile(template)
+            const templateToCompile = handlebars.compile(template)
             const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/activation/${resCreateUser.id}`,})
                 
             await transporter.sendMail({
@@ -252,9 +253,7 @@ module.exports = {
 
     resetPassword: async (req, res) => {
         try {
-            let { password, confirmPassword } = req.body;
-            let {id} = req.uid;
-
+            let { id, password, confirmPassword } = req.body;
             console.log(id)
 
             let findUser = await users.findOne({

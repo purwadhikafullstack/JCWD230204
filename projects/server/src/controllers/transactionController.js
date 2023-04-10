@@ -1,4 +1,5 @@
 const { sequelize } = require("./../models");
+const { Op } = require("sequelize"); 
 const db = require("../models/index");
 const users = db.users;
 const products = db.products;
@@ -370,7 +371,7 @@ module.exports = {
           },
         ],
       });
-      console.log(cartItems[0].dataValues.product.dataValues.id);
+      console.log(cartItems[0]);
 
       //create transaction detail
       const transactionDetails = cartItems.map((item) => {
@@ -406,6 +407,14 @@ module.exports = {
           sequelize.literal(`(6371 * acos(cos(radians(${userLocation.lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLocation.lng})) + sin(radians(${userLocation.lat})) * sin(radians(latitude))))`),
           'distances'
         ]],
+        include: {
+          model: branchProducts,
+          attributes: ["id", "product_id", "stock"],
+          include: {
+            model: products,
+            attributes: ["products_name"],
+          },
+        },
       })
       
       const findClosestStore = () => {
@@ -425,20 +434,41 @@ module.exports = {
           }
         })
 
-        return [closestStores, secondClosestStores];
+        closestStores.forEach(async (store) => {
+          store.dataValues.branch_products.forEach((product) => {
+            cartItems.forEach(async (cartItem) => {
+              if (product.product_id === cartItem.product_id) {
+                const newStock = product.stock - cartItem.qty;
+                const previousStock = product.stock
+                
+                await product.update({ stock: newStock });
+
+                const StockHistory = await stockHistory.create({
+                  event_type: "purchase",
+                  event_date: new Date(),
+                  quantity_changed: -cartItem.qty,
+                  remaining_quantity: newStock,
+                  product_id: product.product_id,
+                })
+              }
+            })
+          })
+        })
+
+        return [closestStores, secondClosestStores]; 
       }
 
       //delete cart
       await cart.destroy({ where: { user_id: id } }, { transaction: t });
 
-      // await t.commit();
+      await t.commit();
       res.status(200).send({
         isError: false,
         message: "place order success",
         data: {findStores, closestStores: findClosestStore()},
       });
     } catch (error) {
-      // await t.rollback();
+      await t.rollback();
       res.status(400).send({
         isError: true,
         message: "add transaction failed",
