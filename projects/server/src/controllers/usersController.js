@@ -61,10 +61,10 @@ module.exports = {
 
 
             // step 5 : kirim email
-            const template = await fs.readFile('./src/template/confirmation.html', 'utf-8')
+            const template = await fs.readFile('D:/FP/JCWD230204/projects/server/src/template/confirmation.html', 'utf-8')
             console.log(template)
             const templateToCompile = await handlebars.compile(template)
-            const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/user/activation/${resCreateUser.id}`,})
+            const newTemplate = templateToCompile({username:username, url: `http://localhost:3000/activation/${resCreateUser.id}`,})
                 
             await transporter.sendMail({
                 from: 'GAMEPEDIA',

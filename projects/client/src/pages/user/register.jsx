@@ -18,7 +18,7 @@ export default function Register (){
 
     const handleSubmit = async () => {
         try {
-            const {data}= await axios.post(process.env.REACT_APP_API_REGISTER, {username:name, email:email, password:password, phone_number:phone});
+            const data = await axios.post(process.env.REACT_APP_API_REGISTER, {username:name, email:email, password:password, phone_number:phone});
             console.log(data);
              toast.success (data.message)
              setTimeout(()=> {
