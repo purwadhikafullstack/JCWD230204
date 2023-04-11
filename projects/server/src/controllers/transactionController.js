@@ -336,75 +336,12 @@ module.exports = {
       const transactionId = nanoid(13);
       // console.log(transactionId);
 
-      //create transaction
-      const transaction = await Transaction.create(
-        {
-          orderId: transactionId,
-          date: new Date(),
-          expiry_date: expiredTime,
-          user_id: id,
-          address: address,
-          city: city,
-          state: state,
-          postal_code: zip,
-          country: country,
-          shipping: shipping,
-          total: total,
-          transaction_status_id: 1,
-        },
-        { transaction: t }
-      );
-
-      const cartItems = await cart.findAll({
-        where: { user_id: id },
-        attributes: ["id", "qty", "user_id"],
-        include: [
-          {
-            model: products,
-            attributes: ["id", "products_name"],
-            include: [
-              {
-                model: products_detail,
-                attributes: ["price"],
-              },
-            ],
-          },
-        ],
-      });
-
-      console.log(cartItems[0]);
-
-      //create transaction detail
-      const transactionDetails = cartItems.map((item) => {
-        const product = item.dataValues.product?.dataValues;
-        return {
-          transaction_id: transaction.id,
-          product_name: product?.products_name || "",
-          qty: item.dataValues.qty,
-          price: product?.products_details?.[0]?.price || 0,
-        };
-      });
-      await TransactionDetail.bulkCreate(transactionDetails, {
-        transaction: t,
-      });
-
-      //create transaction log
-      await TransactionLog.create(
-        {
-          transaction_id: transaction.id,
-          transaction_status_id: 1,
-          date: new Date(),
-        },
-        { transaction: t }
-      );
-
-      console.log(cartItems[0].dataValues.product.dataValues.id);
-
       const userLocation = {
         lat: latitude,
         lng: longitude,
       }
 
+      //get branchStores
       const findStores = await branchStores.findAll({
         attributes: ["id", "branch_name", "latitude", "longitude", "city", "province", [
           sequelize.literal(`(6371 * acos(cos(radians(${userLocation.lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${userLocation.lng})) + sin(radians(${userLocation.lat})) * sin(radians(latitude))))`),
@@ -418,46 +355,98 @@ module.exports = {
             attributes: ["products_name"],
           },
         },
-      })
-      const findClosestStore = () => {
-        let closestStores;
-        let secondClosestStores;
+        order: [[sequelize.col('distances'), 'ASC']],
+        limit: 3
+      });
+      console.log(findStores[0].dataValues.id)
 
-        findStores.forEach((store) => {
-          if (!closestStores) {
-            closestStores = store;
-          } else if (!secondClosestStores) {
-            secondClosestStores = store;
-          } else if (store.dataValues.distances < closestStores.dataValues.distances) {
-            secondClosestStores = closestStores;
-            closestStores = store;
-          } else if (store.dataValues.distances < secondClosestStores.dataValues.distances) {
-            secondClosestStores = store;
-          }
+      if(findStores){
+        const storeId = findStores[0].dataValues.id;
+
+        console.log(id, storeId)
+
+        //get cart
+        const cartItems = await cart.findAll({
+            where: {
+                user_id: id
+            },
+            include: [
+                {
+                    model: products,
+                    attributes: ['id', 'products_name'],
+                    include: [{model: discount},
+                    {model: products_detail,
+                    attributes: ['price']} ],
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            ],
+            exclude: ['createdAt', 'updatedAt']
         })
 
-        closestStores.forEach(async (store) => {
-          store.dataValues.branch_products.forEach((product) => {
-            cartItems.forEach(async (cartItem) => {
-              if (product.product_id === cartItem.product_id) {
-                const newStock = product.stock - cartItem.qty;
-                const previousStock = product.stock
-                
-                await product.update({ stock: newStock });
+        console.log(cartItems)
 
-                const StockHistory = await stockHistory.create({
-                  event_type: "purchase",
-                  event_date: new Date(),
-                  quantity_changed: -cartItem.qty,
-                  remaining_quantity: newStock,
-                  product_id: product.product_id,
-                })
-              }
-            })
+        for (const cartItem of cartItems) {
+          // console.log(cartItem)
+          const product = await branchProducts.findOne({
+            where: { product_id: cartItem.product.id, branch_id: storeId },
           })
-        })
 
-        return [closestStores, secondClosestStores]; 
+          if(product){
+            const newStock = product.stock - cartItem.qty;
+            const previousStock = product.stock;
+
+            await product.update({ stock: newStock }, { transaction: t });
+
+            const stockhistory = await stockHistory.create({
+              event_type: "purchase",
+              event_date: new Date(),
+              quantity_changed: cartItem.qty,
+              remaining_quantity: newStock,
+              product_id: cartItem.product_id,
+            }, { transaction: t });
+          }
+        }
+
+        //create transaction
+        const transaction = await Transaction.create({
+          transaction_id: transactionId,
+          date: new Date(),
+          expiry_date: expiredTime,
+          address,
+          city,
+          state,
+          postal_code: zip,
+          country,
+          shipping,
+          total,
+          user_id: id,
+          transaction_status_id: 1,
+          orderId: transactionId
+        }, { transaction: t });
+
+        // Create TransactionLog for the entire transaction
+        const transactionLog = await TransactionLog.create({
+          transaction_id: transaction.id,
+          datetime: new Date(),
+          transaction_status_id: 1,
+        }, { transaction: t });
+
+        // Create TransactionDetail for each item in the cart
+        for (const cartItem of cartItems) {
+          console.log(cartItem.dataValues.product.dataValues.products_details[0].dataValues.price)
+          const transactionDetail = await TransactionDetail.create({
+            product_name: cartItem.product.products_name,
+            qty: cartItem.qty,
+            total_price: cartItem.dataValues.product.dataValues.products_details[0].dataValues.price * cartItem.qty,
+            transaction_id: transaction.id
+          }, { transaction: t });
+        }
+
+        console.log('Stock updated and StockHistory created for closest store:', findStores.branch_name);
+        console.log('TransactionLog and TransactionDetails created for the entire transaction');
+
+      } else {
+        console.log('No store found');
       }
 
       //delete cart
@@ -467,10 +456,12 @@ module.exports = {
       res.status(200).send({
         isError: false,
         message: "place order success",
-        data: {findStores, closestStores: findClosestStore()},
+        data: null,
       });
+
     } catch (error) {
       await t.rollback();
+      console.log(error.message);
       res.status(400).send({
         isError: true,
         message: "add transaction failed",

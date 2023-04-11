@@ -18,7 +18,7 @@ export default function TransactionList() {
 
     const getTransactionList = async() => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/transaction/get?sortBy=${sortBy}sortType=${sortType}filterBy=${filterBy}query=${search.current.value}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/transaction/get?sortBy=${sortBy}sortType=${sortType}`, {
                 headers: {
                     token: localStorage.getItem('token')
                 }
