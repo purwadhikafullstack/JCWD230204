@@ -17,6 +17,7 @@ const discount = db.discounts;
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
 const geolib = require("geolib");
+const path = require("path");
 
 module.exports = {
   getTransaction: async (req, res) => {
@@ -336,6 +337,70 @@ module.exports = {
       const transactionId = nanoid(13);
       // console.log(transactionId);
 
+      //create transaction
+      const transaction = await Transaction.create(
+        {
+          orderId: transactionId,
+          date: new Date(),
+          expiry_date: expiredTime,
+          user_id: id,
+          address: address,
+          city: city,
+          state: state,
+          postal_code: zip,
+          country: country,
+          shipping: shipping,
+          total: total,
+          transaction_status_id: 1,
+        },
+        { transaction: t }
+      );
+
+      const cartItems = await cart.findAll({
+        where: { user_id: id },
+        attributes: ["id", "qty", "user_id"],
+        include: [
+          {
+            model: products,
+            attributes: ["id", "products_name"],
+            include: [
+              {
+                model: products_detail,
+                attributes: ["price"],
+              },
+            ],
+          },
+        ],
+      });
+
+      console.log(cartItems[0]);
+
+      //create transaction detail
+      const transactionDetails = cartItems.map((item) => {
+        const product = item.dataValues.product?.dataValues;
+        return {
+          transaction_id: transaction.id,
+          product_name: product?.products_name || "",
+          qty: item.dataValues.qty,
+          price: product?.products_details?.[0]?.price || 0,
+        };
+      });
+      await TransactionDetail.bulkCreate(transactionDetails, {
+        transaction: t,
+      });
+
+      //create transaction log
+      await TransactionLog.create(
+        {
+          transaction_id: transaction.id,
+          transaction_status_id: 1,
+          date: new Date(),
+        },
+        { transaction: t }
+      );
+
+      console.log(cartItems[0].dataValues.product.dataValues.id);
+      
       const userLocation = {
         lat: latitude,
         lng: longitude,
@@ -355,6 +420,7 @@ module.exports = {
             attributes: ["products_name"],
           },
         },
+
         order: [[sequelize.col('distances'), 'ASC']],
         limit: 3
       });
@@ -461,7 +527,6 @@ module.exports = {
 
     } catch (error) {
       await t.rollback();
-      console.log(error.message);
       res.status(400).send({
         isError: true,
         message: "add transaction failed",
@@ -513,7 +578,7 @@ module.exports = {
       }
 
       // Your payment proof file path can be stored in a variable like this:
-      let paymentProofFilePath = req.files.images[0].path;
+      let paymentProofFilePath = `Public/images/${req.files.images[0].filename}`;
       console.log(req.files.images[0].path);
 
       let updatePaymentProof = await Transaction.update(
