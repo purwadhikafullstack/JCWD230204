@@ -29,6 +29,7 @@ export default function ResetPassword (){
 
 			let { data } = await axios.patch(
 				`${process.env.REACT_APP_API_BASE_URL}/api/users/resetPassword/id`,
+
 				{ id: location.pathname.slice(33), password: password.current.value, confirmPassword: confirmPassword.current.value }
 			);
 
